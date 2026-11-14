@@ -13,7 +13,7 @@ Pointers: [glossary](./GLOSSARY.md) · [prompt + payload](./prompt-payload.md) �
 | Job | Pantry (≥3 chips) → **one Recipe tonight**. Similar cards after it exists. Photo later. |
 | Cook | Solo, ~1–4. |
 | Auth | **Better Auth** on D1. Generate signed-in. No Guest DO. v1: **Google, Apple, email OTP, Facebook.** Passkeys later (“add a passkey” after first sign-in). Custom `/sign-in`. [ADR 0036](./adr/0036-better-auth-on-d1.md) |
-| Named routes | `(static)` `/about` `/pricing` `/how-to` `/terms` `/privacy`; `(site)` `/` `/popular` `/popular/[type]` `/recipes/[id]`; `/sign-in`; `(app)` signed-in: `/pantry` `/saved` `/account` `/account/usage` `/account/packs`. **No `/chef`.** **No `/topup`.** |
+| Named routes | `(static)` `/about` `/pricing` `/how-to` `/terms` `/privacy`; `(site)` `/` `/popular` `/popular/[type]` `/recipes/[slug]`; `/sign-in`; `(app)` signed-in: `/pantry` `/saved` `/account` `/account/usage` `/account/packs`. **No `/chef`.** **No `/topup`.** |
 | Constraints | Diet/allergy **hard**; kcal/time **targets**; servings 1–12 default 2. Stamp **kcal**. |
 | Missing | ≤2 **Staples** in prompt: water, salt, pepper, oil, butter. |
 | Recipe view | Own **route**; sheet = same route, narrow. +/- servings **client math** (ADR 0022). |
@@ -24,7 +24,7 @@ Pointers: [glossary](./GLOSSARY.md) · [prompt + payload](./prompt-payload.md) �
 | Chat | v1 auth-only cook routes. **Array** tools. |
 | Credits | **No signup Credits.** FCFS = 10k Neurons/day gift (pool DO, [#76](https://github.com/fringe4life/chef-llama/issues/76) — not a KV daily counter). **`max_tokens` 768** is the hard cap (truncates). Packs when gift is gone. Charge: **hold, then settle or release** (not debit-before-AI). |
 | Diet | **Required** before first Generate. Chips override this run. **Swap** not ignore. First-run **blocking dialog on `/pantry`**: name Home; flags vegan/vegetarian/gluten_free; allergy chips; optional kcal; servings 1–12 default 2; optional max_minutes. Multi-Diet **picker is v2 UI**. Storage: sibling Diet DO (`getActive` RPC). |
-| SEO | **v1.** Site indexable. Every Generate is **public-by-URL**; `/recipes/[id]` unauthenticated SSR + OG SVG + **`noindex`** (Popular excepted). No privacy picker. Private Recipes = v2. **No** `svelte-seo`. Robots/CF/cache **accepted** (ADR 0010 · ADR 0032). |
+| SEO | **v1.** Site indexable. Every Generate is **public-by-URL**; `/recipes/[slug]` unauthenticated SSR + OG SVG + **`noindex`** (Popular excepted). No privacy picker. Private Recipes = v2. **No** `svelte-seo`. Robots/CF/cache **accepted** (ADR 0010 · ADR 0032). |
 | Design | **Working draft** [04-landing](./designs/04-landing.html) + [sticker](./designs/05-token-sticker.html) (and `*-dark.html`). Not locked. **No Code**, no extra routes until accept. |
 | Skills | Matt grill set lives in **larder `.agents/skills/`** (not the Project store, not `environment.json`). Copy not committed yet. |
 | Pay | **Stripe you-MoR.** Hosted Checkout. **No Stripe.js.** Not Polar. **NZD only.** Packs **NZ$8 / $16 / $32 → 20 / 50 / 120**. |
@@ -41,7 +41,7 @@ Pointers: [glossary](./GLOSSARY.md) · [prompt + payload](./prompt-payload.md) �
 | BYO v2 | Paste **API keys** (wrap ADR 0016). Cheap picker: `claude-haiku-5-5`, `gpt-6-luna`, `gemini-3.5-flash-lite`, Groq `openai/gpt-oss-20b`. **No Composer.** |
 | Chips | In-process string canonicalizer; **max 16**. Lists **v1**. Leftover rice → `{ "name": "rice", "cooked": true }`; uncooked omit `cooked`. Highlight already-cooked. **Clairic v2/v3**. |
 | Writes | **Drizzle** on Credit DO (materialized remaining / pack_sum / history) + sibling per-user DOs + `RECIPES_DB` `batch` for **public-by-URL** recipes + Queue Vectorize. **`AUTH_DB`** holds Better Auth tables only (no recipe writes at sign-up). Dashboard **does not** hit `RECIPES_DB`. Diet/Saved ids are **not** D1-queued against recipe writes. **No D1 saves list.** Turso / Postgres / Pipelines **parked** (ADR 0019). Storage v2 OPTION (not decided): nightly near-duplicate merge. [ADR 0029](./adr/0029-drizzle-valibot.md) · [ADR 0030](./adr/0030-per-user-credit-dos.md) · [ADR 0032](./adr/0032-public-by-url-recipes.md) · [ADR 0036](./adr/0036-better-auth-on-d1.md). |
-| Pending Cook | **ADR 0024:** stay `/pantry` until Valibot-ok + id, then `goto /recipes/[id]`. v1 = **SVG only** hashed `<img>` ([cupboard.svg](./designs/cupboard.svg) **draft**; robot looks odd; iterate in Kombai separately). Recipe morph **kept**. Chef = Copilot-inspired **hover body** + **bot face**; **head = Chef Llama mark**. Not equine. CSS `perspective` + wall shadow. Chat `make_recipe()` same pending. No poll. No Job-DO WS. **SSE / `query.live` phases = v2/v3**; hide scene when progress+scene cannot both fit. |
+| Pending Cook | **ADR 0024:** stay `/pantry` until Valibot-ok + id, then `goto /recipes/[slug]`. v1 = **SVG only** hashed `<img>` ([cupboard.svg](./designs/cupboard.svg) **draft**; robot looks odd; iterate in Kombai separately). Recipe morph **kept**. Chef = Copilot-inspired **hover body** + **bot face**; **head = Chef Llama mark**. Not equine. CSS `perspective` + wall shadow. Chat `make_recipe()` same pending. No poll. No Job-DO WS. **SSE / `query.live` phases = v2/v3**; hide scene when progress+scene cannot both fit. |
 | Cancel | **`stream: true`** server-side + `request.signal`. Disconnect = cancel. Probe Neurons; if abort ≈ full 768, **no Credit/FCFS refund**. Cook copy = Credit ledger only. Stripe Pack never refunded. |
 
 **Swap scenario:** Active Diet vegan. Chips: chicken, rice, soy. Generate runs. Tofu-rice. `kind: "swap"` with `swaps: [{ "from": "chicken", "to": "tofu" }]`. No swap → `kind: "plain"` (no `swaps` key).
@@ -164,7 +164,7 @@ Cites: [round 48](../internal/research-round48-public-private.md) · [round 47](
 
 **CI / repo:** **No Turbo v1.** bun cache + `actions.lock` + zizmor. **No Blacksmith.** Type-check: `svelte-check --tsgo` (TS ~6; skip svelte-check-native). **bundlewatch** on built client JS/CSS (0 JS public; `/pantry` ~43 KB brotli). Branch protection (D10) undecided. **Private when coding starts** (not when Packs ship). Infisical stays. [#79](https://github.com/fringe4life/chef-llama/issues/79) · [#80](https://github.com/fringe4life/chef-llama/issues/80) · [ADR 0021](./adr/0021-ci-preview-deps-hooks.md).
 
-**Account:** v1 session-gated **`/account`** plus **`/account/usage`** (credit usage) and **`/account/packs`** (packs history) from the Credit DO. Settled Credit rows with a recipe id link to `/recipes/[id]`. #78 CSS bars on usage. Keep **account popover** (theme, remaining Credits, sign out). **Not** on `/`. **No** Stripe Customer Portal / Clerk Billing / subscriptions. Deleting the account **deletes** that Cook’s recipes (410 on old URLs) — [ADR 0036](./adr/0036-better-auth-on-d1.md). Fallow `billing/` stays empty v2. [#84](https://github.com/fringe4life/chef-llama/issues/84).
+**Account:** v1 session-gated **`/account`** plus **`/account/usage`** (credit usage) and **`/account/packs`** (packs history) from the Credit DO. Settled Credit rows with a recipe id link to `/recipes/[slug]`. #78 CSS bars on usage. Keep **account popover** (theme, remaining Credits, sign out). **Not** on `/`. **No** Stripe Customer Portal / Clerk Billing / subscriptions. Deleting the account **deletes** that Cook’s recipes (410 on old URLs) — [ADR 0036](./adr/0036-better-auth-on-d1.md). Fallow `billing/` stays empty v2. [#84](https://github.com/fringe4life/chef-llama/issues/84).
 
 **Pending / SSE:** v1 cupboard scene. SSE progress later; hide scene when both cannot fit. Cupboard **draft**; they work UI in Kombai separately; robot looks odd. **No Kombai Code.**
 
@@ -218,9 +218,9 @@ Cites: [round 48](../internal/research-round48-public-private.md) · [round 47](
 
 **robots/CF (round 20):** Origin `robots.txt/+server.ts` Disallow `/pantry` `/saved` `/sign-in`. Disallow training: `GPTBot`, `Google-Extended`, `CCBot`, `ClaudeBot`, `Applebot-Extended`. Allow search by default: `Googlebot`, `bingbot`, `OAI-SearchBot`, `Claude-SearchBot`, `Applebot`. Do not Disallow `ChatGPT-User` / `Claude-User`. No `Disallow: /` for `*`. CF: Search **Allow**, Agent **Allow**, Training **Disallow**, Bot Preference Sync **on**. AI Crawl Control to enforce training. **Bot Fight Mode off** on Free. [round 20](../internal/research-round20-robots-ai-crawl-cache.md) · [ADR 0010](./adr/0010-seo-share-recipes.md).
 
-**Cache (round 20 + 14 Nov 2026):** Site Worker Alchemy `cache: { enabled: true }`. **Default deny** `private, no-store`. Only `publicCache` may cache ([caching.md](./caching.md) · [ADR 0037](./adr/0037-zero-js-public-cache-guardrails.md)). Public HTML `Cache-Control: public, max-age=B` + `Cloudflare-CDN-Cache-Control` — **not** `s-maxage` with SWR. Tags `popular` / `popular-top` / `popular-{type}` / `recipe-{id}`; cron snapshot purges changed tags. No `Set-Cookie` / `Vary: Cookie` on public GET. Cold cache on each deploy.
+**Cache (round 20 + 14 Nov 2026):** Site Worker Alchemy `cache: { enabled: true }`. **Default deny** `private, no-store`. Only `publicCache` may cache ([caching.md](./caching.md) · [ADR 0037](./adr/0037-zero-js-public-cache-guardrails.md)). Public HTML `Cache-Control: public, max-age=B` + `Cloudflare-CDN-Cache-Control` — **not** `s-maxage` with SWR. Tags `popular` / `popular-top` / `popular-{type}` / `recipe-{ulid}`; cron snapshot purges changed tags. No `Set-Cookie` / `Vary: Cookie` on public GET. Cold cache on each deploy.
 
-**Pending IA (round 21):** Stay `/pantry` → `goto /recipes/[id]` after insert. Chat same. No Job-DO WS. **SSE/`query.live` = v2/v3.** v1 SVG only. [ADR 0024](./adr/0024-cook-pending-pantry.md).
+**Pending IA (round 21):** Stay `/pantry` → `goto /recipes/[slug]` after insert. Chat same. No Job-DO WS. **SSE/`query.live` = v2/v3.** v1 SVG only. [ADR 0024](./adr/0024-cook-pending-pantry.md).
 
 ---
 
@@ -253,7 +253,7 @@ src/routes/
     account/packs/+page.svelte   # packs history
 ```
 
-Auth runs on `(app)`, `/sign-in`, `/api/auth/*`, remotes that need a Cook. **Never** on cached public pages. Public layouts **never import auth**. Public GET **must not** `Set-Cookie` or `Vary: Cookie`. **`getSession` must never run on public cached routes.** `/recipes/[id]` sits **outside** `(app)` so the public cache stays cookie-free. Save on a 0-JS public recipe page is **open** (ADR 0036’s optional island cannot ship if the page has 0 JS and no auth import).
+Auth runs on `(app)`, `/sign-in`, `/api/auth/*`, remotes that need a Cook. **Never** on cached public pages. Public layouts **never import auth**. Public GET **must not** `Set-Cookie` or `Vary: Cookie`. **`getSession` must never run on public cached routes.** `/recipes/[slug]` sits **outside** `(app)` so the public cache stays cookie-free. Save on a 0-JS public recipe page is **open** (ADR 0036’s optional island cannot ship if the page has 0 JS and no auth import).
 
 Headers: [caching.md](./caching.md).
 
@@ -263,7 +263,7 @@ Headers: [caching.md](./caching.md).
 | `/` | `(site)` | `false` | `false` | `publicCache` browser 60 / edge 3600 / swr 86400, tag `popular-top` |
 | `/popular` | `(site)` | `false` | `false` | same, tag `popular` |
 | `/popular/[type]` | `(site)` v2 | `false` | `false` | same, tag `popular-{type}`. Unknown type: 404 `private, no-store` |
-| `/recipes/[id]` | `(site)` | `false` | `false` | browser 300 / edge 31536000, tag `recipe-{id}`; **`noindex`**; **410** after account deletion |
+| `/recipes/[slug]` | `(site)` | `false` | `false` | browser 300 / edge 31536000, tag `recipe-{ulid}`; **`noindex`**; **410** after account deletion |
 | `/sign-in` | — | **`true`** | `false` | `private, no-store` |
 | `/pantry` | `(app)` | **`true`** | `false` | `private, no-store` (~43 KB brotli Kit JS) |
 | `/saved` | `(app)` | **`true`** | `false` | `private, no-store` |
@@ -379,11 +379,11 @@ Canonicalize in-process before the prompt: strip units/qty, closed synonyms, ded
 
 ## Scale (recipe detail)
 
-+/- people on `/recipes/[id]`. Client `n / recipe.servings`, clamp 1–12, start at Diet servings. No Generate. kcal **per serving** stamp stays; show **total** `kcal * n`. Minutes and steps frozen. Names-only `have`/`need` do not multiply. [ADR 0022](./adr/0022-recipe-scale-client.md).
++/- people on `/recipes/[slug]`. Client `n / recipe.servings`, clamp 1–12, start at Diet servings. No Generate. kcal **per serving** stamp stays; show **total** `kcal * n`. Minutes and steps frozen. Names-only `have`/`need` do not multiply. [ADR 0022](./adr/0022-recipe-scale-client.md).
 
 ## Generate write path (v1)
 
-Do **not** await Vectorize or embed on the cook request. Site Worker RPCs Diet `getActive()` and Credit DO **`hold`** (coalesce Credit SQL + materialized remaining/pack_sum, no `await` between writes, **no AI inside the DO**). Attach Diet on the granite request. After Valibot-ok JSON: D1 `batch()` insert a **public-by-URL** recipe (no privacy picker); Credit DO **`settle`** (materialized remaining/pack_sum in the same SQL tx); enqueue `index_recipe`. On AI/Valibot fail or cancel: **`release`** the hold (cancel lock still applies if the GPU used ~768 tokens). Keep the **HTTP request open** for the AI (unlimited wall while connected); do not finish granite in `waitUntil` (30 s after disconnect). Parked v2/v3 writes: [ADR 0019](./adr/0019-write-path-v2-parked.md). **Storage v2 OPTION (not decided):** nightly cron merges near-duplicate recipes, 301 the merged id, purge `recipe-{id}`; embed only saved recipes in Vectorize; never merge different ingredient sets or free-from/allergy tags. Pending UI: [ADR 0024](./adr/0024-cook-pending-pantry.md). Cancel **accepted** round 25. Checkout detect: [ADR 0025](./adr/0025-checkout-feature-detect.md). Visibility: [ADR 0032](./adr/0032-public-by-url-recipes.md). Credits (hold / settle / release) are also described in [tech-stack.md](./tech-stack.md) Credits.
+Do **not** await Vectorize or embed on the cook request. Site Worker RPCs Diet `getActive()` and Credit DO **`hold`** (coalesce Credit SQL + materialized remaining/pack_sum, no `await` between writes, **no AI inside the DO**). Attach Diet on the granite request. After Valibot-ok JSON: D1 `batch()` insert a **public-by-URL** recipe (no privacy picker); Credit DO **`settle`** (materialized remaining/pack_sum in the same SQL tx); enqueue `index_recipe`. On AI/Valibot fail or cancel: **`release`** the hold (cancel lock still applies if the GPU used ~768 tokens). Keep the **HTTP request open** for the AI (unlimited wall while connected); do not finish granite in `waitUntil` (30 s after disconnect). Parked v2/v3 writes: [ADR 0019](./adr/0019-write-path-v2-parked.md). **Storage v2 OPTION (not decided):** nightly cron merges near-duplicate recipes, 301 the merged id, purge `recipe-{ulid}`; embed only saved recipes in Vectorize; never merge different ingredient sets or free-from/allergy tags. Pending UI: [ADR 0024](./adr/0024-cook-pending-pantry.md). Cancel **accepted** round 25. Checkout detect: [ADR 0025](./adr/0025-checkout-feature-detect.md). Visibility: [ADR 0032](./adr/0032-public-by-url-recipes.md). Credits (hold / settle / release) are also described in [tech-stack.md](./tech-stack.md) Credits.
 
 ## Fonts
 
@@ -397,7 +397,7 @@ Do **not** await Vectorize or embed on the cook request. Site Worker RPCs Diet `
 |---|---|---|
 | `/` `/popular` `/about` `/pricing` `/how-to` `/terms` `/privacy` | **yes** (`/` `/popular` edge SSR; rest prerender) | `<svelte:head>` + static meal SVG |
 | `/pantry` `/saved` `/sign-in` | **noindex** (session) | n/a |
-| `/recipes/[id]` | **noindex** | public SSR, undecorated `og:url`, same SVG |
+| `/recipes/[slug]` | **noindex** | public SSR, undecorated `og:url`, same SVG |
 | Popular ids | **yes** in sitemap | index only if Popular |
 
 | Mail | Sender | Brand |

@@ -4,14 +4,14 @@
 
 ## Locked
 
-- **Cap 20** Recipe ids per list. No infinite scroll.
+- **Cap 20** snapshot items per list (`id` ULID + `slug` + `title`). No infinite scroll.
 - **Appear only after ≥5 distinct savers** in the 7-day window.
 - **Index `/` shows 5.** Edge SSR `csr=false`, KV `popular:all`, Cache-Tag `popular-top`. No generator on `/`. Plain HTML form/links to `/pantry` (`?i=` prefill).
 - **`/popular` is a v1 URL** (not only an island on `/`). Same snapshot; tags `popular`.
 - **Cache hit required.** `/` and `/popular` must not scan D1, Saved DOs, or rebuild rank on the request. KV miss → last-good or empty placeholder; never a live rank on the request.
-- **Cron snapshot, not per-save rebuilds.** One D1 aggregate (7-day saves, distinct savers, public type tags), deterministic rank, cap 20, min 5 distinct savers. Hash visible `[id, title]` order per list vs KV `popular:hashes`; write only changed `popular:{type}` / `popular:all`; purge only changed tags (`popular-top` iff the top 5 changed); hashes last. The feed into that aggregate is **OPEN**: `save_count` on the recipe row **or** queue events into a 7-day per-recipe saver ledger. A bare `save_count` cannot enforce distinct savers + window. Do not pick.
+- **Cron snapshot, not per-save rebuilds.** One D1 aggregate (7-day saves, distinct savers, public type tags), deterministic rank, cap 20, min 5 distinct savers. Hash visible `[id, slug, title]` order per list vs KV `popular:hashes`; write only changed `popular:{type}` / `popular:all`; purge only changed tags (`popular-top` iff the top 5 changed); hashes last. The feed into that aggregate is **OPEN**: `save_count` on the recipe row **or** queue events into a 7-day per-recipe saver ledger. If a ledger is used, PK is `save_ledger (recipe_id, saver_hash)`, `saver_hash` = HMAC(secret, userId). A bare `save_count` cannot enforce distinct savers + window. Do not pick.
 - **Not** a Cron ping of `/` ([#81](https://github.com/fringe4life/chef-llama/issues/81) still holds).
-- Headers: `/` and `/popular` browser **60**, edge **3600**, swr **86400**. Recipe pages: browser 300, edge 1 year, tag `recipe-{id}`. **Not** `s-maxage` + SWR.
+- Headers: `/` and `/popular` browser **60**, edge **3600**, swr **86400**. Recipe pages: browser 300, edge 1 year, tag `recipe-{ulid}`. **Not** `s-maxage` + SWR.
 
 This **replaces** the earlier rec of rebuild-on-save/unsave + daily cron, KV `popular:home`, and “no `/popular` feed in v1”.
 

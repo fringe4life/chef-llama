@@ -12,7 +12,7 @@ Default is **deny**: `private, no-store`. The **only** way to cache is `publicCa
 
 - Throws unless the route is under `(static)` or `(site)` and the method is GET/HEAD.
 - Integers only. `browser ≤ 3600`, `edge ≤ 1 year`, `swr ≤ 7 days`, `browser ≤ edge`.
-- 1–10 tags matching `^(popular|popular-top|popular-<type>|recipe-[0-9a-z]{6,32})$` (`CacheTag` template-literal type).
+- 1–10 tags matching `^(popular|popular-top|popular-[a-z0-9-]+|recipe-[0-9a-hjkmnp-tv-z]{26})$` (`CacheTag` template-literal type).
 - Emits `Cache-Control: public, max-age=B`, `Cloudflare-CDN-Cache-Control: max-age=E[, stale-while-revalidate=S]`, `Cache-Tag`. **Never** `s-maxage`.
 
 Hook: if the response did not go through `publicCache` → `private, no-store`, strip CDN / Cache-Tag headers. Public routes: `Set-Cookie` or `Vary: Cookie` / `Authorization` is a violation (dev throws; prod strips, no-store, log `[cache-guard]`).

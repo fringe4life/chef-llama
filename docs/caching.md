@@ -20,7 +20,7 @@ Limits (integers):
 | `browser` | 3600 | `browser ≤ edge` |
 | `edge` | 1 year (31536000) | |
 | `swr` | 7 days (604800) | optional |
-| `tags` | 1–10 | must match `^(popular\|popular-top\|popular-<type>\|recipe-[0-9a-z]{6,32})$` |
+| `tags` | 1–10 | must match `^(popular\|popular-top\|popular-[a-z0-9-]+\|recipe-[0-9a-hjkmnp-tv-z]{26})$` |
 
 `CacheTag` is a template-literal type of that pattern.
 
@@ -38,7 +38,7 @@ Emits:
 |---|---|
 | Prerendered `(static)` HTML | Static Assets default: `public, max-age=0, must-revalidate` + ETag |
 | Hashed assets (CSS/fonts/JS chunks) | immutable 1 year |
-| `/recipes/[id]` | browser **300**, edge **31536000**, tag `recipe-{id}` (immutable recipe HTML) |
+| `/recipes/[slug]` | browser **300**, edge **31536000**, tag `recipe-{ulid}` (immutable recipe HTML) |
 | `/popular` `/popular/[type]` | browser **60**, edge **3600**, swr **86400**, tags `popular` / `popular-{type}` |
 | `/` | same as Popular, tag `popular-top` |
 | Unknown `/popular/[type]` 404 | `private, no-store` (hook) |
@@ -59,7 +59,7 @@ Jobs Worker Cron, one D1 aggregate:
 - cap **20**
 - min **5** distinct savers to appear
 
-Hash visible `[id, title]` order per list vs KV `popular:hashes`. Write only **changed** `popular:{type}` (and `popular:all`). Purge **only** changed tags; also `popular-top` **iff** the top 5 changed. Write hashes **last**.
+Hash visible `[id, slug, title]` order per list vs KV `popular:hashes`. KV items `{id (ULID), slug, title}`. Cards and sitemap link `/recipes/{slug}`. Write only **changed** `popular:{type}` (and `popular:all`). Purge **only** changed tags; also `popular-top` **iff** the top 5 changed. Write hashes **last**.
 
 KV miss on `/` or `/popular`: last-good or empty placeholder — **never** a live rank on the request.
 

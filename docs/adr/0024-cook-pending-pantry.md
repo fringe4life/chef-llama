@@ -4,7 +4,7 @@
 
 Generate is one long HTTP request. Workers have **no wall-clock limit** while the client stays connected; `ctx.waitUntil()` is only **30 s** after disconnect ([limits](https://developers.cloudflare.com/workers/platform/limits/)). Keep the request open for fp8; do not finish inference in `waitUntil`. Effect Schema needs **complete** JSON — do not stream method lines as the Recipe.
 
-**v1:** Cook stays on **`/pantry`**. `<svelte:boundary>` `{#snippet pending()}` = spectacular cupboard/list **SVG only**. After Schema-ok + D1 insert, **`goto('/recipes/[id]')`**. Chat `make_recipe()` uses that same pending + same goto. Do not put a live job on the public 0-JS recipe page ([ADR 0037](./0037-zero-js-public-cache-guardrails.md)). Do not poll. Do not add a Job-DO hibernation WebSocket.
+**v1:** Cook stays on **`/pantry`**. `<svelte:boundary>` `{#snippet pending()}` = spectacular cupboard/list **SVG only**. After Schema-ok + D1 insert, **`goto('/recipes/[slug]')`**. Chat `make_recipe()` uses that same pending + same goto. Do not put a live job on the public 0-JS recipe page ([ADR 0037](./0037-zero-js-public-cache-guardrails.md)). Do not poll. Do not add a Job-DO hibernation WebSocket.
 
 **Parked v2/v3:** SSE and Kit `query.live` job phases. **Round 45:** both granite and llama-3.3-70b-fast document `stream: true` SSE; JSON Mode **does not stream**. v1 still consumes model SSE **in the Worker**. If client progress UI ships later, **hide the pending scene** on viewports that cannot fit progress **and** scene. [round 45](../../internal/research-round45-valibot-drizzle-dos.md).
 

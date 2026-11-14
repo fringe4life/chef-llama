@@ -2,7 +2,7 @@
 
 **Status:** accepted (round 30 Q1–Q2 yes).
 
-**v1 Site/App URLs stay the named Kit files** (`/`, `/pantry`, `/recipes/[id]`, …). Document language is **English for NZ**: `html lang="en-NZ"`. Optional `hreflang="en-NZ"` + `x-default` both on **`/`**. Do **not** add `/en` or country-only `/nz` / `/uk`. Google forbids country-only hreflang; `en` is a language, `NZ` is a region on `en-NZ`. ([Localized versions](https://developers.google.com/search/docs/specialty/international/localized-versions).)
+**v1 Site/App URLs stay the named Kit files** (`/`, `/pantry`, `/recipes/[slug]`, …). Document language is **English for NZ**: `html lang="en-NZ"`. Optional `hreflang="en-NZ"` + `x-default` both on **`/`**. Do **not** add `/en` or country-only `/nz` / `/uk`. Google forbids country-only hreflang; `en` is a language, `NZ` is a region on `en-NZ`. ([Localized versions](https://developers.google.com/search/docs/specialty/international/localized-versions).)
 
 **v2 i18n:** official Kit path is **Paraglide** (`npx sv add paraglide`, inlang project). Default URL strategy = **base locale unprefixed**. Kit has **no** builtin message catalog — only `lang` in `app.html`. Do not wrap v1 in `[[lang]]` (root `+page` already claims `/`). A later `/popular/[type]` feed uses the literal first segment `popular`; locale prefixes are a reserved BCP-47 list so they cannot steal type or nation codes. Closed type list + allergy fail-closed: [ADR 0038](./0038-popular-type-allergy-safeguards.md).
 

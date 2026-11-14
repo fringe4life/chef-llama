@@ -19,7 +19,7 @@ Free-from tags come **only** from a **deterministic ingredient rule table** over
 - **AI cannot add** allergy / free-from tags. AI may only **flag conflicts**.
 - **Disclaimer** on every allergy-typed Popular page and every Recipe.
 - **Report a problem** link on those pages.
-- **Admin pull** of a recipe: clear `free_from`, purge `recipe-{id}` and affected `popular-{type}`, re-run the snapshot.
+- **Admin pull** of a recipe: clear `free_from`, purge `recipe-{ulid}` and affected `popular-{type}`, re-run the snapshot.
 - **Aggregate counts only.** Never per-user data on Popular.
 
 Parked URL in [ADR 0027](./0027-v1-urls-region-api.md) was `/popular/[diet]`; the segment is **`[type]`**, and locale prefixes stay a reserved BCP-47 list so they cannot steal type names.
