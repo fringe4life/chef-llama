@@ -8,7 +8,7 @@
 
 `keto`, `vegan`, `breakfast`, `gluten-free`, `dairy-free`, `nut-free`
 
-Unknown types: Kit 3 param matcher in `src/params.ts` (plain Node at build, no `#lib`; `POPULAR_TYPES` in a dependency-free module) → **plain 404**, **not** cached (`private, no-store` via the default-deny hook). Query strings on `/popular/*` **redirect** to the clean URL.
+Unknown types: Kit 3.2 matcher in `src/params.ts` (`defineParams` from `@sveltejs/kit/params`; Valibot schemas from `#lib/schemas/*`; never `#lib/server/*`) → **plain 404**, **not** cached (`private, no-store` via the default-deny hook). Query strings on `/popular/*` **redirect** to the clean URL.
 
 Each type is its own KV key `popular:{type}` + Cache-Tag `popular-{type}`. Cap **20**. No infinite scroll. Same cron snapshot as `/popular` ([ADR 0034](./0034-popular-cap-cache.md)): not per-save rebuilds.
 

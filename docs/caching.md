@@ -4,7 +4,9 @@
 
 Alchemy `Cloudflare.Website.SvelteKit` **`cache: { enabled: true }`**. Workers Cache on + no `Cache-Control` ≈ 2 h cache; cookie is **not** in the cache key. Default is therefore **deny**.
 
-The **only** way to cache is `publicCache` in `#lib/server/cache`.
+The **only** way to cache is `publicCache` in `#lib/server/cache`. 301s and 404s never go through `publicCache`; default-deny → `private, no-store`.
+
+Kit 3.2 matchers: single `src/params.ts` using `defineParams` from `@sveltejs/kit/params`, Valibot schemas from `#lib/schemas/*`. Routes `/recipes/[slug=slug]`. Brands `RecipeSlug` and `Ulid`. Matchers run server **and** browser: never import `#lib/server/*`. Param matching neither → 404 before load (still no-store via the hook). No `src/id-patterns.ts`. Mirrors dollar-holler `src/params.ts` + `#lib/schemas/cursor-id.ts`.
 
 ## `publicCache(event, { browser, edge, swr?, tags })`
 
@@ -38,7 +40,9 @@ Emits:
 |---|---|
 | Prerendered `(static)` HTML | Static Assets default: `public, max-age=0, must-revalidate` + ETag |
 | Hashed assets (CSS/fonts/JS chunks) | immutable 1 year |
-| `/recipes/[slug]` | browser **300**, edge **31536000**, tag `recipe-{ulid}` (immutable recipe HTML) |
+| `/recipes/[slug=slug]` canonical 200 | browser **300**, edge **31536000**, tag `recipe-{ulid}` (immutable recipe HTML) |
+| `/recipes/...` 301 (wrong/missing title, known suffix) | `private, no-store` — never `publicCache` (else heuristic 1200s per typo path) |
+| Unknown recipe suffix / unmatched slug 404 | `private, no-store` — never `publicCache` (else heuristic 180s per typo path) |
 | `/popular` `/popular/[type]` | browser **60**, edge **3600**, swr **86400**, tags `popular` / `popular-{type}` |
 | `/` | same as Popular, tag `popular-top` |
 | Unknown `/popular/[type]` 404 | `private, no-store` (hook) |

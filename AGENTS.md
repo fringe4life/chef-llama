@@ -25,7 +25,11 @@ Do **not**:
 - render theme from cookies on the server for public pages (blocking inline script in `app.html` only)
 - rebuild Popular on save; the Jobs Worker **cron** snapshots KV
 - cache unknown `/popular/[type]` 404s
+- cache recipe 301s or 404s (Workers Cache heuristic 301 1200s / 404 180s per typo path)
+- import `#lib/server/*` from `src/params.ts` (matchers run in the browser)
 - add ogygia or `OGYGIA_SECRET`
+
+Kit 3.2 matchers: single `src/params.ts` using `defineParams` from `@sveltejs/kit/params`, Valibot schemas from `#lib/schemas/*`. Routes `/recipes/[slug=slug]`. Brands `RecipeSlug` (canonical `{title}-{8 lowercase Crockford}` or bare 8-char suffix then load 301s) and `Ulid` (`^[0-9a-hjkmnp-tv-z]{26}$`). Never import `#lib/server/*`. Param matching neither → 404 before load (still no-store via the hook). No `src/id-patterns.ts`. Mirrors dollar-holler `src/params.ts` + `#lib/schemas/cursor-id.ts`.
 
 Public bodies must be byte-identical with and without a session cookie. Cold cache on each deploy (per-version; no cross-version cache).
 

@@ -25,7 +25,7 @@ Two public groups. Shared `Nav.svelte` with a **plain Sign in** link, **no sessi
 | Group | Routes | Render | JS |
 |---|---|---|---|
 | `(static)` | `/about` `/pricing` `/how-to` `/terms` `/privacy` | prerender, `csr=false` | 0 `<script>`, 0 `modulepreload`; **only** the theme script in `app.html` |
-| `(site)` | `/` `/popular` `/popular/[type]` `/recipes/[slug]` | edge SSR, `csr=false`, Workers Cache | same 0-JS budget |
+| `(site)` | `/` `/popular` `/popular/[type]` `/recipes/[slug=slug]` | edge SSR, `csr=false`, Workers Cache | same 0-JS budget |
 
 `/` **moves off `(static)` onto `(site)`**. Edge-rendered `csr=false`. Top 5 from cron KV snapshot `popular:all`, Cache-Tag `popular-top`. **No generator** on `/`. Plain HTML form / links to `/pantry` (prefill `?i=`; generate **only** on POST).
 
@@ -57,9 +57,9 @@ Small **blocking inline script** in `app.html` (cookie + `light-dark()`). **Neve
 
 `build.cssTarget` = browsers with `light-dark()`, or Vite polyfills `color-scheme`.
 
-## Kit 3 matchers
+## Kit 3.2 matchers
 
-One `src/params.ts` loaded by **plain Node at build**. Param matchers in `src/params.ts` may import only dependency-free `src/id-patterns.ts` (alongside `POPULAR_TYPES`; no `#lib`).
+Single `src/params.ts` using `defineParams` from `@sveltejs/kit/params`, importing Valibot schemas from `#lib/schemas/*` (including `POPULAR_TYPES` / `RecipeSlug` / `Ulid`). Routes `/recipes/[slug=slug]`. Brands: `RecipeSlug` (canonical `{title}-{8 lowercase Crockford}`, title part `[a-z0-9]+(?:-[a-z0-9]+)*` max 50, fallback title `recipe`, **or** a bare 8-char suffix then load 301s) and `Ulid` (`^[0-9a-hjkmnp-tv-z]{26}$`) for internal ids. Matchers run on the server **and** in the browser: never import `#lib/server/*`. Param matching neither → 404 before load (cheap, still no-store via the hook). Remove `src/id-patterns.ts`. Mirrors dollar-holler `src/params.ts` + `#lib/schemas/cursor-id.ts`.
 
 ## Open (do not guess)
 
