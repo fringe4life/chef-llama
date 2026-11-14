@@ -239,7 +239,7 @@ src/routes/
     +page.svelte                  # /  top 5 from popular:all; HTML form → /pantry?i=
     popular/+page.svelte
     popular/[type=popularType]/+page.svelte   # v2; matcher 404 is not cached
-    recipes/[id]/+page.svelte     # public SSR; noindex; 410 after delete
+    recipes/[slug=slug]/+page.svelte     # public SSR; noindex; 410 after delete
   sitemap.xml/+server.ts
   robots.txt/+server.ts
   sign-in/+page.svelte            # Better Auth; last-used cookie read on server
