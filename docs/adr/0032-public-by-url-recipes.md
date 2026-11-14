@@ -2,9 +2,9 @@
 
 **Status:** accepted (round 49 Q1 yes)
 
-Every v1 Generate writes a **public-by-URL** Recipe row to **`RECIPES_DB`**. `/recipes/[id]` stays unauthenticated SSR + OG SVG + `noindex` (Popular excepted). Cook does **not** pick private. No `visibility` flag, no Privacy Mode, no privacy picker on Generate.
+Every v1 Generate writes a **public-by-URL** Recipe row to **`RECIPES_DB`**. `/recipes/[slug]` stays unauthenticated SSR + OG SVG + `noindex` (Popular excepted). Cook does **not** pick private. No `visibility` flag, no Privacy Mode, no privacy picker on Generate.
 
-**Saved** is a private **id list** on the per-user Saved DO — not a private document, not a blob copy of the Recipe. **Popular** ranks rolling 7-day **saves of those public rows** (KV); fill with newest public if the window is thin. Ranking a private Recipe on `/` would publish it; gating `/recipes/[id]` would kill OG unfurl ([ADR 0010](./0010-seo-share-recipes.md)).
+**Saved** is a private **id list** on the per-user Saved DO — not a private document, not a blob copy of the Recipe. **Popular** ranks rolling 7-day **saves of those public rows** (KV); fill with newest public if the window is thin. Ranking a private Recipe on `/` would publish it; gating `/recipes/[slug]` would kill OG unfurl ([ADR 0010](./0010-seo-share-recipes.md)).
 
 Private Recipe store = **v2**. Dual-write of Recipe blobs onto a user DO stays forbidden ([ADR 0030](./0030-per-user-credit-dos.md)). GitHub repo private-when-coding-starts ([#80](https://github.com/fringe4life/chef-llama/issues/80)) is **not** this lock.
 

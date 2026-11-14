@@ -1,6 +1,6 @@
 # Better Auth on D1, not Clerk
 
-**Status:** accepted (14 Nov 2026, Coinnich). Supersedes the Clerk provider in [0005](./0005-clerk-gated-generate.md) (login-gated Generate **stays**). OTP “Delivered by Clerk” in [0013](./0013-transactional-email.md) is superseded; one Site mark stays.
+**Status:** accepted (14 Nov 2026, Coinnich). Supersedes the Clerk provider in [0005](./0005-clerk-gated-generate.md) (login-gated Generate **stays**). OTP “Delivered by Clerk” in [0013](./0013-transactional-email.md) is superseded; one Site mark stays. Ids are lowercase ULID TEXT, not UUIDv7 ([ADR 0039](./0039-ids-and-recipe-slugs.md)).
 
 v1 auth is **Better Auth** first-party SvelteKit (`svelteKitHandler`, `sveltekitCookies` **last**) on Cloudflare Workers with the **Drizzle adapter** on **AUTH_DB**. Sessions are **opaque D1 rows**, sliding **7-day** expiry, **server-read**. Public pages ship **0 KB** auth client JS. ogygia islands may read the session with **no redirect** and no 60s token refresh. Generate stays signed-in only.
 
@@ -37,7 +37,7 @@ Better Auth **`lastLoginMethod`** plugin, **cookie-only** (no DB column). Plugin
 
 | Binding | Owns | Migrations |
 |---|---|---|
-| **AUTH_DB** | Better Auth `user` / `session` / `account` / `verification`. `user.id` is **UUIDv7** — the only identity source. | Own drizzle-kit config + folder. CLI → Drizzle. |
+| **AUTH_DB** | Better Auth `user` / `session` / `account` / `verification`. Ids are **lowercase ULID TEXT** via `advanced.database.generateId: () => newId()` ([ADR 0039](./0039-ids-and-recipe-slugs.md); Better Auth 1.7.x passes `{model,size}`; applies to all adapter-created core and plugin tables). `session.token` stays Better Auth’s default random string. `user.id` is the only identity source. | Own drizzle-kit config + folder. CLI → Drizzle. |
 | **RECIPES_DB** | Public-by-URL recipes and related Site rows. **Read replicas here only.** | Own drizzle-kit config + folder. |
 
 No cross-DB FKs. Credit / Diet / Saved DOs `getByName(userId)`. **Nothing** written to `RECIPES_DB` at sign-up. Diet/Saved still left global D1 for per-user DOs ([ADR 0030](./0030-per-user-credit-dos.md)); **AUTH_DB is extra**. Recipes stay on `RECIPES_DB` (the old “one Site D1”).
@@ -46,19 +46,19 @@ No cross-DB FKs. Credit / Diet / Saved DOs `getByName(userId)`. **Nothing** writ
 
 ## Account deletion
 
-Deletion **deletes** that Cook’s recipes (**not** anonymise). Better Auth `beforeDelete` queues a job: drop recipes + saves from `RECIPES_DB`; remove from Vectorize / Popular snapshot / sitemap; purge cached recipe pages (`recipe-{id}` tags) on the Site Worker; wipe per-user Durable Objects. Deleted `/recipes/[id]` returns **410**. Other Cooks’ saves of those recipes disappear too.
+Deletion **deletes** that Cook’s recipes (**not** anonymise). Better Auth `beforeDelete` queues a job: drop recipes + saves from `RECIPES_DB`; remove from Vectorize / Popular snapshot / sitemap; purge cached recipe pages (`recipe-{ulid}` tags) on the Site Worker; wipe per-user Durable Objects. Deleted `/recipes/[slug]` returns **410**. Other Cooks’ saves of those recipes disappear too.
 
 **TODO:** payment-record retention (undecided).
 
 ## Where auth runs
 
-`(app)` signed-in group (`/pantry` `/saved` `/account`…), `/sign-in`, `/api/auth/*`, remote functions that need a Cook, ogygia `/__ogygia__`. **Never** on cached public pages (`/` `/terms` `/privacy` `/recipes/[id]`). Public GET **must not** `Set-Cookie`. `/recipes/[id]` is **not** under the `(app)` auth layout — optional Save is an island that reads session with no redirect.
+`(app)` signed-in group (`/pantry` `/saved` `/account`…), `/sign-in`, `/api/auth/*`, remote functions that need a Cook, ogygia `/__ogygia__`. **Never** on cached public pages (`/` `/terms` `/privacy` `/recipes/[slug]`). Public GET **must not** `Set-Cookie`. `/recipes/[slug]` is **not** under the `(app)` auth layout — optional Save is an island that reads session with no redirect.
 
 Schema (AUTH_DB, Drizzle; dollar-holler-shaped):
 
 ```ts
-user: id (UUIDv7 PK), name, email unique, emailVerified, image, createdAt, updatedAt
-session: id, token unique, userId → user, expiresAt, ipAddress, userAgent, createdAt, updatedAt
-account: id, userId → user, providerId, accountId, tokens…, password?, createdAt, updatedAt
-verification: id, identifier, value, expiresAt, createdAt, updatedAt
+user: id (lowercase ULID TEXT PK via generateId → newId()), name, email unique, emailVerified, image, createdAt, updatedAt
+session: id (lowercase ULID TEXT PK), token unique (Better Auth default random string), userId → user, expiresAt, ipAddress, userAgent, createdAt, updatedAt
+account: id (lowercase ULID TEXT PK), userId → user, providerId, accountId, tokens…, password?, createdAt, updatedAt
+verification: id (lowercase ULID TEXT PK), identifier, value, expiresAt, createdAt, updatedAt
 ```

@@ -16,4 +16,4 @@
 
 ## Proposal (round 33 — not accepted until grill)
 
-Do **not** replace Credit DO + D1 with a kitchen-sink **User DO** (credit + saved recipes + profile). CF: one DO per **coordination atom**; per-user storage is valid, but Popular / share `/recipes/[id]` / Vectorize need **cross-user** D1. Diet + Saved **ids** are sibling per-user DOs (supersedes “Diet stays D1”). DO name: `getByName(userId)` ≡ `idFromName` (Better Auth `user.id` UUIDv7). Gift pool remains a **separate** DO (#76). [#82](https://github.com/fringe4life/chef-llama/issues/82) · [round 33](../../internal/research-round33-reylo-userdo-turbo.md).
+Do **not** replace Credit DO + D1 with a kitchen-sink **User DO** (credit + saved recipes + profile). CF: one DO per **coordination atom**; per-user storage is valid, but Popular / share `/recipes/[slug]` / Vectorize need **cross-user** D1. Diet + Saved **ids** are sibling per-user DOs (supersedes “Diet stays D1”). DO name: `getByName(userId)` ≡ `idFromName` (Better Auth `user.id` ULID). Gift pool remains a **separate** DO (#76). [#82](https://github.com/fringe4life/chef-llama/issues/82) · [round 33](../../internal/research-round33-reylo-userdo-turbo.md).
