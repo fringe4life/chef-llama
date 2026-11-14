@@ -40,7 +40,7 @@ Photo and chat: **slots only**, disabled.
 
 ## Visual
 
-Parchment / olive / paprika / cast iron ([design.md](./design.md) token table). Light = kitchen daylight. Dark = closed cupboard. Display **serif** on wordmark + recipe titles; **sans** on chrome. **Kombai picks Fontsource families** (pin + content-hash; never Google Fonts CSS). Hairline borders, tape-label chips. No gradient mesh, no glow orbs, no 3D food.
+Parchment / olive / paprika / cast iron ([design.md](./design.md) token table). Light = kitchen daylight. Dark = closed cupboard. Display **serif** on wordmark + recipe titles; **sans** on chrome. **System font stack only** (`--font-display` / `--font-sans` / `--font-mono` in design.md). No Fontsource pass. Never Google Fonts CSS. Hairline borders, tape-label chips. No gradient mesh, no glow orbs, no 3D food.
 
 ## Motion — CSS only ([emilkowalski/skills](https://github.com/emilkowalski/skills) `emil-design-eng` + `animate`)
 

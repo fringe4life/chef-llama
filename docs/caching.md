@@ -72,3 +72,15 @@ Each deploy gets a **new** cache (Cloudflare default per-version). No cross-vers
 ## Playwright (layer 3)
 
 Against **`wrangler dev` production build**, not `vitest-pool-workers`. Manifest: `routes.manifest.ts`. Fail if a route is missing or stale. Fetch anonymous **and** with a session cookie. Public/static: no `Set-Cookie`, no `Vary: Cookie`, no `<script>` / `modulepreload` (theme inline script in `app.html` excepted). Private exactly `private, no-store`. 404s and remote queries no-store. Public bodies **byte-identical** with/without cookie.
+
+## bundlewatch (complements 0-JS guardrails)
+
+PR check on the **built client** JS/CSS ([ADR 0021](./adr/0021-ci-preview-deps-hooks.md) · [tech-stack.md](./tech-stack.md) CI). Playwright already fails public pages that ship `<script>` / `modulepreload`. bundlewatch is the size brake after Vite emit.
+
+| Surface | JS budget |
+|---|---|
+| `/` (index) and `(static)` / public `(site)` pages | **0 JS** |
+| `/pantry` | **~43 KB** brotli Kit JS |
+| CSS | **TBD by measurement** — do not invent a number |
+
+Type-check sits next to this: `svelte-check --tsgo` (TS ~6 compile; skip `svelte-check-native`) — [#79](https://github.com/fringe4life/chef-llama/issues/79) round 38.

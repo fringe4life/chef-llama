@@ -193,7 +193,7 @@ Slightly squared — enamelware, not iOS pills.
 | `--leading-tight` / `--leading-body` | `1.2` / `1.55` |
 | `--tracking-display` | `-0.02em` |
 
-Display only on wordmark, recipe titles, empty-state headlines. UI chrome stays sans.
+Display only on wordmark, recipe titles, empty-state headlines. UI chrome stays sans. **This system stack is v1** — no later Fontsource / Fraunces pass ([ADR 0015](./adr/0015-fontsource-preload.md) superseded).
 
 ### spacing
 
@@ -278,7 +278,7 @@ One aesthetic: **working kitchen, not generative-AI purple.**
 
 ## Local mock
 
-**Working draft:** [`docs/designs/04-landing.html`](./designs/04-landing.html) (parchment) and [`04-landing-dark.html`](./designs/04-landing-dark.html) (cast iron), plus token stickers `05-*`. File preview: Tailwind CDN + `color-scheme` on the **same** `:root` rule as `light-dark()` tokens. Canvas: `.kombai/canvas/larder-site.canvas`. Fonts this pass: Vollkorn / Archivo / IBM Plex Mono (Fontsource later). **Not locked.**
+**Working draft:** [`docs/designs/04-landing.html`](./designs/04-landing.html) (parchment) and [`04-landing-dark.html`](./designs/04-landing-dark.html) (cast iron), plus token stickers `05-*`. File preview: Tailwind CDN + `color-scheme` on the **same** `:root` rule as `light-dark()` tokens. Canvas: `.kombai/canvas/larder-site.canvas`. **Fonts: system stack only** (`--font-display` / `--font-sans` / `--font-mono` above). No Fontsource pass. **Not locked.**
 
 Earlier sketch: [`design-mock.html`](./design-mock.html) (pantry/results/detail in one file). Keep for chip/dialog notes; do not treat as the current look.
 

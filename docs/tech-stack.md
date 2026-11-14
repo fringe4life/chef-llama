@@ -1,6 +1,6 @@
 # Chef Llama tech stack
 
-**Default:** SvelteKit 3 on **Cloudflare Workers** (not Pages-legacy), provisioned with **Alchemy v2 beta** (`Cloudflare.Website.SvelteKit`, **`cache: { enabled: true }`**), domain logic in **Effect v4**, auth with **Better Auth** on D1 (first-party SvelteKit, Drizzle adapter, custom `/sign-in`), prepaid credits via **Stripe Checkout hosted NZD (you are MoR) → Durable Object ledger**, public pages **0-JS Kit** (`csr=false`; ogygia **dropped** — [ADR 0037](./adr/0037-zero-js-public-cache-guardrails.md)), styling via **StyleX `--` shadcn token names** resolved with CSS `light-dark()` only (no `.dark`, no component pack, no `mode-watcher`; theme script in `app.html`), fonts via **Fontsource** + Kit `preload`.
+**Default:** SvelteKit 3 on **Cloudflare Workers** (not Pages-legacy), provisioned with **Alchemy v2** (`Cloudflare.Website.SvelteKit`, **`cache: { enabled: true }`** — pin the **latest Alchemy v2 exactly when coding starts**), domain logic in **Effect v4**, auth with **Better Auth** on D1 (first-party SvelteKit, Drizzle adapter, custom `/sign-in`), prepaid credits via **Stripe Checkout hosted NZD (you are MoR) → Durable Object ledger**, public pages **0-JS Kit** (`csr=false`; ogygia **dropped** — [ADR 0037](./adr/0037-zero-js-public-cache-guardrails.md)), styling via **StyleX `--` shadcn token names** resolved with CSS `light-dark()` only (no `.dark`, no component pack, no `mode-watcher`; theme script in `app.html`), fonts via the **system stack** in [design.md](./design.md).
 
 **Fallback:** `@sveltejs/adapter-cloudflare` + `wrangler.jsonc` if Alchemy’s Kit adapter misbehaves. Auth fallbacks (not v1): WorkOS AuthKit, DIY Oslo+arctic — rejected in [ADR 0036](./adr/0036-better-auth-on-d1.md).
 
@@ -13,7 +13,7 @@ Evidence is as of **21 Oct 2026**. Svelte MCP was not available in this environm
 | Layer | Default | Fallback |
 |---|---|---|
 | App | SvelteKit **3** + Svelte 5, Vite 8 / Rolldown, Node ≥ 22.17, TypeScript 6 | Stay on latest Kit 2 only if Alchemy cannot follow Kit 3 (product requirement is v3 — treat Kit 2 as a temporary unblock, not the target) |
-| Deploy | Alchemy **2.0.0-beta.83+** `Cloudflare.Website.SvelteKit` → Workers Static Assets | Official `@sveltejs/adapter-cloudflare` **8.x** + Wrangler **≥ 4.118** (`main`: `.svelte-kit/cloudflare/_worker.js`) |
+| Deploy | Alchemy **v2** `Cloudflare.Website.SvelteKit` → Workers Static Assets. Pin the **latest v2 exactly when coding starts** (no floating `beta.83+`) | Official `@sveltejs/adapter-cloudflare` **8.x** + Wrangler **≥ 4.118** (`main`: `.svelte-kit/cloudflare/_worker.js`) |
 | IaC | Alchemy v2 `Alchemy.Stack` + Effect generators | Wrangler-only `wrangler.jsonc` (lose typed bind/deploy of queues, DOs, Vectorize) |
 | Errors / domain | Effect **v4** (`Data.TaggedError`, `Effect.tryPromise`, `catchTag`) | Typed `Result` unions only if Effect + Alchemy runtime coupling is too heavy in SvelteKit loaders |
 | Auth | **Better Auth** first-party SvelteKit on **AUTH_DB** (Drizzle adapter, `svelteKitHandler`, `nodejs_compat`). Opaque D1 sessions, sliding 7-day, server-read. Custom `/sign-in`. v1: Google, Apple, email OTP, Facebook | Not Clerk (fees + 60s JWT). Not WorkOS AuthKit. Not DIY Oslo+arctic. Not Lucia. Not OpenAuth as the session SDK. Not Auth.js first. [ADR 0036](./adr/0036-better-auth-on-d1.md) |
@@ -22,7 +22,7 @@ Evidence is as of **21 Oct 2026**. Svelte MCP was not available in this environm
 | Recipe parse | **Valibot** Standard Schema on the Worker (same lib as Kit remotes) | `JSON.parse` only is insufficient; tagged Valibot fail → no row, refund Credit. Not `effect/Schema` |
 | Embeddings | `@cf/baai/bge-base-en-v1.5` (768-d) into Vectorize | `bge-small-en-v1.5` (384-d) if index cost bites |
 | UI tokens | StyleX `defineVars` with **`--` prefixed shadcn token names**. Colors via `light-dark()` only + `html[data-colorscheme]` / `:has(#scheme-*:checked)` | Drop StyleX; keep the **same** `--` variables in CSS. **No** `.dark` fallback |
-| Fonts | Fontsource **variable** packages **pinned** (Kombai picks families); Vite SHA-256 of woff2 **bytes**; Kit `preload` one body `.woff2`. Not Astro Fonts API | System stacks in `design.md` until families chosen |
+| Fonts | **System stack only** ([design.md](./design.md) `--font-display` / `--font-sans` / `--font-mono`). No Fontsource, no Fraunces pin, no later webfont pass. [ADR 0015](./adr/0015-fontsource-preload.md) superseded | — |
 | Overlays | Native `<dialog>`, Popover API; CSS anchor positioning with `@oddbird/css-anchor-positioning` when unsupported | floating-ui only if a11y gaps appear. **No** shadcn / shadcn-svelte / bits-ui components |
 | Lint | **ESLint 10+** (flat `eslint.config.js`) + **Fallow** (project graph). Plugins: `eslint-plugin-svelte` (Svelte **and** Kit), `@stylexjs/eslint-plugin`, `@effect/eslint-plugin` (barrels only), **`eslint-plugin-slop`** `createSlopConfig()` (`*.{ts,js}` first), **local `chef/`** (`no-raw-cache-headers`, `public-route-purity`, `public-csr-false` — not Oxlint). MCP: `@eslint/mcp` + `fallow-mcp` | Do not swap ESLint for oxlint/Biome. Not `@antfu/eslint-config`. If `@effect/eslint-plugin` peers refuse ESLint 10, keep the plugin via override or drop it until peers bump — do **not** replace it with oxlint Effect plugins |
 
@@ -90,7 +90,7 @@ First Wrangler autoconfig deploy can fail with `Types file not found at worker-c
 - `compilerOptions.experimental.async: true`
 - `experimental.remoteFunctions: true`
 
-Sources: [Remote functions](https://svelte.dev/docs/kit/remote-functions), [Migrating to SvelteKit v3](https://svelte.dev/docs/kit/migrating-to-sveltekit-3), [SvelteKit 3 announcement](https://svelte.dev/blog/sveltekit-3-is-here) (“not quite ready”). `.remote.ts` modules always run on the server. Generate / debit / remaining Credits / Diet save should be `query` / `command` (or `form`) here, not ad-hoc `+server` unless a webhook (Stripe).
+Sources: [Remote functions](https://svelte.dev/docs/kit/remote-functions), [Migrating to SvelteKit v3](https://svelte.dev/docs/kit/migrating-to-sveltekit-3), [SvelteKit 3 announcement](https://svelte.dev/blog/sveltekit-3-is-here) (“not quite ready”). `.remote.ts` modules always run on the server. Generate / Credit **hold-settle-or-release** / remaining Credits / Diet save should be `query` / `command` (or `form`) here, not ad-hoc `+server` unless a webhook (Stripe).
 
 **`<svelte:boundary>`** ([Svelte 5.3+](https://svelte.dev/docs/svelte/svelte-boundary)): wall off `await`, show `{#snippet pending()}`, `{#snippet failed(error, reset)}`, optional `onerror`. Pending snippet is **SSR placeholder** for first resolve; later async uses `$effect.pending()`. Event-handler errors are **not** caught. Generate pending: pantry boundary + **SVG only** v1; [`query.live`](https://svelte.dev/docs/kit/remote-functions) / SSE phases **v2** ([ADR 0024](./adr/0024-cook-pending-pantry.md)).
 
@@ -102,14 +102,14 @@ Route groups [`(name)`](https://svelte.dev/docs/kit/advanced-routing) share a la
 
 ## Alchemy v2 beta vs wrangler-only
 
-**Alchemy is the right IaC** for this product: one TypeScript/Effect program declares Workers, bindings, and (optionally) Effect-typed runtime clients. npm `alchemy@2.0.0-beta.83` (12 Oct 2026) is Cloudflare Birthday Week + Effect 4 (`@effect/sql-d1`, `@effect/sql-sqlite-do`) ([npm](https://www.npmjs.com/package/alchemy), [beta.83 notes](https://alchemy.run/blog/2026-10-12-beta-83/)). Wrangler remains the Cloudflare compiler; Alchemy **owns** resource graph and deploy. Wrangler-only is the fallback when Alchemy’s SvelteKit resource lags Kit 3.
+**Alchemy is the right IaC** for this product: one TypeScript/Effect program declares Workers, bindings, and (optionally) Effect-typed runtime clients. Pin the **latest Alchemy v2 exactly when coding starts** — do not float a `beta.83+` floor. Wrangler remains the Cloudflare compiler; Alchemy **owns** resource graph and deploy. Wrangler-only is the fallback when Alchemy’s SvelteKit resource lags Kit 3. ([npm](https://www.npmjs.com/package/alchemy)).
 
 **Declare / bind / deploy:**
 
 1. Resources as module-level `Cloudflare.*` values (`KV.Namespace`, `R2.Bucket`, `D1`, Vectorize, Queue, Durable Object namespace, `Website.SvelteKit` / `Worker`).
 2. Bind with `env: { Cache, AI, Recipes, … }` on the Worker **or** Effect-style `yield* Cloudflare.R2.ReadWriteBucket(Uploads)` + `Effect.provide(...Binding)` ([Workers](https://alchemy.run/cloudflare/compute/workers/), [v2 migration](https://v2.alchemy.run/guides/migrating-from-v1/)).
 3. `export default Alchemy.Stack("ChefLlama", { providers: Cloudflare.providers(), state: Cloudflare.state() }, Effect.gen(...))`.
-4. `alchemy deploy`. Adopt existing CF resources with `alchemy deploy --adopt` (v1 state is incompatible). Pin **≥ beta.82** everywhere before the first DO `exports` deploy — that switch is one-way ([beta.83](https://alchemy.run/blog/2026-10-12-beta-83/)).
+4. `alchemy deploy`. Adopt existing CF resources with `alchemy deploy --adopt` (v1 state is incompatible). Pin that exact Alchemy v2 on the first DO `exports` deploy; do not float a range.
 
 v2 is **beta**: expect breaking changes. Do not mix v1 `await alchemy()` / `finalize()` with v2 stacks.
 
@@ -136,15 +136,15 @@ class PaymentError extends Data.TaggedError("PaymentError")<{
 const runAi = (env: { AI: Ai }, prompt: string) =>
   Effect.tryPromise({
     try: () =>
-      env.AI.run("@cf/meta/llama-3.1-8b-instruct-fp8", {
+      env.AI.run("@cf/ibm-granite/granite-4.0-h-micro", {
         messages: [{ role: "user", content: prompt }],
       }),
     catch: (e) => new AiInferenceError({ cause: String(e) }),
   });
 
-const charge = (credits: CreditStub, n: number) =>
+const hold = (credits: CreditStub, n: number) =>
   Effect.tryPromise({
-    try: () => credits.debit(n),
+    try: () => credits.hold(n),
     catch: (e) => new InsufficientCredits({ userId: "…", need: n }),
   });
 ```
@@ -161,10 +161,10 @@ Effect is the IaC/runtime substrate (Alchemy v2) **and** a typed error channel �
 |---|---|---|
 | [`@effect/ai`](https://effect.website/docs/ai/introduction/) `LanguageModel` | Provider-agnostic generate/stream/tools | Runs anywhere you can provide `HttpClient`. Official adapters: OpenAI, Anthropic, Bedrock, Google. **No Workers AI adapter** in that list. |
 | Effect v4 `LanguageModel` | Same idea at [`effect/unstable/ai/LanguageModel`](https://effect.website/docs/v4/api/effect/unstable/ai/LanguageModel) | Marked **unstable**. |
-| [`@effect/ai-cloudflare`](https://effect.website/docs/v4/api/ai-cloudflare/CloudflareClient) | **Clef / Clef-flash `DecisionModel`** over **REST** (account id + API token). Not Llama chat. | Docs label **unstable**. No automatic retries. This is **not** `env.AI.run` for `@cf/meta/llama-3.1-8b-instruct-fp8`. |
+| [`@effect/ai-cloudflare`](https://effect.website/docs/v4/api/ai-cloudflare/CloudflareClient) | **Clef / Clef-flash `DecisionModel`** over **REST** (account id + API token). Not Llama chat. | Docs label **unstable**. No automatic retries. This is **not** `env.AI.run` for `@cf/ibm-granite/granite-4.0-h-micro`. |
 | Alchemy [`Cloudflare.Workers.AI()`](https://alchemy.run/cloudflare/ai/workers-ai) | Binding + Effect `run` / `models` with `WorkersAIError` | **Yes — this is the Workers path.** Uses the native AI binding, not Node `HttpClient`. |
 
-**Default for Generate:** Alchemy Workers AI binding (or `env.AI.run` + `Effect.tryPromise`). Do **not** route Llama through `@effect/ai-openai` or `@effect/ai-cloudflare`. v2 BYO lives in empty `src/features/byo-ai/` and **then** uses `@effect/ai` + official OpenAI / Anthropic / Google adapters (Groq unofficial). Rough edges: unstable Effect AI APIs; Clef package looks like “Effect on Cloudflare AI” but is the wrong product; `@effect/ai` samples use `NodeHttpClient` which is **not** workerd.
+**Default for Generate:** Alchemy Workers AI binding (or `env.AI.run` + `Effect.tryPromise`) on **`@cf/ibm-granite/granite-4.0-h-micro`**, backup **`@cf/meta/llama-3.3-70b-instruct-fp8-fast`** ([ADR 0031](./adr/0031-granite-valibot-llama-backup.md)). Do **not** route the cook through `@effect/ai-openai` or `@effect/ai-cloudflare`. v2 BYO lives in empty `src/features/byo-ai/` and **then** uses `@effect/ai` + official OpenAI / Anthropic / Google adapters (Groq unofficial). Rough edges: unstable Effect AI APIs; Clef package looks like “Effect on Cloudflare AI” but is the wrong product; `@effect/ai` samples use `NodeHttpClient` which is **not** workerd.
 
 ---
 
@@ -174,10 +174,10 @@ Effect is the IaC/runtime substrate (Alchemy v2) **and** a typed error channel �
 |---|---|---|---|
 | Recipe agent (cheap, non-frontier) | Workers AI **`@cf/ibm-granite/granite-4.0-h-micro`** via `ai.binding = "AI"` then **Valibot** decode | **$0.017 / $0.112 per M**, 131k context, `stream: true` SSE ([model](https://developers.cloudflare.com/workers-ai/models/granite-4.0-h-micro/)). Default `max_tokens` **256** — set **768**. JSON Mode list **does not name granite**. fp8 8B 410 **20 Nov 2026**. | Backup **`@cf/meta/llama-3.3-70b-instruct-fp8-fast`** **$0.293 / $2.253** per M (capacity/fail only). Do not default-pay 70b-fast. |
 | Diet prefs | Sibling **Diet DO** `getByName(userId)` + `getActive()` | One-row Generate RPC from the Site Worker; not JSON on the Cook row; not the Credit ledger; not Better Auth user metadata; not `RECIPES_DB`. Profiles are **not** D1-queued against recipe writes. | **Required** before first Generate; chips override that run only. Multi-Diet picker is v2 UI |
-| Saved ids | Sibling **Saved DO** `getByName(userId)` | Private **id list** pointing at public `RECIPES_DB` rows. Not a blob copy, not a private Recipe store ([ADR 0030](./adr/0030-per-user-credit-dos.md) · [ADR 0032](./adr/0032-public-by-url-recipes.md)) | `/saved` signed-in list. Popular counts save events of those public rows, not the Cook’s list |
-| Operator Generate cap | **KV** daily counter (UTC) | Bounds FCFS signups against the **10k Neurons/day** gift ([pricing](https://developers.cloudflare.com/workers-ai/platform/pricing/)) | Fail Generate with a Site-wide exhausted copy when the cap hits |
+| Saved ids | Sibling **Saved DO** `getByName(userId)` | Private **id list** pointing at public `RECIPES_DB` rows. Not a blob copy, not a private Recipe store. **No D1 saves list. No dual-write of the list.** ([ADR 0030](./adr/0030-per-user-credit-dos.md) · [ADR 0032](./adr/0032-public-by-url-recipes.md) · [#82](https://github.com/fringe4life/chef-llama/issues/82)) | `/saved` signed-in list. Popular **cross-user** counts come from `save_count` on the D1 recipe row **or** a queue event (Saved DO updates on save/unsave). Exact mechanism **OPEN** (see Popular below). |
+| Operator Generate cap | **Pool Durable Object** ([#76](https://github.com/fringe4life/chef-llama/issues/76)) | Shared daily FCFS/gift cap. **Not** a KV UTC daily counter ([#20](https://github.com/fringe4life/chef-llama/issues/20)). | Per-user 3/day + pool claim live on #76. Fail the **free** path when the pool is dry; packs still work. |
 | Similar recipes **after create** | **Vectorize** index `recipes` (768-d, cosine) + **D1** `recipes` table as source of truth | Vector search is Vectorize’s job ([storage options](https://developers.cloudflare.com/workers/platform/storage-options/), [embeddings tutorial](https://developers.cloudflare.com/vectorize/get-started/embeddings/)). KV cannot do ANN. D1 hydrates hits (title, ingredients, slug). | Skip Vectorize until >~hundreds of recipes: D1 `LIKE` / ingredient overlap. R2 only for blobs, not similarity |
-| Popular-recipe cache | **KV** `POPULAR` (`popular:all`, `popular:{type}`, `popular:hashes`) | Cron snapshot, not per-save ([ADR 0034](./adr/0034-popular-cap-cache.md)). Rank **rolling 7-day saves of public-by-URL Recipe rows**, cap 20, ≥5 distinct savers ([ADR 0023](./adr/0023-popular-saves-window.md) · [ADR 0032](./adr/0032-public-by-url-recipes.md)). Min `cacheTtl` is 30s ([changelog](https://developers.cloudflare.com/changelog/post/2026-01-30-kv-reduced-minimum-cachettl/)). | [Workers Caching](https://developers.cloudflare.com/workers/cache/) via **`publicCache` only** — default `private, no-store` ([caching.md](./caching.md) · [ADR 0037](./adr/0037-zero-js-public-cache-guardrails.md)). Do **not** use the old Cache API (adapter 8 dropped it; Cache API is colo-local/ephemeral) |
+| Popular-recipe cache | **KV** `POPULAR` (`popular:all`, `popular:{type}`, `popular:hashes`) | Cron snapshot, not per-save ([ADR 0034](./adr/0034-popular-cap-cache.md)). Rank **rolling 7-day saves of public-by-URL Recipe rows**, cap 20, ≥5 distinct savers ([ADR 0023](./adr/0023-popular-saves-window.md) · [ADR 0032](./adr/0032-public-by-url-recipes.md)). Counting **must** support distinct savers + the 7-day window; a bare `save_count` cannot. Exact mechanism (**counter vs queue events into a 7-day per-recipe saver ledger**) is **OPEN** — do not pick. Min `cacheTtl` is 30s ([changelog](https://developers.cloudflare.com/changelog/post/2026-01-30-kv-reduced-minimum-cachettl/)). | [Workers Caching](https://developers.cloudflare.com/workers/cache/) via **`publicCache` only** — default `private, no-store` ([caching.md](./caching.md) · [ADR 0037](./adr/0037-zero-js-public-cache-guardrails.md)). Do **not** use the old Cache API (adapter 8 dropped it; Cache API is colo-local/ephemeral) |
 | Background jobs | **Queues** producer on the site Worker; **consumer on a Jobs Worker** | Guaranteed delivery, retries, batching ([Queues](https://developers.cloudflare.com/queues/get-started/)) | `waitUntil` for tiny fire-and-forget only; Workflows if a job needs multi-step durable orchestration |
 | User credits | **SQLite Durable Object** `CreditAccount`, `getByName(userId)` + **sibling per-user DOs** | Strongly consistent ledger **plus materialized** remaining / pack_sum / history so `/account` never scans global D1 ([DO storage](https://developers.cloudflare.com/durable-objects/api/sqlite-storage-api/), [rules](https://developers.cloudflare.com/durable-objects/best-practices/rules-of-durable-objects/), [ADR 0030](./adr/0030-per-user-credit-dos.md)) | Never KV for balances. Public recipes stay D1. |
 | Photos (later) | **R2** bucket `ingredients` | Object storage, no egress tax | Images binding + R2 |
@@ -192,23 +192,25 @@ Suggested binding names: `AI`, **`AUTH_DB`** (Better Auth D1), **`RECIPES_DB`** 
 | `index_recipe` | After a recipe row exists | Embed + `VECTORIZE.upsert`. **Do not** rebuild Popular here — cron snapshot owns KV ([ADR 0034](./adr/0034-popular-cap-cache.md)) |
 | `ocr_photo` | **Later** | Photo → ingredient list (out of scope now) |
 
-Synchronous generate on the request path is fine for v1 if 8B stays fast; still enqueue **index** so the user isn’t blocked on Vectorize.
+Synchronous generate on the request path is fine for v1 if granite stays fast; still enqueue **index** so the user isn’t blocked on Vectorize.
 
-### Write path (do not serialize Generate + index + debit)
+### Write path (do not serialize Generate + index + Credit hold)
 
 D1 is **one Durable Object per database**, **single-threaded** — writes take several ms to replicate; throughput ≈ 1 / query duration; overload → `"overloaded"`. Cap **10 GB**. That is why write-heavy apps jump to **Postgres** (MVCC, concurrent writers, Hyperdrive). Chef Llama Generate is **one INSERT per cook** — stay on D1. ([D1 limits](https://developers.cloudflare.com/d1/platform/limits/).)
 
-**Request:** Better Auth session (`userId`) → Diet DO `getActive()` (Site Worker attaches Diet on the granite request) → Credit DO `debit` (coalesced SQL + **materialized** remaining/pack_sum, **no** `await` AI/Stripe/D1 between writes) → Workers AI granite (`stream: true`) on the **Worker** → **Valibot** → D1 **`batch()`** insert a **public-by-URL** recipe (no privacy picker). Return the recipe.
+**Request:** Better Auth session (`userId`) → Diet DO `getActive()` (Site Worker attaches Diet on the granite request) → Credit DO **`hold`** (coalesced SQL + **materialized** remaining/pack_sum, **no** `await` AI/Stripe/D1 between writes) → Workers AI granite (`stream: true`) on the **Worker** → **Valibot** → D1 **`batch()`** insert a **public-by-URL** recipe (no privacy picker) → Credit DO **`settle`**. Return the recipe.
 
-**After:** Queue `index_recipe` (or `waitUntil` only if tiny): bge embed + Vectorize **upsert** (WAL then async index job; batch, never 1-vector insert — [Vectorize insert](https://developers.cloudflare.com/vectorize/best-practices/insert-vectors/)) + Analytics Engine datapoint. Refund Credit on AI/Valibot fail.
+**After:** Queue `index_recipe` (or `waitUntil` only if tiny): bge embed + Vectorize **upsert** (WAL then async index job; batch, never 1-vector insert — [Vectorize insert](https://developers.cloudflare.com/vectorize/best-practices/insert-vectors/)) + Analytics Engine datapoint. **Release** the hold on AI/Valibot fail or cancel (no settle).
 
 **Parked v2/v3 (ADR 0019):** Turso/libSQL over HTTP; Postgres + Hyperdrive; Basin Pipelines → R2 Iceberg. Not v1. [round 14](../internal/research-round14-tokens-byo-writes.md).
+
+**Storage v2 OPTION (not decided):** nightly cron merges near-duplicate recipes, **301** the merged id, purge `recipe-{id}` cache tags; embed **only saved** recipes in Vectorize. **Never** merge recipes with different ingredient sets or free-from/allergy tags.
 
 ### Credits: consistency and charge
 
 One SQLite-backed Credit DO per user (`new_sqlite_classes`) plus sibling per-user classes. Credit schema: `balance` **materialized**, `pack_sum` **materialized**, `ledger(id, delta, reason, created_at)` with unique `id` for Stripe `event.id` / generation `jobId`. Dashboard reads the materialized rows — never `SUM(delta)` the whole history. Drizzle on D1 + DO ([ADR 0029](./adr/0029-drizzle-valibot.md)); stub unused `drizzle-kit` / `node:fs` chunks like [dollar-holler#322](https://github.com/fringe4life/dollar-holler/pull/322).
 
-**Charge:** RPC `debit(n, idempotencyKey)` **before** AI. Coalesce SQL writes with **no intervening `await`** so they commit atomically ([DO rules](https://developers.cloudflare.com/durable-objects/best-practices/rules-of-durable-objects/)). Do **not** `await fetch(Stripe|AI)` inside the DO between reads and writes (input gates don’t cover non-storage I/O). On AI failure, `credit(n, sameKey)` refund. Stripe `checkout.session.completed` → `credit(packSize, event.id)` (idempotent).
+**Charge:** RPC **`hold(n, idempotencyKey)`**, then **`settle`** on Valibot-ok insert or **`release`** on AI/Valibot fail / cancel. Do **not** debit-before-AI as a one-shot. Coalesce SQL writes with **no intervening `await`** so they commit atomically ([DO rules](https://developers.cloudflare.com/durable-objects/best-practices/rules-of-durable-objects/)). Do **not** `await fetch(Stripe|AI)` inside the DO between reads and writes (input gates don’t cover non-storage I/O). Stripe `checkout.session.completed` → `credit(packSize, event.id)` (idempotent). Credits are described here, in [product.md](./product.md) (Credits / Generate write path), and on the Credit DO ([ADR 0030](./adr/0030-per-user-credit-dos.md)).
 
 Prefer `transaction()` / coalesced SQL over `blockConcurrencyWhile` on the hot path.
 
@@ -250,7 +252,7 @@ Rejected: Clerk (Hobby 50k MRU then ~**US$1,025/mo at 100k MRU**; 60s `__session
 
 **Theme:** Do **not** install [`mode-watcher`](https://www.npmjs.com/package/mode-watcher). Tokens **are** the theme ([ADR 0014](./adr/0014-stylex-shadcn-tokens.md)). [`light-dark()`](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/light-dark) **only** — no `.dark` fallback. Override: small **blocking inline script** in `app.html` (cookie + `light-dark()`). **Never** render theme from cookies on the server for public pages. `html:has(#scheme-dark:checked) { color-scheme: dark }` still fine on `(app)`. `build.cssTarget` = browsers with `light-dark()`, or Vite polyfills `color-scheme`.
 
-**Fonts:** Import Fontsource into the Vite graph so woff2 URLs are hashed from **file bytes** (SHA-256 prefix; [Vite assets](https://vite.dev/guide/assets), [getHash](https://github.com/vitejs/vite/blob/main/packages/vite/src/node/utils.ts)). **Same Fontsource version → same hashed filename** on rebuild. Kit [`preload`](https://svelte.dev/docs/kit/hooks) matches source **`filename`**, not the hashed `path`. **Never** `@import` / `<link>` Google Fonts. Do not copy fonts into `static/` (unhashed). Pin; `?no-inline` if a face is near `assetsInlineLimit`. **Families left to Kombai.** Pattern: [dollar-holler `hooks.server.ts`](https://github.com/fringe4life/dollar-holler/blob/main/src/hooks.server.ts) — do not copy that app. Not [Astro Fonts](https://docs.astro.build/en/guides/fonts/).
+**Fonts:** **System stack only** — `--font-display` / `--font-sans` / `--font-mono` in [design.md](./design.md). No Fontsource, no Fraunces / Source Sans 3, no later webfont pass. **Never** `@import` / `<link>` Google Fonts. [ADR 0015](./adr/0015-fontsource-preload.md) superseded · [#56](https://github.com/fringe4life/chef-llama/issues/56).
 
 ---
 
@@ -409,17 +411,17 @@ Chat-to-recipe via a page-level tool registry: [WebMCP](https://github.com/WebMC
 
 ## Open risks
 
-1. **Alchemy v2 beta** — breaking changes; pin ≥ `2.0.0-beta.82` before first DO `exports` deploy; don’t roll back past it.
+1. **Alchemy v2** — breaking changes; pin the **latest v2 exactly when coding starts**. Do not float `beta.83+`.
 2. **Alchemy vs official Kit 3 `cloudflare:workers` env** — two documented access styles (`platform.env` vs `import { env }`). Pick Alchemy’s and don’t mix.
 3. **DO classes + SvelteKit** — keep `CreditAccount` + queue consumer on a **Jobs Worker**; bind it into the site Worker.
 4. **Better Auth Worker graph** — ~140–170 KiB gzip; isolate-cached `getAuth()`; stub `generate-drizzle-schema` / `node:fs` like [dollar-holler#322](https://github.com/fringe4life/dollar-holler/pull/322). Watch 1s startup.
-5. **Workers AI model churn** — 8B-fast already vanished; pin the model id and watch the [catalog](https://developers.cloudflare.com/workers-ai/models/).
-6. **Clerk Billing ≠ prepaid generation credits** — still rejected; mixing any vendor credits with the Credit DO will double-count or miss debits.
+5. **Workers AI model churn** — 8B-fast already vanished; pin granite + llama-3.3-70b-fp8-fast backup ([ADR 0031](./adr/0031-granite-valibot-llama-backup.md)) and watch the [catalog](https://developers.cloudflare.com/workers-ai/models/).
+6. **Clerk Billing ≠ prepaid generation credits** — still rejected; mixing any vendor credits with the Credit DO will double-count or miss holds/settles.
 7. **StyleX unplugin on Vite 8 / Kit 3** — unproven. Fallback is the same `--` CSS tokens, not a shadcn component pack (pack is closed).
 8. **SQLite DO storage billing** — in effect since Jan 2026 ([changelog](https://developers.cloudflare.com/changelog/post/2025-12-12-durable-objects-sqlite-storage-billing/)); keep ledgers tiny.
 9. **Queue + AI capacity** — use `rejectIfBusy` / async `queueRequest` on Workers AI when the request path must not stall ([reject if busy](https://developers.cloudflare.com/workers-ai/features/reject-if-busy/)).
 10. **Remote functions experimental** — Kit 3 flag; expect churn. Pair with `<svelte:boundary>` + `withOverride`; do not treat as a stable RPC contract.
-11. **Effect AI ≠ Workers AI binding** — `@effect/ai-cloudflare` is unstable Clef REST; Llama Generate stays on Alchemy `Workers.AI()`. StyleX stays outside Effect.
+11. **Effect AI ≠ Workers AI binding** — `@effect/ai-cloudflare` is unstable Clef REST; granite Generate stays on Alchemy `Workers.AI()`. StyleX stays outside Effect. Effect is **tagged errors only** — no Effect SQL ([ADR 0029](./adr/0029-drizzle-valibot.md)).
 12. **JSON Mode list is stale** — retired 8B ids still listed; granite cook is **not** named; 70b-fast **is** named; JSON Mode **no streaming**. Valibot decode is the contract ([prompt-payload](./prompt-payload.md), [ADR 0031](./adr/0031-granite-valibot-llama-backup.md)).
 13. **Valibot on Workers** — Kit remotes document Valibot as Standard Schema. Do **not** import `effect/Schema` on Generate. Effect stays Alchemy + tagged errors. Query layer is **Drizzle**, not Effect SQL ([ADR 0029](./adr/0029-drizzle-valibot.md)).
 14. **MoR tax** — Stripe Tax Basic **0.5%** where registered; **does not file**. Dashboard alerts on; Checkout `automatic_tax` off until IRD GST (NZ$60k must, or voluntary, or if adding GST to prices). Polar declined. Packs **NZD only**.
@@ -427,7 +429,7 @@ Chat-to-recipe via a page-level tool registry: [WebMCP](https://github.com/WebMC
 16. **0-JS public pages** — ogygia **dropped** (measured ~22 KB runtime, not ~8 KB). `(static)`/`(site)` `csr=false`; `/pantry` plain Kit ~43 KB. Workers Cache **default-deny**; only `publicCache` ([caching.md](./caching.md) · [AGENTS.md](../AGENTS.md) · [ADR 0037](./adr/0037-zero-js-public-cache-guardrails.md)). Remove `OGYGIA_SECRET`. Five guardrail layers in v1 (hook, helper, Playwright vs wrangler prod build, local ESLint `chef/*`, canary).
 17. **workers-og WASM** — keep off v1. No `svelte-seo`.
 18. **mode-watcher** — skip. `light-dark()` only; **blocking inline script** in `app.html` for the cookie. Never server-render theme from cookies on public pages.
-19. **Fonts** — Kit `preload` is build-time only; do not expect it in `alchemy dev`. Do not add Astro’s Font pipeline.
+19. **Fonts** — system stack only. No Fontsource pass. Do not add Astro’s Font pipeline.
 20. **OTP mail sender is TODO** (CF Email Sending vs Resend). CF Email is Beta + **Workers Paid**. Alchemy may not document `send_email`. From must be a domain we own.
 21. **BYO keys (v2)** — empty `src/features/byo-ai/`. Never D1 plaintext. Wrap with Worker Secret `BYO_WRAP_KEY`. **Paste API keys**; cheap ids: `claude-haiku-5-5`, `gpt-6-luna`, `gemini-3.5-flash-lite`, Groq `openai/gpt-oss-20b`. **No Composer.** Anthropic forbids Claude.ai OAuth; OpenAI SIWC partner-gated; Gemini default is API key.
 22. **Diet rows** — sibling Diet DO + `getActive()` RPC. Site Worker attaches Diet on Generate. Not JSON on the user row; not the Credit ledger; not global D1. Dashboard skips global D1. [ADR 0030](./adr/0030-per-user-credit-dos.md).
@@ -436,7 +438,8 @@ Chat-to-recipe via a page-level tool registry: [WebMCP](https://github.com/WebMC
 25. **Cost floor** — Workers Paid **$5 USD** ≈ NZ$8.79 (RBNZ 23 Oct 2026). `max_tokens` **768**. Pack SKUs **locked** NZ$8/$16/$32 → 20/50/120 Credits.
 26. **D1 write contention** — one DB = one DO, single-threaded. Generate stays one `batch()` INSERT; Vectorize off the request path. Turso/Postgres/Pipelines parked (ADR 0019).
 27. **Secrets** — Varlock `.env.schema` + **Infisical Free** (accepted) OIDC + Alchemy `Config.Redacted`. Not a 4th Bitwarden SM project. Effect plugin needs **4.0.0-rc.113+**. No `varlock-wrangler` leak-detection on Alchemy until varlock#735.
-28. **CI** — lint/Fallow/`tsc` **without** secrets. Preview = Better Auth secret + OAuth test apps on `workers.dev` (`allowedHosts` `*.workers.dev`). Dependabot for `bun` + Actions. husky + lint-staged. Cursor `.cursor/hooks.json`: ESLint after edit, Fallow on `stop`.
+28. **CI** — lint/Fallow/`svelte-check --tsgo` **without** secrets. Type-check settled (#79 round 38): TS ~6 compile, `--tsgo`, skip `svelte-check-native`. **bundlewatch** on built client JS/CSS: index + static/public pages **0 JS**; `/pantry` **~43 KB** brotli JS; CSS budget **TBD by measurement**. Branch protection (D10) still undecided ([ADR 0021](./adr/0021-ci-preview-deps-hooks.md)). Preview = Better Auth secret + OAuth test apps on `workers.dev` (`allowedHosts` `*.workers.dev`). Dependabot for `bun` + Actions. husky + lint-staged. Cursor `.cursor/hooks.json`: ESLint after edit, Fallow on `stop`.
 29. **Scale** — client conversion-factor on `/recipes/[id]`; no second Generate; no qty in v1 Valibot (ADR 0022) **accepted**.
-30. **Popular** — rolling 7-day **saves of public-by-URL rows**, cap 20, ≥5 distinct savers, **cron snapshot** (ADR 0023 · ADR 0032 · ADR 0034) **accepted**. `/popular` is a v1 URL. v2 `/popular/[type]` ADR 0038 (list TBC).
+30. **Popular** — rolling 7-day **saves of public-by-URL rows**, cap 20, ≥5 distinct savers, **cron snapshot** (ADR 0023 · ADR 0032 · ADR 0034) **accepted**. `/popular` is a v1 URL. v2 `/popular/[type]` ADR 0038 (list TBC). Cross-user counts: `save_count` on the D1 recipe row **or** a queue event from the Saved DO. A bare `save_count` **cannot** enforce 5 distinct savers or the 7-day window. Exact mechanism (counter vs queue events into a 7-day per-recipe saver ledger) is **OPEN**. Do not pick.
 31. **Visibility** — every v1 Generate is public-by-URL. No privacy picker. Saved = private id list. Private Recipes = v2 (ADR 0032) **accepted**.
+32. **Storage v2 OPTION (not decided):** nightly cron merges near-duplicate recipes, 301 the merged id, purge `recipe-{id}`; embed **only saved** recipes in Vectorize. **Never** merge recipes with different ingredient sets or free-from/allergy tags.

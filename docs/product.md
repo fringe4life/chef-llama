@@ -22,7 +22,7 @@ Pointers: [glossary](./GLOSSARY.md) · [prompt + payload](./prompt-payload.md) �
 | Kit | Remote functions, `<svelte:boundary>`, `withOverride`. **Not Astro.** |
 | Site | 0-JS Kit. `(static)` prerender; `(site)` edge SSR + Workers Cache. Popular = **cron KV snapshot** (not per-save), ranked **7-day saves of public-by-URL rows**, cap 20, ≥5 distinct savers; **no generate, no chat** on `/`. ogygia **dropped** (ADR 0011 superseded · ADR 0037). |
 | Chat | v1 auth-only cook routes. **Array** tools. |
-| Credits | **No signup Credits.** FCFS = 10k Neurons/day gift. **`max_tokens` 768** is the hard cap (truncates). Packs when gift is gone. |
+| Credits | **No signup Credits.** FCFS = 10k Neurons/day gift (pool DO, [#76](https://github.com/fringe4life/chef-llama/issues/76) — not a KV daily counter). **`max_tokens` 768** is the hard cap (truncates). Packs when gift is gone. Charge: **hold, then settle or release** (not debit-before-AI). |
 | Diet | **Required** before first Generate. Chips override this run. **Swap** not ignore. First-run **blocking dialog on `/pantry`**: name Home; flags vegan/vegetarian/gluten_free; allergy chips; optional kcal; servings 1–12 default 2; optional max_minutes. Multi-Diet **picker is v2 UI**. Storage: sibling Diet DO (`getActive` RPC). |
 | SEO | **v1.** Site indexable. Every Generate is **public-by-URL**; `/recipes/[id]` unauthenticated SSR + OG SVG + **`noindex`** (Popular excepted). No privacy picker. Private Recipes = v2. **No** `svelte-seo`. Robots/CF/cache **accepted** (ADR 0010 · ADR 0032). |
 | Design | **Working draft** [04-landing](./designs/04-landing.html) + [sticker](./designs/05-token-sticker.html) (and `*-dark.html`). Not locked. **No Code**, no extra routes until accept. |
@@ -35,12 +35,12 @@ Pointers: [glossary](./GLOSSARY.md) · [prompt + payload](./prompt-payload.md) �
 | `kind` | `"plain"` \| `"swap"`. Field **`kcal_over`**. Empty `flags` omitted. |
 | Theme | Named CSS tokens **are** the theme. StyleX `--` keys. **`light-dark()` only**. Blocking **inline script** in `app.html` (cookie); **never** server-render theme from cookies on public pages. Pack closed. |
 | Mail | One Site logo: OTP (sender **TODO**) · Stripe receipts · product mail. From `no-reply@mail.<domain>`; Reply-To `chefllamanz@gmail.com`. |
-| Fonts | Fontsource **pinned**; Vite SHA-256 of woff2 bytes. Kit preload. Never Google CSS. **Families to Kombai.** |
+| Fonts | **System stack only** ([design.md](./design.md)). No Fontsource, no Fraunces, no later webfont pass. [ADR 0015](./adr/0015-fontsource-preload.md) superseded. |
 | Icons | **No** Lucide / Simple Icons / Tabler. Chrome = **custom animated SVG**. OAuth marks = **official** Google + Apple kits only (Meta/X if those rows exist). [ADR 0026](./adr/0026-no-icon-libraries.md). |
 | Observe | Workers Paid **Logs + Issues + Analytics Engine** `writeDataPoint` per Generate. Effect JSON `console.log`. **No Sentry v1.** No `@effect/opentelemetry` NodeSdk. |
 | BYO v2 | Paste **API keys** (wrap ADR 0016). Cheap picker: `claude-haiku-5-5`, `gpt-6-luna`, `gemini-3.5-flash-lite`, Groq `openai/gpt-oss-20b`. **No Composer.** |
 | Chips | In-process string canonicalizer; **max 16**. Lists **v1**. Leftover rice → `{ "name": "rice", "cooked": true }`; uncooked omit `cooked`. Highlight already-cooked. **Clairic v2/v3**. |
-| Writes | **Drizzle** on Credit DO (materialized remaining / pack_sum / history) + sibling per-user DOs + `RECIPES_DB` `batch` for **public-by-URL** recipes + Queue Vectorize. **`AUTH_DB`** holds Better Auth tables only (no recipe writes at sign-up). Dashboard **does not** hit `RECIPES_DB`. Diet/Saved ids are **not** D1-queued against recipe writes. Turso / Postgres / Pipelines **parked** (ADR 0019). [ADR 0029](./adr/0029-drizzle-valibot.md) · [ADR 0030](./adr/0030-per-user-credit-dos.md) · [ADR 0032](./adr/0032-public-by-url-recipes.md) · [ADR 0036](./adr/0036-better-auth-on-d1.md). |
+| Writes | **Drizzle** on Credit DO (materialized remaining / pack_sum / history) + sibling per-user DOs + `RECIPES_DB` `batch` for **public-by-URL** recipes + Queue Vectorize. **`AUTH_DB`** holds Better Auth tables only (no recipe writes at sign-up). Dashboard **does not** hit `RECIPES_DB`. Diet/Saved ids are **not** D1-queued against recipe writes. **No D1 saves list.** Turso / Postgres / Pipelines **parked** (ADR 0019). Storage v2 OPTION (not decided): nightly near-duplicate merge. [ADR 0029](./adr/0029-drizzle-valibot.md) · [ADR 0030](./adr/0030-per-user-credit-dos.md) · [ADR 0032](./adr/0032-public-by-url-recipes.md) · [ADR 0036](./adr/0036-better-auth-on-d1.md). |
 | Pending Cook | **ADR 0024:** stay `/pantry` until Valibot-ok + id, then `goto /recipes/[id]`. v1 = **SVG only** hashed `<img>` ([cupboard.svg](./designs/cupboard.svg) **draft**; robot looks odd; iterate in Kombai separately). Recipe morph **kept**. Chef = Copilot-inspired **hover body** + **bot face**; **head = Chef Llama mark**. Not equine. CSS `perspective` + wall shadow. Chat `make_recipe()` same pending. No poll. No Job-DO WS. **SSE / `query.live` phases = v2/v3**; hide scene when progress+scene cannot both fit. |
 | Cancel | **`stream: true`** server-side + `request.signal`. Disconnect = cancel. Probe Neurons; if abort ≈ full 768, **no Credit/FCFS refund**. Cook copy = Credit ledger only. Stripe Pack never refunded. |
 
@@ -85,7 +85,7 @@ Open questions: NZ$4/10 vs NZ$6/15; show while FCFS remains; refund clearing the
 | Cache | `publicCache` only. `/` and `/popular`: browser 60, edge 3600, swr 86400. Default-deny `private, no-store`. |
 | v2 | Closed `/popular/[type]` list + allergy fail-closed ([ADR 0038](./adr/0038-popular-type-allergy-safeguards.md)). Exact list TBC. |
 
-**Still open:** quiet-week all-time fill (earlier rec N=5/M=2 is in tension with min 5 distinct savers); author’s own save counting toward 5.
+**Still open:** quiet-week all-time fill (earlier rec N=5/M=2 is in tension with min 5 distinct savers); author’s own save counting toward 5; **how to count** distinct savers in the 7-day window (a bare `save_count` cannot; counter vs queue events into a 7-day per-recipe saver ledger — **do not pick**).
 
 ### Guest Generate (reconsider; lock stands until chosen)
 
@@ -127,7 +127,7 @@ Picked from the 24 competitor items + gaps where they match Chef Llama: Diet fir
 
 **Credits (one line near Generate)**
 
-- While the daily Neuron gift lasts, Generate is FCFS (no Credit debit). After that, **1 Credit = 1 Recipe**. Viewing, Save, and client scale do not spend. A second Generate is a new Credit (or another FCFS Recipe). Failed/empty/cancelled Generate follows the cancel lock (no refund if the GPU used ~768 tokens).
+- While the daily Neuron gift lasts, Generate is FCFS (no Credit hold). After that, **1 Credit = 1 Recipe**. Viewing, Save, and client scale do not spend. A second Generate is a new Credit (or another FCFS Recipe). Charge is **hold, then settle or release**. Failed/empty/cancelled Generate **releases** the hold unless the cancel lock says the GPU used ~768 tokens (then settle).
 
 **NZ**
 
@@ -140,7 +140,7 @@ Picked from the 24 competitor items + gaps where they match Chef Llama: Diet fir
 
 Open questions: always-visible vs collapsed; tap-to-fill NZ example chip sets; whether a failed Generate refunds; lawyer pass on allergy/cross-contact wording; leftover safe-age copy vs “use your judgement” only.
 
-## Recommended (round 49 — leftover: Popular save-event path)
+## Recommended (round 49 — leftover: Popular save-count mechanism still **OPEN**)
 
 Cites: [round 48](../internal/research-round48-public-private.md) · [round 47](../internal/research-round47-d1-limits-leftover.md) · [round 45](../internal/research-round45-valibot-drizzle-dos.md).
 
@@ -158,13 +158,13 @@ Cites: [round 48](../internal/research-round48-public-private.md) · [round 47](
 
 **Cook:** granite-4.0-h-micro (`$0.017 / $0.112` per M, `stream: true` SSE). JSON = IBM `<schema>` + **Valibot**. Backup **llama-3.3-70b-instruct-fp8-fast** (`$0.293 / $2.253` per M, **on** JSON Mode list, also streams). JSON Mode **no streaming** and **does not name granite**. fp8 8B 410 **20 Nov 2026**. [ADR 0031](./adr/0031-granite-valibot-llama-backup.md).
 
-**Query / validation:** **Drizzle** + DH [PR 322](https://github.com/fringe4life/dollar-holler/pull/322) stubs. **Valibot** for remotes and Recipe JSON (Kit Standard Schema). Effect stays Alchemy + tagged errors. **No Effect SQL. No Effect Schema.** Reylo parked. [ADR 0029](./adr/0029-drizzle-valibot.md) · [#83](https://github.com/fringe4life/chef-llama/issues/83).
+**Query / validation:** **Drizzle** + DH [PR 322](https://github.com/fringe4life/dollar-holler/pull/322) stubs. **Valibot** for remotes and Recipe JSON (Kit Standard Schema): **steps 6–8**, **title ≤ 80**, **have ≤ 16**, **flags ≤ 8**. Effect stays Alchemy + **tagged errors only**. **No Effect SQL. No Effect Schema.** Reylo parked. [ADR 0029](./adr/0029-drizzle-valibot.md) · [#83](https://github.com/fringe4life/chef-llama/issues/83) superseded.
 
 **Credits / user data:** **more DOs per user.** Credit SQLite DO named by Better Auth `getByName(userId)`: ledger **plus materialized** remaining / pack_sum / history so dashboard never `SUM`s from scratch and **never hits `RECIPES_DB`**. Sibling per-user DOs (not a kitchen sink). Public recipes stay **`RECIPES_DB`**. Gift pool = **separate** class (#76). [ADR 0030](./adr/0030-per-user-credit-dos.md) · [#82](https://github.com/fringe4life/chef-llama/issues/82).
 
-**CI / repo:** **No Turbo v1.** bun cache + `actions.lock` + zizmor. **No Blacksmith.** **Private when coding starts** (not when Packs ship). Infisical stays. [#79](https://github.com/fringe4life/chef-llama/issues/79) · [#80](https://github.com/fringe4life/chef-llama/issues/80).
+**CI / repo:** **No Turbo v1.** bun cache + `actions.lock` + zizmor. **No Blacksmith.** Type-check: `svelte-check --tsgo` (TS ~6; skip svelte-check-native). **bundlewatch** on built client JS/CSS (0 JS public; `/pantry` ~43 KB brotli). Branch protection (D10) undecided. **Private when coding starts** (not when Packs ship). Infisical stays. [#79](https://github.com/fringe4life/chef-llama/issues/79) · [#80](https://github.com/fringe4life/chef-llama/issues/80) · [ADR 0021](./adr/0021-ci-preview-deps-hooks.md).
 
-**Account:** v1 session-gated **`/account`** plus **`/account/usage`** (credit usage) and **`/account/packs`** (packs history) from the Credit DO. Debit rows with a recipe id link to `/recipes/[id]`. #78 CSS bars on usage. Keep **account popover** (theme, remaining Credits, sign out). **Not** on `/`. **No** Stripe Customer Portal / Clerk Billing / subscriptions. Deleting the account **deletes** that Cook’s recipes (410 on old URLs) — [ADR 0036](./adr/0036-better-auth-on-d1.md). Fallow `billing/` stays empty v2. [#84](https://github.com/fringe4life/chef-llama/issues/84).
+**Account:** v1 session-gated **`/account`** plus **`/account/usage`** (credit usage) and **`/account/packs`** (packs history) from the Credit DO. Settled Credit rows with a recipe id link to `/recipes/[id]`. #78 CSS bars on usage. Keep **account popover** (theme, remaining Credits, sign out). **Not** on `/`. **No** Stripe Customer Portal / Clerk Billing / subscriptions. Deleting the account **deletes** that Cook’s recipes (410 on old URLs) — [ADR 0036](./adr/0036-better-auth-on-d1.md). Fallow `billing/` stays empty v2. [#84](https://github.com/fringe4life/chef-llama/issues/84).
 
 **Pending / SSE:** v1 cupboard scene. SSE progress later; hide scene when both cannot fit. Cupboard **draft**; they work UI in Kombai separately; robot looks odd. **No Kombai Code.**
 
@@ -313,7 +313,7 @@ Hosted Checkout, Jobs Worker, Credit DO. NZ **2.65% + NZ$0.30** domestic. Polar 
 
 ## Recipe JSON (`kind`)
 
-Shared: `title`, `minutes`, `servings`, `kcal`, `kcal_over`, `have`, `need`, `steps`. `flags` omitted if none.
+Shared: `title` (≤ 80), `minutes`, `servings`, `kcal`, `kcal_over`, `have` (≤ 16), `need`, `steps` (6–8). `flags` omitted if none (≤ 8 when present). See [prompt-payload.md](./prompt-payload.md).
 
 ```json
 {
@@ -383,11 +383,11 @@ Canonicalize in-process before the prompt: strip units/qty, closed synonyms, ded
 
 ## Generate write path (v1)
 
-Do **not** await Vectorize or embed on the cook request. Site Worker RPCs Diet `getActive()` and Credit DO `debit` **before** AI (coalesce Credit SQL + materialized remaining/pack_sum, no `await` between writes, **no AI inside the DO**). Attach Diet on the granite request. After Valibot-ok JSON: D1 `batch()` insert a **public-by-URL** recipe (no privacy picker); Credit DO write updates materialized remaining/pack_sum in the same SQL tx; enqueue `index_recipe`. Keep the **HTTP request open** for the AI (unlimited wall while connected); do not finish granite in `waitUntil` (30 s after disconnect). Parked v2/v3 writes: [ADR 0019](./adr/0019-write-path-v2-parked.md). Pending UI: [ADR 0024](./adr/0024-cook-pending-pantry.md). Cancel **accepted** round 25. Checkout detect: [ADR 0025](./adr/0025-checkout-feature-detect.md). Visibility: [ADR 0032](./adr/0032-public-by-url-recipes.md).
+Do **not** await Vectorize or embed on the cook request. Site Worker RPCs Diet `getActive()` and Credit DO **`hold`** (coalesce Credit SQL + materialized remaining/pack_sum, no `await` between writes, **no AI inside the DO**). Attach Diet on the granite request. After Valibot-ok JSON: D1 `batch()` insert a **public-by-URL** recipe (no privacy picker); Credit DO **`settle`** (materialized remaining/pack_sum in the same SQL tx); enqueue `index_recipe`. On AI/Valibot fail or cancel: **`release`** the hold (cancel lock still applies if the GPU used ~768 tokens). Keep the **HTTP request open** for the AI (unlimited wall while connected); do not finish granite in `waitUntil` (30 s after disconnect). Parked v2/v3 writes: [ADR 0019](./adr/0019-write-path-v2-parked.md). **Storage v2 OPTION (not decided):** nightly cron merges near-duplicate recipes, 301 the merged id, purge `recipe-{id}`; embed only saved recipes in Vectorize; never merge different ingredient sets or free-from/allergy tags. Pending UI: [ADR 0024](./adr/0024-cook-pending-pantry.md). Cancel **accepted** round 25. Checkout detect: [ADR 0025](./adr/0025-checkout-feature-detect.md). Visibility: [ADR 0032](./adr/0032-public-by-url-recipes.md). Credits (hold / settle / release) are also described in [tech-stack.md](./tech-stack.md) Credits.
 
 ## Fonts
 
-Fontsource packages imported in the Vite graph. Vite hashes **woff2 file bytes** (SHA-256 prefix). **Same Fontsource version → same hashed filename** across rebuilds. Kit `preload` one body `.woff2` via source `filename`. **Never** Google Fonts `@import`/`<link>`. Do not copy fonts into `static/`/`public/`. **Families left to Kombai.**
+**System stack only** (`--font-display` / `--font-sans` / `--font-mono` in [design.md](./design.md)). No Fontsource, no Fraunces / Source Sans 3, no later webfont pass. **Never** Google Fonts `@import`/`<link>`. [ADR 0015](./adr/0015-fontsource-preload.md) superseded · [#56](https://github.com/fringe4life/chef-llama/issues/56).
 
 ---
 
@@ -420,7 +420,7 @@ Fontsource packages imported in the Vite graph. Vite hashes **woff2 file bytes**
 | [#11](https://github.com/fringe4life/chef-llama/issues/11) / [#31](https://github.com/fringe4life/chef-llama/issues/31) / [#37](https://github.com/fringe4life/chef-llama/issues/37) | `light-dark()` only; **blocking inline script** in `app.html`; never server-render theme from cookies on public pages (ADR 0037). |
 | [#28](https://github.com/fringe4life/chef-llama/issues/28) / [#38](https://github.com/fringe4life/chef-llama/issues/38) | **Diet** dialog rec; Kitchen name retired. |
 | [#32](https://github.com/fringe4life/chef-llama/issues/32) | One logo; OTP / Stripe / product mail. |
-| [#39](https://github.com/fringe4life/chef-llama/issues/39) | Fontsource pin + stable hash **accepted**. Families **to Kombai**. |
+| [#39](https://github.com/fringe4life/chef-llama/issues/39) | Fontsource pin **superseded**. System stack only. |
 | [#40](https://github.com/fringe4life/chef-llama/issues/40) | **Better Auth** + `/sign-in` ([ADR 0036](./adr/0036-better-auth-on-d1.md)). Clerk rejected. |
 | [#41](https://github.com/fringe4life/chef-llama/issues/41) | Topup dialog + Checkout + sessionStorage **accepted**. |
 | [#42](https://github.com/fringe4life/chef-llama/issues/42) | `+error.svelte` + Generate boundary; Popular is SSR on `/` and `/popular` (ADR 0037). |
@@ -431,13 +431,13 @@ Fontsource packages imported in the Vite graph. Vite hashes **woff2 file bytes**
 | [#47](https://github.com/fringe4life/chef-llama/issues/47) | Chip canonicalizer; leftover rice `{ "name": "rice", "cooked": true }` **accepted**. Lists v1; Clairic parked. |
 | [#48](https://github.com/fringe4life/chef-llama/issues/48) | `max_tokens` **768** **accepted**; conciseness = prompt+Schema, not a smaller cap. |
 | [#49](https://github.com/fringe4life/chef-llama/issues/49) | Write path **accepted**; Turso/Postgres/Pipelines parked ADR 0019. |
-| [#50](https://github.com/fringe4life/chef-llama/issues/50) | Conciseness package; 768 is a cap. |
+| [#50](https://github.com/fringe4life/chef-llama/issues/50) | Conciseness package; 768 is a cap. Valibot: steps **6–8**, title **≤ 80**, have **≤ 16**, flags **≤ 8**. |
 | [#51](https://github.com/fringe4life/chef-llama/issues/51) | Varlock + **Infisical Free accepted**. |
 | [#52](https://github.com/fringe4life/chef-llama/issues/52) | CI lint without secrets; Better Auth secret on workers.dev preview. |
 | [#53](https://github.com/fringe4life/chef-llama/issues/53) | Dependabot + husky + Cursor ESLint/Fallow hooks. |
 | [#54](https://github.com/fringe4life/chef-llama/issues/54) | Lists v1; Clairic **v2/v3**. |
 | [#55](https://github.com/fringe4life/chef-llama/issues/55) | Infisical Free **accepted**. |
-| [#56](https://github.com/fringe4life/chef-llama/issues/56) | Families **not** locked; Kombai picks. |
+| [#56](https://github.com/fringe4life/chef-llama/issues/56) | Fontsource/Fraunces **superseded**. System stack only. |
 | [#57](https://github.com/fringe4life/chef-llama/issues/57) | Diet first-run fields **accepted**. |
 | [#58](https://github.com/fringe4life/chef-llama/issues/58) | lookup_key pack_a/b/c; SKUs **locked**. |
 | [#59](https://github.com/fringe4life/chef-llama/issues/59) | Recipe scale client conversion-factor **accepted**. |
@@ -455,11 +455,11 @@ Fontsource packages imported in the Vite graph. Vite hashes **woff2 file bytes**
 | [#71](https://github.com/fringe4life/chef-llama/issues/71) | GPU abort **accepted** (round 25). |
 | [#72](https://github.com/fringe4life/chef-llama/issues/72) | Checkout detect **accepted** (living list) + noscript. |
 | [#73](https://github.com/fringe4life/chef-llama/issues/73) | **Accepted:** no Lucide/Simple Icons; official OAuth SVGs only. |
-| [#79](https://github.com/fringe4life/chef-llama/issues/79) | Cheap cached **secure** Actions (lockfile, bun cache). Not Turbo/Blacksmith v1. Extends #52/#53. |
+| [#79](https://github.com/fringe4life/chef-llama/issues/79) | Cheap cached **secure** Actions (lockfile, bun cache). Round 38: `svelte-check --tsgo` settled. bundlewatch added. Not Turbo/Blacksmith v1. Extends #52/#53. |
 | [#80](https://github.com/fringe4life/chef-llama/issues/80) | **Accepted:** public until **coding starts**, then private. Infisical stays. Clone ≠ hide the live Worker. |
 | [#81](https://github.com/fringe4life/chef-llama/issues/81) | Rec: not always-on. Paid $5 is not `min_instances`. Leftover grill Q8. |
-| [#82](https://github.com/fringe4life/chef-llama/issues/82) | **More DOs per user.** Credit DO materialized aggregates; Diet + Saved sibling DOs; dashboard skips global D1. ADR 0030 **accepted**. |
-| [#83](https://github.com/fringe4life/chef-llama/issues/83) | **Drizzle** v1 (DH stubs). Effect SQL **rejected**. Reylo parked. [ADR 0029](./adr/0029-drizzle-valibot.md). |
+| [#82](https://github.com/fringe4life/chef-llama/issues/82) | **More DOs per user.** Credit DO materialized aggregates; Diet + Saved sibling DOs; dashboard skips global D1. Popular counts: `save_count` on the D1 recipe row **or** a queue event — mechanism **OPEN**. ADR 0030 **accepted**. |
+| [#83](https://github.com/fringe4life/chef-llama/issues/83) | **Superseded** by [ADR 0029](./adr/0029-drizzle-valibot.md). Drizzle + DH stubs. Effect SQL **rejected**. Effect tagged errors only. Reylo parked. |
 | [#78](https://github.com/fringe4life/chef-llama/issues/78) | CSS sideways bars + rail **widget** on `/account/usage`. Not the spend/packs **page**. |
 | [#84](https://github.com/fringe4life/chef-llama/issues/84) | **Accepted:** `/account` + usage + packs. No Portal/Billing/subscriptions. |
 | [#88](https://github.com/fringe4life/chef-llama/issues/88) | **Accepted:** every v1 Generate is public-by-URL. No privacy picker. Private Recipes = v2. |

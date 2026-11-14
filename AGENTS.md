@@ -28,3 +28,5 @@ Do **not**:
 - add ogygia or `OGYGIA_SECRET`
 
 Public bodies must be byte-identical with and without a session cookie. Cold cache on each deploy (per-version; no cross-version cache).
+
+PR check **bundlewatch** on built client JS/CSS: index and `(static)`/`(site)` public pages **0 JS**; `/pantry` **~43 KB** brotli JS; CSS budget TBD by measurement. Type-check: `svelte-check --tsgo` (TS ~6; skip svelte-check-native).
