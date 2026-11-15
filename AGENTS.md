@@ -12,7 +12,7 @@ Default is **deny**: `private, no-store`. The **only** way to cache is `publicCa
 
 - Throws unless the route is under `(static)` or `(site)` and the method is GET/HEAD.
 - Integers only. `browser ≤ 3600`, `edge ≤ 1 year`, `swr ≤ 7 days`, `browser ≤ edge`.
-- 1–10 tags matching `^(popular|popular-top|popular-<type>|recipe-[0-9a-z]{6,32})$` (`CacheTag` template-literal type).
+- 1–10 tags matching `^(popular|popular-top|popular-[a-z0-9-]+|recipe-[0-9a-hjkmnp-tv-z]{26})$` (`CacheTag` template-literal type).
 - Emits `Cache-Control: public, max-age=B`, `Cloudflare-CDN-Cache-Control: max-age=E[, stale-while-revalidate=S]`, `Cache-Tag`. **Never** `s-maxage`.
 
 Hook: if the response did not go through `publicCache` → `private, no-store`, strip CDN / Cache-Tag headers. Public routes: `Set-Cookie` or `Vary: Cookie` / `Authorization` is a violation (dev throws; prod strips, no-store, log `[cache-guard]`).
@@ -25,6 +25,12 @@ Do **not**:
 - render theme from cookies on the server for public pages (blocking inline script in `app.html` only)
 - rebuild Popular on save; the Jobs Worker **cron** snapshots KV
 - cache unknown `/popular/[type]` 404s
+- cache recipe 301s or 404s (Workers Cache heuristic 301 1200s / 404 180s per typo path)
+- import `#lib/server/*` from `src/params.ts` (matchers run in the browser)
 - add ogygia or `OGYGIA_SECRET`
 
+Kit 3.2 matchers: single `src/params.ts` using `defineParams` from `@sveltejs/kit/params`, Valibot schemas from `#lib/schemas/*`. Routes `/recipes/[slug=slug]`. Brands `RecipeSlug` (canonical `{title}-{8 lowercase Crockford}` or bare 8-char suffix then load 301s) and `Ulid` (`^[0-9a-hjkmnp-tv-z]{26}$`). Never import `#lib/server/*`. Param matching neither → 404 before load (still no-store via the hook). No `src/id-patterns.ts`. Mirrors dollar-holler `src/params.ts` + `#lib/schemas/cursor-id.ts`.
+
 Public bodies must be byte-identical with and without a session cookie. Cold cache on each deploy (per-version; no cross-version cache).
+
+PR check **bundlewatch** on built client JS/CSS: index and `(static)`/`(site)` public pages **0 JS**; `/pantry` **~43 KB** brotli JS; CSS budget TBD by measurement. Type-check: `svelte-check --tsgo` (TS ~6; skip svelte-check-native).

@@ -27,20 +27,20 @@ Skip Paper MCP during exploration (**100 calls/week**). Do not Figma MCP. Do not
 | Site landing | `/` | Brochure + top 5 Popular (SSR HTML, not an island). Cook CTA = plain HTML form/links to `/pantry?i=`. |
 | Terms / privacy | `/terms` `/privacy` | Long legal. Minimal chrome. |
 | Pantry | `/pantry` | Chips (≥3), Diet overrides this run, generate, credits pill. Pending **stays here** ([cupboard.svg](./designs/cupboard.svg) **draft**), then goto recipe. No extra routes. No Code. |
-| Recipe | `/recipes/[id]` | Method, `kcal` + `kcal_over`, swaps if `kind: "swap"`, save, **+/- servings** (no new Generate). Narrow = same route as sheet. |
+| Recipe | `/recipes/[slug]` | Method, `kcal` + `kcal_over`, swaps if `kind: "swap"`, save, **+/- servings** (no new Generate). Narrow = same route as sheet. |
 | Saved | `/saved` | List. Empty state. |
 | **Diet** | dialog on `/pantry` | Blocking first-run: name, flags, allergies, optional kcal, servings default 2, optional max time. Not `/kitchen`. Multi-Diet picker is v2. |
 | **Sign-in** | `/sign-in` | Google, Apple, email OTP, Facebook. Last-used badge. Chef Llama chrome around Better Auth. Passkeys later. |
 | **Exhausted / topup** | dialog then Checkout | Pack SKUs **NZD $8 / $16 / $32** → 20 / 50 / 120 Credits. No card fields. Return to `/pantry`. |
 | **404** | `+error.svelte` | Site vs `(app)` chrome. Popular hole uses boundary, not this. |
-| **Popular** | `/` top 5 + `/popular` | Cards → `/recipes/[id]`. Empty / stale list. v2 `/popular/[type]` later. |
+| **Popular** | `/` top 5 + `/popular` | Cards → `/recipes/[slug]`. Empty / stale list. v2 `/popular/[type]` later. |
 | Account | popover | Theme radios, credits, sign out. |
 
 Photo and chat: **slots only**, disabled.
 
 ## Visual
 
-Parchment / olive / paprika / cast iron ([design.md](./design.md) token table). Light = kitchen daylight. Dark = closed cupboard. Display **serif** on wordmark + recipe titles; **sans** on chrome. **Kombai picks Fontsource families** (pin + content-hash; never Google Fonts CSS). Hairline borders, tape-label chips. No gradient mesh, no glow orbs, no 3D food.
+Parchment / olive / paprika / cast iron ([design.md](./design.md) token table). Light = kitchen daylight. Dark = closed cupboard. Display **serif** on wordmark + recipe titles; **sans** on chrome. **System font stack only** (`--font-display` / `--font-sans` / `--font-mono` in design.md). No Fontsource pass. Never Google Fonts CSS. Hairline borders, tape-label chips. No gradient mesh, no glow orbs, no 3D food.
 
 ## Motion — CSS only ([emilkowalski/skills](https://github.com/emilkowalski/skills) `emil-design-eng` + `animate`)
 

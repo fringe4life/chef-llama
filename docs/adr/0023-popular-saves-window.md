@@ -13,9 +13,9 @@
 
 ## v1 (locked)
 
-Ranking is rolling **7-day saves of public-by-URL Recipe rows** (every v1 Generate writes one — [ADR 0032](./0032-public-by-url-recipes.md)). Jobs Worker **cron-snapshots** KV (not per-save rebuilds — [ADR 0034](./0034-popular-cap-cache.md)). Sort `saves_7d` desc, tie-break `created_at`. A recipe appears only after **≥5 distinct savers**. Cap **20**. **Do not** increment on anonymous `/recipes/[id]` GET. **Do not** rank a private Recipe (none in v1; that would publish it).
+Ranking is rolling **7-day saves of public-by-URL Recipe rows** (every v1 Generate writes one — [ADR 0032](./0032-public-by-url-recipes.md)). Jobs Worker **cron-snapshots** KV (not per-save rebuilds — [ADR 0034](./0034-popular-cap-cache.md)). Sort `saves_7d` desc, tie-break `created_at`. A recipe appears only after **≥5 distinct savers**. Cap **20**. **Do not** increment on anonymous `/recipes/[slug]` GET. **Do not** rank a private Recipe (none in v1; that would publish it).
 
-Saved itself is a private **id list** on the per-user Saved DO ([ADR 0030](./0030-per-user-credit-dos.md)) — Popular counts save **events** of public rows, not the Cook’s list.
+Saved itself is a private **id list** on the per-user Saved DO ([ADR 0030](./0030-per-user-credit-dos.md)). **No D1 saves list. No dual-write of the list.** Popular **cross-user** counts come from `save_count` on the D1 recipe row (`RECIPES_DB`) **or** a queue event, updated on save/unsave by the Saved DO. A bare `save_count` **cannot** enforce 5 distinct savers or the 7-day window. Exact mechanism (counter vs queue events into a 7-day per-recipe saver ledger) is **OPEN**. Do not pick. If a ledger is used, PK is `save_ledger (recipe_id, saver_hash)`, `saver_hash` = HMAC(secret, userId). [#82](https://github.com/fringe4life/chef-llama/issues/82).
 
 <!-- Sources: round 17 Q3 yes; round 49 Q1 public-by-URL; round 48 Saved = ids on a DO; 14 Nov 2026 cron snapshot + min 5 distinct savers. -->
 

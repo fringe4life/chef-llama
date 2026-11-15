@@ -8,7 +8,7 @@
 
 `keto`, `vegan`, `breakfast`, `gluten-free`, `dairy-free`, `nut-free`
 
-Unknown types: Kit 3 param matcher in `src/params.ts` (plain Node at build, no `#lib`; `POPULAR_TYPES` in a dependency-free module) → **plain 404**, **not** cached (`private, no-store` via the default-deny hook). Query strings on `/popular/*` **redirect** to the clean URL.
+Unknown types: Kit 3.2 matcher in `src/params.ts` (`defineParams` from `@sveltejs/kit/params`; Valibot schemas from `#lib/schemas/*`; never `#lib/server/*`) → **plain 404**, **not** cached (`private, no-store` via the default-deny hook). Query strings on `/popular/*` **redirect** to the clean URL.
 
 Each type is its own KV key `popular:{type}` + Cache-Tag `popular-{type}`. Cap **20**. No infinite scroll. Same cron snapshot as `/popular` ([ADR 0034](./0034-popular-cap-cache.md)): not per-save rebuilds.
 
@@ -19,7 +19,7 @@ Free-from tags come **only** from a **deterministic ingredient rule table** over
 - **AI cannot add** allergy / free-from tags. AI may only **flag conflicts**.
 - **Disclaimer** on every allergy-typed Popular page and every Recipe.
 - **Report a problem** link on those pages.
-- **Admin pull** of a recipe: clear `free_from`, purge `recipe-{id}` and affected `popular-{type}`, re-run the snapshot.
+- **Admin pull** of a recipe: clear `free_from`, purge `recipe-{ulid}` and affected `popular-{type}`, re-run the snapshot.
 - **Aggregate counts only.** Never per-user data on Popular.
 
 Parked URL in [ADR 0027](./0027-v1-urls-region-api.md) was `/popular/[diet]`; the segment is **`[type]`**, and locale prefixes stay a reserved BCP-47 list so they cannot steal type names.

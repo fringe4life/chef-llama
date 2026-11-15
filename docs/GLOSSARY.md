@@ -53,16 +53,16 @@ One cookable dish for tonight that fits the Pantry (and constraints on that run)
 _Avoid_: Meal plan, candidate set, post, feed item, markdown blob, private document in v1
 
 **Saved**:
-The Cook’s private list of Recipe ids they kept. Not a copy of the Recipe, not a private Recipe store, not a visibility picker.
-_Avoid_: bookmark blob, dual-write, private recipe store
+The Cook’s private list of Recipe ids they kept (per-user Saved DO). Not a copy of the Recipe, not a private Recipe store, not a visibility picker, not a D1 saves list.
+_Avoid_: bookmark blob, dual-write of the list, private recipe store, D1 saves table
 
 **Site**:
 Public marketing pages. Brochure, not the cooking loop.
 _Avoid_: Landing (for the whole Site), home (for the Pantry), Site composer
 
 **Credit**:
-One prepaid Generate on a signed-in Cook after the operator Neuron gift is exhausted. Not granted on signup.
-_Avoid_: Neuron, Clerk Billing credit, Clerk account credit, Guest try, signup bonus
+One prepaid Generate on a signed-in Cook after the operator Neuron gift is exhausted. Not granted on signup. Charge is **hold, then settle or release** — not debit-before-AI.
+_Avoid_: Neuron, Clerk Billing credit, Clerk account credit, Guest try, signup bonus, debit-before-AI
 
 **Cancel**:
 The Cook leaves (or stops) Generate before a valid Recipe exists. Refunds Credit / the gift slot only when inference actually stops. Not a Stripe Pack refund. Not a Neuron rebate.
@@ -77,8 +77,8 @@ On a Recipe detail page, change the person count without a new Generate. Serving
 _Avoid_: second Generate, spice-law in the model, scaling cook time
 
 **Popular**:
-Public Recipes on `/` (top 5) and `/popular`. v1: rolling 7-day saves of public-by-URL rows, cap 20, ≥5 distinct savers, cron KV snapshot, not anonymous views.
-_Avoid_: HN gravity, view-count ranking, ogygia island, per-save rebuild, ranking private documents
+Public Recipes on `/` (top 5) and `/popular`. v1: rolling 7-day saves of public-by-URL rows, cap 20, ≥5 distinct savers, cron KV snapshot, not anonymous views. How those saves are counted (bare `save_count` vs a 7-day saver ledger) is **open**.
+_Avoid_: HN gravity, view-count ranking, ogygia island, per-save rebuild, ranking private documents, assuming a bare `save_count` is enough
 
 **Tool**:
 A page tool that calls the same command as a Pantry control (`add_ingredients`, `remove_ingredients`, `make_recipe`, `topup`).
