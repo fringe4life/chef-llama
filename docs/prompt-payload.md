@@ -31,7 +31,7 @@ Meta/Cloudflare docs do **not** define a cooking Staple. Pass `extras: water,sal
 
 There is **no** cheap hosted Llama that Cloudflare currently documents as JSON Mode **and** keeps in the catalog. 70B-fast output is ~**8×** fp8; r1 output is ~**17×**. Stay on **fp8**.
 
-Pricing and 10k Neurons/day (both Free and Paid; Paid is $0.011 / 1k Neurons after the gift): [Workers AI pricing](https://developers.cloudflare.com/workers-ai/platform/pricing/) (20 Oct 2026).
+Pricing and 10k Neurons/day (both Free and Paid; Paid is $0.011 / 1k Neurons after the gift): [Workers AI pricing](https://developers.cloudflare.com/workers-ai/platform/pricing/) (fetched 15 Nov 2026; page last updated 12 Nov 2026). **All limits reset daily at 00:00 UTC.**
 
 ## Contract: JSON + Valibot
 

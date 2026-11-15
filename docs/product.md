@@ -22,7 +22,7 @@ Pointers: [glossary](./GLOSSARY.md) · [prompt + payload](./prompt-payload.md) �
 | Kit | Remote functions, `<svelte:boundary>`, `withOverride`. **Not Astro.** |
 | Site | 0-JS Kit. `(static)` prerender; `(site)` edge SSR + Workers Cache. Popular = **cron KV snapshot** (not per-save), ranked **7-day saves of public-by-URL rows**, cap 20, ≥5 distinct savers; **no generate, no chat** on `/`. ogygia **dropped** (ADR 0011 superseded · ADR 0037). |
 | Chat | v1 auth-only cook routes. **Array** tools. |
-| Credits | **No signup Credits.** FCFS = 10k Neurons/day gift (pool DO, [#76](https://github.com/fringe4life/chef-llama/issues/76) — not a KV daily counter). **`max_tokens` 768** is the hard cap (truncates). Packs when gift is gone. Charge: **hold, then settle or release** (not debit-before-AI). |
+| Credits | **No signup Credits.** FCFS = 10k Neurons/day gift (pool DO, [#76](https://github.com/fringe4life/chef-llama/issues/76) — not a KV daily counter). Gift and per-user free-cook caps reset at **00:00 UTC** ([Workers AI pricing](https://developers.cloudflare.com/workers-ai/platform/pricing/): all limits reset daily at 00:00 UTC). **`max_tokens` 768** is the hard cap (truncates). Packs when gift is gone. Charge: **hold, then settle or release** (not debit-before-AI). |
 | Diet | **Required** before first Generate. Chips override this run. **Swap** not ignore. First-run **blocking dialog on `/pantry`**: name Home; flags vegan/vegetarian/gluten_free; allergy chips; optional kcal; servings 1–12 default 2; optional max_minutes. Multi-Diet **picker is v2 UI**. Storage: sibling Diet DO (`getActive` RPC). |
 | SEO | **v1.** Site indexable. Every Generate is **public-by-URL**; `/recipes/[slug]` unauthenticated SSR + OG SVG + **`noindex`** (Popular excepted). No privacy picker. Private Recipes = v2. **No** `svelte-seo`. Robots/CF/cache **accepted** (ADR 0010 · ADR 0032). |
 | Design | **Working draft** [04-landing](./designs/04-landing.html) + [sticker](./designs/05-token-sticker.html) (and `*-dark.html`). Not locked. **No Code**, no extra routes until accept. |
@@ -95,7 +95,7 @@ Competitors ship a free first Recipe with no account (DishGen 1 then wall; Fridg
 
 | Option | Rec? |
 |---|---|
-| **(a)** Capped guest Generate on the daily Neuron budget; Turnstile; **1** then sign-in wall; Diet still required (`sessionStorage`); **no Guest DO** | Alternative if Coinnich wants conversion parity |
+| **(a)** Capped guest Generate on the daily Neuron budget; Turnstile; **1** then sign-in wall (resets **00:00 UTC**, same as Neurons gift); Diet still required (`sessionStorage`); **no Guest DO** | Alternative if Coinnich wants conversion parity |
 | **(b)** One free Recipe per device or IP | **No** — spoofable, NAT-unfair |
 | **(c)** Keep sign-in required | **Rec for v1** |
 
