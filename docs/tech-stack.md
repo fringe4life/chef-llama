@@ -222,7 +222,7 @@ Prefer `transaction()` / coalesced SQL over `blockConcurrencyWhile` on the hot p
 
 **Bundle:** ~**140–170 KiB gzip** on the Worker (measured in fringe4life/dollar-holler and a scratch build). Well under CF **64 MiB**. Watch **1s** isolate startup. `nodejs_compat` (or `nodejs_als`). Copy DH isolate-cached `getAuth()` so the adapter does not construct at import.
 
-**Where auth runs:** `(app)` (`/pantry` `/saved` `/account`…), `/sign-in`, `/api/auth/*`, remotes that need a Cook. **Never** on cached public pages (`/` `/popular` `/about` `/pricing` `/how-to` `/terms` `/privacy` `/recipes/[slug]`). Public GET **must not** `Set-Cookie`. **`getSession` must never run on public cached routes** — it can set cookies.
+**Where auth runs:** `(app)` (`/pantry` `/saved` `/account`…), `/sign-in`, `/api/auth/*`, remotes that need a Cook. **Never** on cached public pages (`/` `/popular` `/about` `/pricing` `/how-to` `/terms` `/privacy` `/recipes/[slug]`). Public layouts **never import auth**. Public GET **must not** `Set-Cookie`. **`getSession` must never run on public cached routes** — it can set cookies. **Save** on `/recipes/[slug]` is a **plain HTML form or link** (signed-out → `/sign-in`); not a session-reading island ([ADR 0036](./adr/0036-better-auth-on-d1.md) · [ADR 0037](./adr/0037-zero-js-public-cache-guardrails.md)).
 
 **v1 methods:** Google, Apple, email OTP, Facebook. Passkeys later as **“add a passkey”** after first sign-in.
 

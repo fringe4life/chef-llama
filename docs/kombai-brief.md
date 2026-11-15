@@ -27,7 +27,7 @@ Skip Paper MCP during exploration (**100 calls/week**). Do not Figma MCP. Do not
 | Site landing | `/` | Brochure + top 5 Popular (SSR HTML, not an island). Cook CTA = plain HTML form/links to `/pantry?i=`. |
 | Terms / privacy | `/terms` `/privacy` | Long legal. Minimal chrome. |
 | Pantry | `/pantry` | Chips (≥3), Diet overrides this run, generate, credits pill. Pending **stays here** ([cupboard.svg](./designs/cupboard.svg) **draft**), then goto recipe. No extra routes. No Code. |
-| Recipe | `/recipes/[slug]` | Method, `kcal` + `kcal_over`, swaps if `kind: "swap"`, save, **+/- servings** (no new Generate). Narrow = same route as sheet. |
+| Recipe | `/recipes/[slug]` | Method, `kcal` + `kcal_over`, swaps if `kind: "swap"`, **Save** = plain form/link (0 JS; signed-out → `/sign-in`), **+/- servings** (no new Generate). Narrow = same route as sheet. |
 | Saved | `/saved` | List. Empty state. |
 | **Diet** | dialog on `/pantry` | Blocking first-run: name, flags, allergies, optional kcal, servings default 2, optional max time. Not `/kitchen`. Multi-Diet picker is v2. |
 | **Sign-in** | `/sign-in` | Google, Apple, email OTP, Facebook. Last-used badge. Chef Llama chrome around Better Auth. Passkeys later. |

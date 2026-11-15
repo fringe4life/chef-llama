@@ -2,7 +2,7 @@
 
 **Status:** accepted (14 Nov 2026, Coinnich). Supersedes the Clerk provider in [0005](./0005-clerk-gated-generate.md) (login-gated Generate **stays**). OTP “Delivered by Clerk” in [0013](./0013-transactional-email.md) is superseded; one Site mark stays. Ids are lowercase ULID TEXT, not UUIDv7 ([ADR 0039](./0039-ids-and-recipe-slugs.md)).
 
-v1 auth is **Better Auth** first-party SvelteKit (`svelteKitHandler`, `sveltekitCookies` **last**) on Cloudflare Workers with the **Drizzle adapter** on **AUTH_DB**. Sessions are **opaque D1 rows**, sliding **7-day** expiry, **server-read**. Public pages ship **0 KB** auth client JS. ogygia islands may read the session with **no redirect** and no 60s token refresh. Generate stays signed-in only.
+v1 auth is **Better Auth** first-party SvelteKit (`svelteKitHandler`, `sveltekitCookies` **last**) on Cloudflare Workers with the **Drizzle adapter** on **AUTH_DB**. Sessions are **opaque D1 rows**, sliding **7-day** expiry, **server-read**. Public pages are **0-JS** Kit (`csr=false`): they ship **0 KB** auth client JS, **never import auth**, and **never** `getSession` ([ADR 0037](./0037-zero-js-public-cache-guardrails.md)). Generate stays signed-in only.
 
 Proven on this stack in [fringe4life/dollar-holler](https://github.com/fringe4life/dollar-holler). Worker cost ~**140–170 KiB gzip** (dollar-holler + a scratch build) — well under CF **64 MiB**; watch **1s** isolate startup. `nodejs_compat` (or `nodejs_als`) required.
 
@@ -10,7 +10,7 @@ Proven on this stack in [fringe4life/dollar-holler](https://github.com/fringe4li
 
 | Option | Why not |
 |---|---|
-| **Clerk** (`@clerk/backend`, `svelte-clerk`, hosted Account Portal) | Per-user fees at scale (~**US$1,025/mo at 100k MRU**). `__session` JWT ~**60s**, refreshed by client SDK — fights ogygia server islands and `csr=false` public pages. `svelte-clerk` 1.2.0 peers Kit **2** only. |
+| **Clerk** (`@clerk/backend`, `svelte-clerk`, hosted Account Portal) | Per-user fees at scale (~**US$1,025/mo at 100k MRU**). `__session` JWT ~**60s**, refreshed by client SDK — fights **0-JS** / `csr=false` public pages that must not run a client SDK or refresh cookies. `svelte-clerk` 1.2.0 peers Kit **2** only. |
 | **WorkOS AuthKit** | Per-user pricing; extra vendor; not on this Workers + D1 path. |
 | **DIY Oslo + arctic** | We would own sessions, CSRF, OAuth, OTP, deletion. Better Auth already does that on D1 here. |
 | Lucia | Deprecated. |
@@ -52,7 +52,7 @@ Deletion **deletes** that Cook’s recipes (**not** anonymise). Better Auth `bef
 
 ## Where auth runs
 
-`(app)` signed-in group (`/pantry` `/saved` `/account`…), `/sign-in`, `/api/auth/*`, remote functions that need a Cook, ogygia `/__ogygia__`. **Never** on cached public pages (`/` `/terms` `/privacy` `/recipes/[slug]`). Public GET **must not** `Set-Cookie`. `/recipes/[slug]` is **not** under the `(app)` auth layout — optional Save is an island that reads session with no redirect.
+`(app)` signed-in group (`/pantry` `/saved` `/account`…), `/sign-in`, `/api/auth/*`, remote functions that need a Cook. **Never** on cached public pages (`/` `/popular` `/about` `/pricing` `/how-to` `/terms` `/privacy` `/recipes/[slug]`). Public layouts **never import auth**. Public GET **must not** `Set-Cookie` or `Vary: Cookie`. `/recipes/[slug]` sits **outside** `(app)` so the public cache stays cookie-free. **Save** on that page is a **plain HTML form or link** (no session read on the cached HTML); signed-out cooks go to `/sign-in` ([ADR 0037](./0037-zero-js-public-cache-guardrails.md)).
 
 Schema (AUTH_DB, Drizzle; dollar-holler-shaped):
 

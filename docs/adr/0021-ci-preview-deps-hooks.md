@@ -36,7 +36,7 @@ After the production client build, [bundlewatch](https://bundlewatch.io/) compar
 
 ## Better Auth on Cloudflare preview
 
-CF `workers.dev` / [Preview URLs](https://developers.cloudflare.com/workers/previews/) are a **host preview domain**. Rec: preview `BETTER_AUTH_SECRET` + OAuth **test** apps; Better Auth `allowedHosts` includes `*.workers.dev`. Production OAuth clients only on the **production root**. Optional Cloudflare Access. `workers.dev` previews already send `X-Robots-Tag: noindex`.
+CF `workers.dev` / [Preview URLs](https://developers.cloudflare.com/workers/previews/) are a **host preview domain**. Rec: preview `BETTER_AUTH_SECRET` + OAuth **test** apps (not Clerk Dev keys); Better Auth `allowedHosts` includes `*.workers.dev`. Production OAuth clients only on the **production root**. Optional Cloudflare Access. `workers.dev` previews already send `X-Robots-Tag: noindex`.
 
 ## Dependabot (not Renovate v1)
 

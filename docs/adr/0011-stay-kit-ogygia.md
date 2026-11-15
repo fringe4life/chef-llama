@@ -1,6 +1,6 @@
 # Stay Kit 3; ogygia per route — **superseded**
 
-**Status:** superseded (14 Nov 2026, Coinnich) by [ADR 0037](./0037-zero-js-public-cache-guardrails.md). **Do not add ogygia.** Public pages are 0-JS SvelteKit (`csr=false`). `/pantry` is plain Kit with JS. Remove `OGYGIA_SECRET`.
+**Status:** superseded (14 Nov 2026, Coinnich) by [ADR 0037](./0037-zero-js-public-cache-guardrails.md). **Do not add ogygia.** Public pages are 0-JS SvelteKit (`csr=false`). They **never import** Better Auth and **never** `getSession` ([ADR 0036](./0036-better-auth-on-d1.md)). `/pantry` is plain Kit with JS. Remove `OGYGIA_SECRET`.
 
 Measured brotli: ogygia runtime ~**22 KB** at page load (docs claimed ~8 KB), plus ~14.5 KB tiny island wake and ~31 KB remote-function island wake. 0-JS Kit public HTML is ~0.5–0.8 KB + ~0.6 KB hashed StyleX CSS, **0 JS**.
 

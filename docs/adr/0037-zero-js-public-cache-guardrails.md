@@ -63,7 +63,7 @@ Single `src/params.ts` using `defineParams` from `@sveltejs/kit/params`, importi
 
 ## Open (do not guess)
 
-- **Save** on `/recipes/[slug]`: ADR 0036 (on [PR 93](https://github.com/fringe4life/chef-llama/pull/93)) still describes an ogygia island that reads session. That cannot ship on a 0-JS public page that never imports auth.
+- **Save** on `/recipes/[slug]`: **plain HTML form or link** (no auth import, no session read on the public page); signed-out → `/sign-in`. Settled with [ADR 0036](./0036-better-auth-on-d1.md) (no ogygia Save island).
 - **+/- servings** on `/recipes/[slug]` ([ADR 0022](./0022-recipe-scale-client.md) is client math) vs 0 JS.
 - Exact `/about` `/pricing` `/how-to` paths (legal = existing `/terms` `/privacy`).
 - Quiet-week fill vs ≥5 distinct savers ([ADR 0034](./0034-popular-cap-cache.md)).

@@ -2,7 +2,7 @@
 
 **Status:** accepted for index/share/`noindex` (round 8; no svelte-seo). **Accepted (round 20)** robots + Cloudflare AI policies + Workers Cache for crawlers.
 
-SEO is v1. Prerender `/` `/terms` `/privacy`. Every v1 Generate writes a **public-by-URL** Recipe ([ADR 0032](./0032-public-by-url-recipes.md)); `/recipes/[slug]` is **public unauthenticated SSR** so unfurlers read OG from `<svelte:head>` (`og:url` undecorated). Those URLs are **`noindex`** except Popular. No privacy picker — a private Recipe store is v2. v1 `og:image` is a **static meal SVG**. Do **not** add [`svelte-seo`](https://www.npmjs.com/package/svelte-seo). Do not add workers-og WASM. No share tokens. `/pantry` `/saved` stay session-gated. Deleted recipe URLs return **410** ([ADR 0036](./0036-better-auth-on-d1.md)).
+SEO is v1. Prerender `/` `/terms` `/privacy`. Every v1 Generate writes a **public-by-URL** Recipe ([ADR 0032](./0032-public-by-url-recipes.md)); `/recipes/[slug]` is **public unauthenticated SSR** so unfurlers read OG from `<svelte:head>` (`og:url` undecorated). Those URLs are **`noindex`** except Popular. No privacy picker — a private Recipe store is v2. v1 `og:image` is a **static meal SVG**. Do **not** add [`svelte-seo`](https://www.npmjs.com/package/svelte-seo). Do not add workers-og WASM. No share tokens. `/pantry` `/saved` stay **Better Auth** session-gated. Deleted recipe URLs return **410** after account deletion deletes that Cook’s recipes ([ADR 0036](./0036-better-auth-on-d1.md)).
 
 <!-- Sources: round 8 + round 20 robots/cache; round 49 Q1 public-by-URL. -->
 

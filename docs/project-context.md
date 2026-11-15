@@ -12,7 +12,7 @@ Users enter a list of ingredients (later: photo → ingredient list). A non-fron
 - **Alchemy v2** for infra/bindings (pin latest v2 exactly when coding starts)
 - **Effect v4** for errors (and payments flow)
 - Cloudflare: Workers AI, RAG/KV for similar recipes after a recipe is created, cache for popular recipes, Queues, Durable Objects for user credits
-- Auth: **Better Auth** on D1 (Workers + Drizzle). Payments stay Stripe Checkout, not Clerk Billing.
+- Auth: **Better Auth** on **AUTH_DB** (Workers + Drizzle; `userId`, not `clerkUserId`). Payments stay Stripe Checkout, not Clerk Billing.
 - Styling: **StyleX**; custom components using native browser APIs (anchor positioning, Popover, Dialog) where possible
 - Design: **Kombai** to produce UI; **paper.design** (HTML/CSS, npm package, MCP) preferred over Figma (limited MCP). Do as much design work locally. shadcn-compatible theming + light/dark
 - GitHub repo (better name than `ai-chef-website`), issues, research tracking, GitHub roadmap/project so implementation stays on track

@@ -6,7 +6,7 @@
 
 **v2 i18n:** official Kit path is **Paraglide** (`npx sv add paraglide`, inlang project). Default URL strategy = **base locale unprefixed**. Kit has **no** builtin message catalog — only `lang` in `app.html`. Do not wrap v1 in `[[lang]]` (root `+page` already claims `/`). A later `/popular/[type]` feed uses the literal first segment `popular`; locale prefixes are a reserved BCP-47 list so they cannot steal type or nation codes. Closed type list + allergy fail-closed: [ADR 0038](./0038-popular-type-allergy-safeguards.md).
 
-**v1 region NZ:** Workers **default closest PoP** (Oceania cities include Auckland, Christchurch, Wellington). Do **not** set Alchemy/Wrangler `placement.region` to `aws:ap-southeast-2` — that pulls NZ users toward Sydney. Both **`AUTH_DB`** and **`RECIPES_DB`** use D1 **`primaryLocationHint: "oc"`** (hint, not a lock). No NZ jurisdiction (`eu` / `us` / `fedramp` only).
+**v1 region NZ:** Workers **default closest PoP** (Oceania cities include Auckland, Christchurch, Wellington). Do **not** set Alchemy/Wrangler `placement.region` to `aws:ap-southeast-2` — that pulls NZ users toward Sydney. Both **`AUTH_DB`** (Better Auth) and **`RECIPES_DB`** use D1 **`primaryLocationHint: "oc"`** (hint, not a lock). No NZ jurisdiction (`eu` / `us` / `fedramp` only). [ADR 0036](./0036-better-auth-on-d1.md).
 
 **API:** v1 = Kit remotes. Do not prefix HTML with `/v1`. A public REST surface later is **`/api/v1`** because CF cache keys on **path** (not host). Additive Schema does not bump.
 

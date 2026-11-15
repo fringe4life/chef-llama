@@ -13,8 +13,8 @@ Retired working name. Do not use for the product, repo, or chrome.
 _Avoid_: treating Larder as what Cooks see
 
 **Cook**:
-A solo home cook feeding about one to four people from what is already on hand.
-_Avoid_: User, customer, chef (the person is not Llama), account
+A solo home cook feeding about one to four people from what is already on hand. Signed-in identity is Better Auth `userId` (not `clerkUserId`).
+_Avoid_: User, customer, chef (the person is not Llama), account, `clerkUserId`
 
 **Pantry**:
 The Cook’s current list of on-hand Chips for one Generate. Generate requires three or more Chips.

@@ -16,7 +16,7 @@ SQLite (D1 and Durable Object SQLite) has no UUID column type. Better Auth's def
 - Kit 3.2 matchers are a single `src/params.ts` using `defineParams` from `@sveltejs/kit/params`, importing Valibot schemas from `#lib/schemas/*`. Routes `/recipes/[slug=slug]`. Brands: `RecipeSlug` (canonical `{title}-{8 lowercase Crockford}`, title part `[a-z0-9]+(?:-[a-z0-9]+)*` max 50, fallback title `recipe`, **or** a bare 8-char suffix then load 301s) and `Ulid` (`^[0-9a-hjkmnp-tv-z]{26}$`) for internal ids. Matchers run on the server **and** in the browser: never import `#lib/server/*`. Param matching neither → 404 before load (cheap, still no-store via the hook). Remove `src/id-patterns.ts`. Mirrors dollar-holler `src/params.ts` + `#lib/schemas/cursor-id.ts`.
 
 ## Consequences
-- ADR 0036 amended (ULID, not UUIDv7); docs saying /recipes/[id] or recipe-[0-9a-z]{6,32} updated.
+- ADR 0036 amended (ULID, not UUIDv7); docs saying /recipes/[id] or recipe-[0-9a-z]{6,32} updated. Identity field is Better Auth `userId` (not `clerkUserId`).
 - One extra slug->row lookup on a cache miss; a cache HIT still skips the Worker. A suffix/typo miss 301s or 404s without a cache entry.
 - Keyset pagination can use id directly.
 - Public URLs don't leak Generate time; the ULID still encodes time for operators and cursors.

@@ -253,7 +253,7 @@ src/routes/
     account/packs/+page.svelte   # packs history
 ```
 
-Auth runs on `(app)`, `/sign-in`, `/api/auth/*`, remotes that need a Cook. **Never** on cached public pages. Public layouts **never import auth**. Public GET **must not** `Set-Cookie` or `Vary: Cookie`. **`getSession` must never run on public cached routes.** `/recipes/[slug]` sits **outside** `(app)` so the public cache stays cookie-free. Save on a 0-JS public recipe page is **open** (ADR 0036’s optional island cannot ship if the page has 0 JS and no auth import).
+Auth runs on `(app)`, `/sign-in`, `/api/auth/*`, remotes that need a Cook. **Never** on cached public pages. Public layouts **never import auth**. Public GET **must not** `Set-Cookie` or `Vary: Cookie`. **`getSession` must never run on public cached routes.** `/recipes/[slug]` sits **outside** `(app)` so the public cache stays cookie-free. **Save** on `/recipes/[slug]` is a **plain HTML form or link** (no auth import, no session read on the public page); signed-out cooks go to `/sign-in` ([ADR 0036](./adr/0036-better-auth-on-d1.md) · [ADR 0037](./adr/0037-zero-js-public-cache-guardrails.md)).
 
 Headers: [caching.md](./caching.md).
 

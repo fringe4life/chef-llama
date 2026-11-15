@@ -229,7 +229,7 @@ App shell
 | **Results** | Generated recipes | Cards: title, time, uses N of M ingredients, missing 0–2 items. Empty / error / credits-exhausted states |
 | **Detail** | Cook from it | Title, servings, time, ingredient checklist vs pantry, steps, save, similar |
 | **Saved** | Library | List + similar strip per item (“because you made X”) |
-| **Account** | Session + credits | Email, remaining generations, sign out. Payments CTA later |
+| **Account** | Better Auth session + credits | Email, remaining generations, sign out. Payments CTA later |
 
 ### Later plug-in points (do not design fully)
 
