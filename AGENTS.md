@@ -1,7 +1,5 @@
 # Agent rules — Chef Llama
 
-Product docs: [`docs/product.md`](./docs/product.md) · stack: [`docs/tech-stack.md`](./docs/tech-stack.md) · cache SSOT: [`docs/caching.md`](./docs/caching.md) · [ADR 0037](./docs/adr/0037-zero-js-public-cache-guardrails.md).
-
 ## Caching (Workers Cache is on)
 
 Workers Cache is on (`Alchemy` `cache: { enabled: true }`). That is a **hard rule**, not an optimisation.
@@ -34,3 +32,36 @@ Kit 3.2 matchers: single `src/params.ts` using `defineParams` from `@sveltejs/ki
 Public bodies must be byte-identical with and without a session cookie. Cold cache on each deploy (per-version; no cross-version cache).
 
 PR check **bundlewatch** on built client JS/CSS: index and `(static)`/`(site)` public pages **0 JS**; `/pantry` **~43 KB** brotli JS; CSS budget TBD by measurement. Type-check: `svelte-check --tsgo` (TS ~6; skip svelte-check-native).
+
+## Where decisions live
+
+Topic files in `docs/` are the **only** place decisions live. Each has a **Decided** and an **Open** section. There are no ADRs. GitHub issues are short tasks that link to a topic section and never carry decisions.
+
+| Topic | File |
+|---|---|
+| Product: job, routes, Diet, Popular rules, pending, errors, icons | `docs/product.md` |
+| Vocabulary (Cook, Recipe, Diet, Staples, Credits…) | `docs/GLOSSARY.md` |
+| Auth: Better Auth, Google + email OTP, the `redirectTo` post-login redirect, sessions, guest Generate, mail | `docs/auth.md` |
+| Data: ULID ids, recipe slugs, Drizzle, D1, DOs, KV, Queues, Vectorize, write path | `docs/data.md` |
+| AI Generate: model, prompt, Recipe JSON, chips, cancel | `docs/ai.md` |
+| Payments: Stripe packs, Credits, free-cook pool and status, 00:00 UTC reset, tax, topup | `docs/payments.md` |
+| Caching, 0-JS public pages, Save on the cached recipe page, robots.txt, sitemap.xml, SEO | `docs/caching.md` |
+| Security: rate limits, WAF, zone hardening, session IP, secrets + Varlock | `docs/security.md` |
+| Theme: shadcn-style oklch tokens, light/dark, browser floor, typography, z-index, native overlays, usage chart spec, design loop | `docs/theme.md` |
+| Lint: ESLint 10 + Fallow + `svelte-check --tsgo`, `chef/*` rules, slop, pre-commit (husky + lint-staged) | `docs/lint.md` |
+| Cursor hooks: `.cursor/hooks.json` running ESLint and Fallow for agents | `docs/cursor-hooks.md` |
+| Agent skills: Matt Pocock's skills in `.agents/skills/` | `docs/skills.md` |
+| Tests: seams, fixtures, Playwright (owner; one target, the PR preview), synthetic check | `docs/tests.md` |
+| CI: jobs, Sengi runners, Actions hardening, exact-version deps, Dependabot, bundlewatch | `docs/ci.md` |
+| Branch previews | `docs/previews.md` |
+| Folder organisation (one Kit app, no empty folders) | `docs/folder-organisation.md` |
+| Ops: observability, logging, Automations, deps review | `docs/ops.md` |
+| Software factory: architecture hunt, agent retro, friction digest | `docs/factory.md` |
+| v2 and later (parked) | `docs/v2.md` |
+
+Rules for agents:
+- Change a decision **only** by editing its topic file's Decided section in a PR Coinnich approves. Never decide in an issue or comment.
+- When a task needs a decision, add it to the topic's **Open** section.
+- Topic files never cite ADRs, issue numbers or working notes: write the actual content inline.
+- Do not create ADRs or decision documents outside these files. Skills that write ADRs by default (`grill-with-docs`, `domain-modeling`) record decisions in the topic file instead.
+- Don't skip the Git hooks (`--no-verify`, `HUSKY=0`); fix the lint error.

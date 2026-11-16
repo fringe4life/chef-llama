@@ -193,56 +193,13 @@ Slightly squared — enamelware, not iOS pills.
 | `--leading-tight` / `--leading-body` | `1.2` / `1.55` |
 | `--tracking-display` | `-0.02em` |
 
-Display only on wordmark, recipe titles, empty-state headlines. UI chrome stays sans. **This system stack is v1** — no later Fontsource / Fraunces pass ([ADR 0015](./adr/0015-fontsource-preload.md) superseded).
+Display only on wordmark, recipe titles, empty-state headlines. UI chrome stays sans. **This system stack is v1** — no later Fontsource / Fraunces pass (see [theme.md](./theme.md)).
 
 ### spacing
 
 4px grid: `--space-1` `0.25rem` … `--space-16` `4rem`. Layout: `--space-page` `1.25rem` (mobile) / `2rem` (desktop). Chip gap `--space-2`. Card padding `--space-5`.
 
 User override: blocking inline script in `app.html` reads the cookie and sets `html[data-colorscheme]` (public pages must **not** server-render theme from cookies). `(app)` may also use `html:has(#scheme-dark:checked)`. Default: `color-scheme: light dark` so `light-dark()` follows `prefers-color-scheme`. No `.dark` fallback. No `localStorage` as source of truth.
-
----
-
-## Product UI IA (v1)
-
-Primary job: **type what is in the cupboard → get cookable recipes → save / find similar.**
-
-```
-App shell
-├── Pantry (home)          v1
-│   ├── ingredient chips + field
-│   ├── generate
-│   └── [slot] photo → chips     later
-├── Results list           v1
-├── Recipe detail          v1
-│   └── [slot] chat-to-recipe    later (WebMCP)
-├── Saved                  v1
-│   └── similar (RAG/KV)   v1, after a recipe exists
-└── Account / credits      v1 (read + light actions)
-```
-
-### v1 screens
-
-| Screen | Purpose | Contents |
-| --- | --- | --- |
-| **Pantry** | Manual ingredient list | Text field, add on Enter/comma, chips, “What’s for dinner”, optional diet/time filters as **later-lite**: one row of toggles (veg, 30 min) if cheap; otherwise omit |
-| **Results** | Generated recipes | Cards: title, time, uses N of M ingredients, missing 0–2 items. Empty / error / credits-exhausted states |
-| **Detail** | Cook from it | Title, servings, time, ingredient checklist vs pantry, steps, save, similar |
-| **Saved** | Library | List + similar strip per item (“because you made X”) |
-| **Account** | Session + credits | Email, remaining generations, sign out. Payments CTA later |
-
-### Later plug-in points (do not design fully)
-
-- **Photo → ingredients:** dashed “From a photo” control on the Pantry well, same chip model. Upload fills chips; user edits. No camera UI in v1 mock beyond a disabled slot.
-- **Chat-to-recipe:** dock on **Detail** (and optionally Results): “Ask to tweak”. Same recipe entity; chat is a modifier, not a second product.
-
-### Navigation
-
-Single app chrome: wordmark → Pantry | Saved. Account + credits in the header. Results and Detail are Pantry stack (back control), not extra top-nav items.
-
-### Credit UX
-
-Generating a recipe spends a credit (Durable Object, later). Header pill `12 left`. Exhausted: generate opens a **dialog** (native) with “You’re out of credits” — no checkout UI until payments land.
 
 ---
 

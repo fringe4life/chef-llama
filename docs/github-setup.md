@@ -31,7 +31,7 @@ Matt Pocock / `grill-with-docs` already live on Fedora at `/home/cc/.agents/skil
 
 ## Issue index (workstreams)
 
-Workstreams **#3–#14**. Later issues through **#92**. Round 31 filed **#79** cheap secure Actions (round 38: `svelte-check --tsgo` settled; bundlewatch added in review-corrections). Round 33 filed **#82** User DO vs Credit DO, **#83** Effect SQL vs Reylo/Drizzle (**superseded** by ADR 0029). Round 33b filed **#84** session-gated `/account` (spend/packs; GitHub title still says Clerk); **#78** stays CSS charts. Round 49 filed **#88** public-by-URL Recipes. Filed **#89–#92** as `proposal` (not locked; not a grill round). Do not duplicate **#52** / **#53** / **#79–#81**. Do not treat **#80** as Recipe visibility. Do not treat **#89–#92** as accepted.
+Workstreams **#3–#14**. Later issues through **#92**. Round 31 filed **#79** cheap secure Actions (round 38: `svelte-check --tsgo` settled; bundlewatch added in review-corrections). Round 33 filed **#82** User DO vs Credit DO, **#83** Effect SQL vs Reylo/Drizzle (**superseded** by [data.md](./data.md)). Round 33b filed **#84** session-gated `/account` (spend/packs; GitHub title still says Clerk); **#78** stays CSS charts. Round 49 filed **#88** public-by-URL Recipes. Filed **#89–#92** as `proposal` (not locked; not a grill round). Do not duplicate **#52** / **#53** / **#79–#81**. Do not treat **#80** as Recipe visibility. Do not treat **#89–#92** as accepted.
 
 | # | Title | Labels | Project Status (when set) | URL |
 |---|---|---|---|---|
@@ -42,7 +42,7 @@ Workstreams **#3–#14**. Later issues through **#92**. Round 31 filed **#79** c
 | 80 | Private vs public GitHub if the Site is paid (clone vs Actions minutes) | `research`, `infra`, `docs` | — | https://github.com/fringe4life/chef-llama/issues/80 |
 | 81 | Workers not always-on | `research`, `infra` | — | https://github.com/fringe4life/chef-llama/issues/81 |
 | 82 | Per-user Credit, Diet, Saved DOs; `RECIPES_DB` for public Recipes (`AUTH_DB` extra) | `research`, `infra`, `docs` | — | https://github.com/fringe4life/chef-llama/issues/82 |
-| 83 | Query layer: Effect SQL, not Drizzle; Reylo parked | `research`, `infra`, `docs` | **superseded** by [ADR 0029](./adr/0029-drizzle-valibot.md) | https://github.com/fringe4life/chef-llama/issues/83 |
+| 83 | Query layer: Effect SQL, not Drizzle; Reylo parked | `research`, `infra`, `docs` | **superseded** by [data.md](./data.md) | https://github.com/fringe4life/chef-llama/issues/83 |
 | 84 | Session-gated /account spend + packs (issue title still Clerk-gated) | `research`, `feature`, `docs` | — | https://github.com/fringe4life/chef-llama/issues/84 |
 | 88 | v1 every Generate is public-by-URL; private Recipe store is v2 | `research`, `feature`, `docs` | — | https://github.com/fringe4life/chef-llama/issues/88 |
 | 89 | Proposal: Starter pack (once-only NZD trial SKU) | `proposal`, `docs`, `research`, `feature` | — | https://github.com/fringe4life/chef-llama/issues/89 |
