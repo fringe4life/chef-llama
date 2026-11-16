@@ -2,17 +2,17 @@
 
 **Token-cheap loop (round 19 accepted).** Coinnich **GO** 28 Oct 2026. Electron **2.0.160**. Design mode **only** landing `/` + token sticker. Variants/Passes **1**. **Do not** Code-design every route.
 
-**Working draft (not locked, not Code):** [04-landing.html](./designs/04-landing.html) · [04-landing-dark.html](./designs/04-landing-dark.html) · [05-token-sticker.html](./designs/05-token-sticker.html) · [05-token-sticker-dark.html](./designs/05-token-sticker-dark.html) · canvas `.kombai/canvas/larder-site.canvas`. Index: [designs/README.md](./designs/README.md). File preview: Tailwind CDN + `color-scheme` on the token `:root` rule. Improve in place. **No Code design, no extra routes** until Coinnich accepts. Fonts this pass: Vollkorn / Archivo / IBM Plex Mono.
+**Working draft (not locked, not Code):** [04-landing.html](./designs/04-landing.html) · [04-landing-dark.html](./designs/04-landing-dark.html) · [05-token-sticker.html](./designs/05-token-sticker.html) · [05-token-sticker-dark.html](./designs/05-token-sticker-dark.html) · canvas `.kombai/canvas/larder-site.canvas`. Index: [designs/README.md](./designs/README.md). File preview: Tailwind CDN + `color-scheme` on the token `:root` rule. Improve in place. **No Code design, no extra routes** until Coinnich accepts. Fonts: system font stacks only (families TBD; see docs/theme.md).
 
-0. Repo CSS: shadcn **names** as `--` vars, `light-dark()` only (ADR 0014). Iterate [`design-mock.html`](./design-mock.html) with **no** Kombai.
-1. Kombai **Design mode**, **one** `/` + token sticker. Settings: Variants **1**, Passes **1**. Attach a Larder `.ds` from that CSS / `design.md`. **Edit Designs** by hand (no prompt). No **Code design**.
+0. Repo CSS: shadcn **names** as `--` vars, `light-dark()` only, full oklch colours (see [theme.md](./theme.md)). Iterate [`design-mock.html`](./design-mock.html) with **no** Kombai.
+1. Kombai **Design mode**, **one** `/` + token sticker. Settings: Variants **1**, Passes **1**. Attach a Chef Llama `.ds` from that CSS / `design.md`. **Edit Designs** by hand (no prompt). No **Code design**.
 2. Coinnich accepts landing + tokens.
 3. Next canvas screen (pantry or recipe), same `.ds`.
 4. Then Code design / Kit implement.
 
 Skip Paper MCP during exploration (**100 calls/week**). Do not Figma MCP. Do not Plan → Approve and Code of the whole app.
 
-**Working draft, not Code.** Kit later against StyleX `--` tokens, native Dialog/Popover/anchor, **0-JS public pages** per [product.md](./product.md) ([ADR 0037](./adr/0037-zero-js-public-cache-guardrails.md)). Wordmark **Larder**. Agent **Chef Llama**.
+**Working draft, not Code.** Kit later against StyleX `--` tokens, native Dialog/Popover (no anchor positioning), **0-JS public pages** per [product.md](./product.md) and [caching.md](./caching.md). Wordmark **Chef Llama**. The cook is **Llama**.
 
 ## Closed
 
