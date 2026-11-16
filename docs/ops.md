@@ -5,6 +5,7 @@
 ## Decided
 - **Observability v1**: Workers Paid **Logs + Issues + Analytics Engine** `writeDataPoint` per Generate. **No Sentry in v1.** No `@effect/opentelemetry` NodeSdk on workerd.
 - **Workers are not always-on**: rely on cache + a small isolate, not min-instances or cron pings. No cron ping of `/`.
+- **Request billing with Workers Cache on:** every request to the Site Worker is billed, including cache hits, static-asset requests and service-binding calls; cache storage is free. Workers Paid includes 10M requests/month, then US$0.30 per million. Details: [caching.md](./caching.md#decided).
 - **Production exceptions**: Cloudflare Workers Issues → Cursor Automation → draft fix PRs. An **event** path, not a fourth scheduled hunt. Don't poll Logs from GitHub Actions.
 - **Three scheduled Cursor Automations** (the cap is 3). Premium is required. Spend cap. PR creation off unless a run is explicitly allowed to open one draft digest. Never the cook model or Workers AI (Neurons are account-wide and would eat the gift). Details and cost: [factory.md](./factory.md).
   1. **Architecture hunt**: Pocock `improve-codebase-architecture`, issues only. Composer 2.5 standard (Fast off) unless changed. Cadence is Open.
@@ -45,3 +46,4 @@
 - Confirm in the **web** Automations picker that Grok 4.6 + medium + Fast off is selectable for the retro.
 - Monthly deps review format: keep, replace with a browser/Kit/Cloudflare built-in, or go leaner.
 - Post-deploy `CF-Cache-Status: HIT` assert (later).
+- **Workers spend control:** a Workers spending limit (blocks new invocations at a threshold, and can stop every Worker on the account) or only an email alert. Recommendation: an email alert at launch, no hard limit.

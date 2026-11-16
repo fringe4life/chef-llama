@@ -10,7 +10,7 @@
   - Alchemy's `Cloudflare.Website.SvelteKit` builds the app itself at deploy time (SvelteKit's Vite pipeline plus its own wrangler-free adapter, no Wrangler file), so there is no separate "production build" to serve.
   - **Not** `alchemy dev` (the Vite dev server with HMR, so it can't prove 0 JS), **not** `vite preview` (Node, not workerd) and **not** `wrangler dev` on an adapter-cloudflare build (a different pipeline from Alchemy's).
 - **CI order:** (1) unit and lint (typecheck, ESLint, Fallow, Vitest, bundlewatch) → (2) `alchemy deploy --stage pr-{n}` → (3) **one** Playwright job with `PLAYWRIGHT_BASE_URL=https://pr-{n}.preview.chefllama.nz` and the CI Access service-token headers (see [previews.md](./previews.md)).
-- **Locally** (agents and humans): set `PLAYWRIGHT_BASE_URL` to the PR's preview URL and run the same config. Vitest with Miniflare stays the local in-process suite; it is not a second Playwright target.
+- **Locally** (agents and humans): set `PLAYWRIGHT_BASE_URL` to the PR's preview URL and run the same config. Vitest with Miniflare stays the local in-process suite; it is not a second Playwright target. While the codebase is small, `bun test` also runs in the Git pre-commit hook (see [lint.md](./lint.md#pre-commit-husky--lint-staged)); CI remains the gate. Playwright stays CI-only.
 - **Production** is covered by the synthetic check below, not by Playwright.
 - A fresh deploy starts with a cold, per-version cache, so cache-hit assertions request each route twice. The 3-preview cap can queue the e2e job.
 - The route contract also asserts the Save form's `action` starts with `/saved?/remote=` (see [caching.md](./caching.md#save-on-the-cached-recipe-page-a-remote-form-that-posts-to-saved)).

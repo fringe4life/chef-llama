@@ -28,7 +28,9 @@ src/
     server/cache                # publicCache (#lib/server/cache)
     server/http.ts              # the one raw-fetch exception
     server/log.hazardous.ts     # the sanctioned logger
-    theme/tokens.css            # Chef Llama theme tokens (see theme.md)
+    theme/tokens.css            # raw leftovers only: color-scheme, overlays (see theme.md)
+    theme/tokens.stylex.ts      # defineVars token values (`--` keys)
+    theme/stylex-dev-runtime.hazardous.svelte.ts  # StyleX dev $effect hatch
     auth/redirect.ts            # redirectTo helpers (see auth.md)
     saves.remote.ts             # Save remote form() (see caching.md)
   params.ts                     # all Kit 3.2 matchers

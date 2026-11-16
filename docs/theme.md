@@ -6,9 +6,9 @@
 
 ### Tokens are the theme
 - The theme **is** the shadcn-style **named CSS custom properties**: `background`/`foreground`, `card`, `popover`, `primary`, `secondary`, `muted`, `accent`, `destructive`, `border`, `input`, `ring`, `radius`, optional `chart-*`. Every custom property in the app comes from this theme.
-- The name is **Chef Llama**. The token file is `src/lib/theme/tokens.css` plus `*.stylex.ts`. There are no product-specific extra colour tokens.
-- StyleX `defineVars` uses **`--` keys**, so the emitted names are the same (no hashed vars).
-- Not the shadcn / bits-ui component pack. No StyleX `createTheme`. Native `<dialog>` / `[popover]` read the same variables.
+- The name is **Chef Llama**. Token **values** live in StyleX `defineVars` in `*.stylex.ts` (for example `src/lib/theme/tokens.stylex.ts`), using **`--` keys** so the emitted CSS custom properties keep those names (no hashes). Official StyleX docs: `defineVars` creates global CSS variables; `light-dark()` is a supported colour value (`primaryColor: 'light-dark(black, white)'` in the light/dark recipe). Native `<dialog>` / `[popover]` still read `var(--background)` and friends. There are no product-specific extra colour tokens.
+- `src/lib/theme/tokens.css` is **not** the token value source. It holds only the raw CSS StyleX cannot express (see [Native overlays](#native-overlays)).
+- Not the shadcn / bits-ui component pack. No StyleX `createTheme`.
 - Groups: colour, radius, type, spacing.
 
 ### Colour tokens: shadcn-style semantic names, full oklch colours inside `light-dark()`
@@ -83,13 +83,77 @@
 - Only prose so far: 120–180 ms opacity/transform on popovers. The spike says to add shared duration/easing tokens before the motion `propLimits` are useful.
 
 ### Browser floor
-- `package.json` `browserslist` is the machine-readable floor: `chrome >= 123`, `edge >= 123`, `ios_saf >= 18.3`, `safari >= 18.3`, `firefox >= 128` (≈91% global usage; set by `light-dark()` in Chromium, popover light dismiss in WebKit and `@property` in Gecko; WebKit is about 29% of NZ page views). Review 2027-05-06.
+- `package.json` `browserslist` is the machine-readable floor: `chrome >= 123`, `edge >= 123`, `and_chr >= 123`, `samsung >= 27`, `opera >= 109`, `ios_saf >= 18.3`, `safari >= 18.3`, `firefox >= 128`. The floor is set by `light-dark()` in Chromium, popover light dismiss in WebKit and `@property` in Gecko; WebKit is about 29% of NZ page views. Review 2027-05-06.
+- **`and_chr` (Chrome for Android) is included**, at the same major as Chrome. `caniuse-lite` (1.0.30001826, 16 Nov 2026 NZDT) only lists the *current* `and_chr` (157 today); `bunx browserslist "and_chr >= 123"` still matches it. Android Chrome usage is counted under `and_chr`, not `chrome`: without it, `bunx browserslist --coverage` on the rest of the floor was **43.36%** global; with `and_chr >= 123` it was **87.38%**.
+- **`samsung >= 27`.** Samsung Internet 26 is Chromium **122**, 27 is Chromium **125** (first version at or above Chrome 123). Source: [Samsung Internet release calendar](https://browsercalendar.com/browsers/samsung-internet) (26 → 122, 27 → 125, 28 → 130). Adding it to the floor + `and_chr` raised `--coverage` from 87.38% to **89.23%**.
+- **`opera >= 109`** (desktop). Opera **109** is Chromium **123** ([Opera 109 blog](https://blogs.opera.com/desktop/2024/03/opera-109/), 27 Mar 2024); Opera 110 is Chromium 124 (offset ≈ 14). `bunx browserslist "opera >= 109"` starts at `opera 109`. The full decided floor measured **90.04%** global coverage (`bunx browserslist --coverage`, same caniuse-lite, 16 Nov 2026 NZDT).
 - Features below the floor are not used as load-bearing CSS. CSS anchor positioning is one of them.
+- **Floor linting:** `eslint-plugin-compat` for JS (reads `browserslist`) and `@eslint/css` `css/use-baseline` at `{ available: 2024 }` for raw CSS. Details and the Baseline-year mapping are in [lint.md](./lint.md#browser-floor-linting).
 
 ### Native overlays
 - Popover API for chips, the card ⋯ menu and the account menu. `<dialog>.showModal()` for credits exhausted, sign-in required and unsaved leave. Invokers (`commandfor` / `popovertarget`). No Radix/shadcn JS, no polyfilled dropdowns.
 - **No CSS anchor positioning**: the project's browserslist targets don't support it. Popovers use plain top-layer placement styled by the theme.
-- Component `<style>` blocks are banned (see [lint.md](./lint.md)). The overlay CSS that StyleX can't express (`::backdrop`, `@starting-style` entry motion, UA-drawn parts) lives in the global `tokens.css`, and every value it uses is a theme custom property.
+- Component `<style>` blocks are banned (see [lint.md](./lint.md)).
+- **No `src/app.css`.** SvelteKit's default `app.css` is not used (the official StyleX SvelteKit example fills it with a raw `@layer resets` — the bypass we are stopping). Import `src/lib/theme/tokens.css` from `src/routes/+layout.svelte`:
+  ```ts
+  import '$lib/theme/tokens.css';
+  ```
+  `@stylexjs/unplugin` needs a Vite-emitted CSS asset to append compiled StyleX to ([unplugin docs](https://stylexjs.com/docs/api/configuration/unplugin/): "Provide a CSS entry so Vite emits an asset for the plugin to append to"; fallback is an unlinked `stylex.css`). `tokens.css` is that entry. If the append misses it, set `cssInjectionTarget` to that file. **Do not add an `@stylex;` at-rule.** That directive is only for `@stylexjs/postcss-plugin`, which *replaces* it with generated CSS ([PostCSS plugin README](https://github.com/facebook/stylex/blob/main/packages/@stylexjs/postcss-plugin/README.md)). The Vite/unplugin path never looks for it: `pickCssAssetFromRollupBundle` in the unplugin source appends to an emitted `index.css` / `style.css` (hashed or not) or the first `.css` asset. Official `examples/example-sveltekit/src/app.css` and `examples/example-vite/src/index.css` have no `@stylex;`. A box build with `@stylexjs/unplugin` 0.19.2 (16 Nov 2026 NZDT) still injected compiled styles when the entry had no directive; when `@stylex;` was present it was left behind in the production CSS, not consumed.
+- **`tokens.css` is only what StyleX cannot express:** `:root { color-scheme: light dark; }` and the `:root:has(> body[data-colorscheme="…"])` rules (required for `light-dark()` to resolve, including values emitted by `defineVars`), `font-synthesis: none` on `:root`, `@property` if we use it, and overlay CSS (`::backdrop`, `@starting-style` entry motion, UA-drawn parts). Every overlay value is a theme custom property (`var(--…)`). Colour, radius, type and spacing **values** belong in `defineVars`, not here. No component or page layout, no unnamed grids, no box-sizing/reset layer. Enforcement: `chef/no-app-css` plus a `preToolUse` deny on `src/app.css`; a tighter `chef` rule for `tokens.css` contents can be added later (see [lint.md](./lint.md#stylex)).
+
+### StyleX dev runtime
+The official SvelteKit guide ([StyleX + SvelteKit](https://stylexjs.com/docs/learn/installation/vite/sveltekit), fetched 16 Nov 2026 NZDT) inlines `$effect` in the root layout:
+
+```svelte
+<script lang="ts">
+	import favicon from '$lib/assets/favicon.svg';
+	import "../app.css";
+	if (import.meta.env.DEV) {
+		// @ts-expect-error // Virtual modules are not typed
+		$effect(() => import('virtual:stylex:runtime'))
+	}
+
+	let { children } = $props();
+</script>
+```
+
+**We do not leave `$effect` in `+layout.svelte`.** `$effect` belongs in the hazardous hatch, because it is almost always misused; this official snippet is the first real use of that hatch. It must live in a **rune module** (`*.svelte.ts` / `*.svelte` / `*.svelte.js`): a plain `.ts` file is not compiled by Svelte, so `$effect` would be a syntax error. It must be **called during component initialisation** (Svelte docs: `$effect` can be used outside the top level of a component only while a parent effect is running; the layout's `<script>` setup is that context). `$effect` runs in the browser only, not during SSR, which is why the guide uses it (a top-level `import()` would also run on the server). Do not put `$effect` at module top level, and do not wrap it in `onMount`.
+
+`src/lib/theme/stylex-dev-runtime.hazardous.svelte.ts`:
+
+```ts
+export function stylexDevRuntime() {
+  $effect(() => {
+    void import('virtual:stylex:runtime');
+  });
+}
+```
+
+`src/routes/+layout.svelte` calls it synchronously in `<script>` (not in `onMount`, not after an `await`):
+
+```svelte
+<script lang="ts">
+  import { stylexDevRuntime } from '$lib/theme/stylex-dev-runtime.hazardous.svelte';
+  import '$lib/theme/tokens.css';
+
+  if (import.meta.env.DEV) {
+    stylexDevRuntime();
+  }
+
+  let { children } = $props();
+</script>
+
+<svelte:head>
+  {#if import.meta.env.DEV}
+    <link rel="stylesheet" href="/virtual:stylex.css" />
+  {/if}
+</svelte:head>
+```
+
+The `$effect` ban and the files-override are in [lint.md](./lint.md#effect-banned-escape-hatch-is-a-file-suffix). Keep the dev-only `<link rel="stylesheet" href="/virtual:stylex.css" />`.
+
+### Named grid areas
+Prefer `gridTemplateAreas` (for example `"header" "content" "footer"` on small containers and `"header header" "sidebar content" "footer footer"` at a container query around 768 px, or the usage-chart rail in [chart.md](./chart.md)) over anonymous track grids and numeric line placement. Lint: `chef/prefer-named-grid-areas` plus numeric-line `no-restricted-syntax`, with a built-in exception for `repeat(auto-fill|auto-fit)` and minmax-only tracks (see [lint.md](./lint.md#stylex)).
 
 ### Icons
 - No icon libraries. Chrome pictograms are custom animated SVG (in-file CSS, `light-dark()`, `prefers-reduced-motion`). OAuth marks come from official brand kits only (Google in v1; any later provider likewise).
@@ -99,99 +163,7 @@
 - The working drafts live in `docs/designs/` (not locked); that folder is left as is.
 
 ### Usage chart on `/account`
-The usage chart on `/account` is **sideways CSS bars** (rows, one per bucket), with no chart library. An earlier design ("CSS marks + popover, no chart library") lost three premises: the popover, the always-visible table of exact numbers, and the column chart. The constraints that survived are restated here in full so this can be built from this section alone. Background and the rejected paths were in the research note `2026-11-06-bucket-composition-states.md` (not in this repo). Kombai canvas references: `var_rail_collect_1107` (final form, 390 and 720), `var_narrow_place_1107` (value placement comparison), `var_markcount_1107` (mark-count arithmetic), `var_bucketstates_1106` (state matrix).
-
-#### 1. Sideways, not columns
-The chart is a list of rows, one per bucket, each row carrying the current period and the previous period as two bars on a shared scale. There is no column form.
-
-A paired column slot needs two 24 px marks plus the gap, so the floor is **56 px per bucket**:
-
-| Range | Buckets | Marks | Minimum width | 356 px phone | 560 px panel |
-|---|---:|---:|---|---|---|
-| Month | 4 | 8 | 224 px | fits | fits |
-| Week | 7 | 14 | 392 px | does not fit | fits, nothing spare |
-| Year | 12 | 24 | 672 px | no | no |
-
-Horizontal scroll is not an escape: it hides the comparison pair behind a gesture, fights the page's own vertical scroll, and makes a pairwise comparison depend on scroll position. Rows have no width floor — bucket count becomes row count on an axis the page already scrolls. A second, independent reason: **the column form cannot label the ghost at all**, because the label band has one position per bucket and a slot holds two marks.
-
-Cost accepted: a column chart shows the year's silhouette at a glance and a row list does not. If that silhouette is a real job it is a separate range-level summary, not a second orientation of this chart.
-
-#### 2. Marks
-- **One element per bar**, split by a hard-stop gradient at the funding boundary with a 2 px gap; never two stacked divs.
-- **The component derives the state** and exposes it as `data-shape` — `none | gift | credit | both`. CSS cannot compare counts to zero at the floor, so the component decides and the stylesheet renders.
-- **A zero bucket keeps a 3 px tick**, not an empty space and not a floating `0`. Zero is measured; it is not absence. The tick must be present in the row form, not only in a column form.
-- **An absent or short previous period draws nothing.** A comparison that cannot be made is not shown, rather than shown hatching a caveat.
-- **A non-zero segment clamps to 3 px** so one cook is never invisible and the gap never swallows it.
-- **Previous period is the same geometry, washed** (`color-mix(in oklab, …, 45%)`) with a faint ink rim (a derived theme token, called `--ink-faint` in the original design; it must come from the theme, see [`color-mix()`](#color-mix)) — the rim is load-bearing, since no wash of this hue reaches 3:1.
-- **No hatch, no `data-incomplete`.** With no short-window ghost there is nothing for it to mark.
-
-#### 3. Values are text in the chart
-Every funding count for every period is a **real text node** — not a tooltip, not a table, not generated content.
-
-Each value is **its own grid item**: `<span class="v">{n}<i>{free|paid}</i></span>`. That is what lets one set of four numbers sit under two bars at narrow width and collect into a rail at wide width; a single wrapper cannot be in two places, and duplicating the values into a second block would put the same number in the DOM twice.
-
-**Narrow (below the rail threshold):** each pair sits under its own bar, gathered at the bar's origin, words inline — `1 free` then `8 paid`. No Now/Prev headings, because position already says whose the values are.
-
-**Wide:** all four collect into a rail at the right, with `free` / `paid` as row labels and `Now` / `Prev` as column headings; the words drop out of the values. The headings earn their place only here, because the values have left the bars' rows.
-
-Placement decisions, with the numbers behind them:
-
-| Placement | Verdict |
-|---|---|
-| Gathered at the bar's origin | **Chosen.** One fixed block, same x on every row; adjacent numbers compare with each other as well as down the list; stable at any bucket size. |
-| Spread to the row edges | Rejected. Forms two columns, but 250 px apart on a phone, and the right-hand value sits at the row edge, asserting an attachment to the bar's end that is false on every row. |
-| Tied to the bar's own end | Rejected. The strongest reading when it fits — `8 paid` lands under the credit segment's end — but the pair needs ~82 px of unbreakable text, so a bucket must reach ~27% of the axis to host its own labels. Below that it degenerates into the gathered form, which makes the position of a number a function of its own value. That is a conditional, not a placement. |
-
-#### 4. The rail is a container query, not a second component
-Same markup at both widths; the only difference is `grid-template-areas`. `container-type: inline-size` goes on the card (an element cannot query its own inline size), and the threshold is a **content-box** width, not a viewport width — the same chart in a sidebar and full-width must not share a breakpoint.
-
-```css
-.lane{                                    /* narrow */
-  grid-template-columns:24px minmax(0,1fr) auto;
-  grid-template-areas:
-    "head head head"
-    "tagN now  now"
-    ".    fN   pN"
-    "tagP prev prev"
-    ".    fP   pP";
-}
-
-@container (min-width:560px){             /* rail */
-  .lane{
-    grid-template-columns:24px minmax(0,1fr) 1.9em 2.5em 2.5em;
-    grid-template-areas:
-      "head  head  hk    hnow  hprev"
-      "tagN  now   kfree fN    fP"
-      "tagP  prev  kpaid pN    pP";
-  }
-}
-```
-
-No `display` toggles beyond the rail's own labels. No `data-form`, no `data-timeline`: the form follows the container, and the window name cannot carry the mark count anyway (a year is 12 marks now, 24 once prior-year data exists).
-
-#### 5. Delta
-A **bare arrow aimed on an invisible clock face**: the tail is the pivot, the tip swings between the one and five o'clock positions, and no dial is drawn.
-
-- one step either way: ±32°
-- two or more: ±56°
-- unchanged: horizontal
-- no earlier period: an em dash, never a level arrow (a level arrow asserts a comparison that came out at zero)
-
-A signed numeral was rejected: beside four figures in a rail it reads as a fifth figure. An arrow is a different shape class. The value goes in the SVG's `<title>`, so the arrow is not decoration-only.
-
-#### 6. Not in this design
-Tooltip · popover · CSS anchor positioning · the always-visible data table · `data-incomplete` and the hatch · the column form · any chart library.
-
-#### 7. Accessibility
-- The plot is a `<figure>`; the marks are `aria-hidden` decoration, and a `<figcaption>` carries the period.
-- **The values are the accessible content**, because they are text — this replaces the "table as the SC 1.1.1 equivalent" arrangement. Two paths to one number was the redundancy cost of keeping both.
-- Each bucket is a list item: the date, then the figures as text. No per-bucket control, so no tab stops inside the chart and no SC 2.5.8 question for marks.
-- The funding split is stated in words (`free` / `paid`), so colour is never the only carrier.
-
-#### 8. Implementation notes
-- StyleX, static classes only; per-mark numbers arrive as custom properties on the element (`--g`, `--t`, `--pg`, `--pt`, `--max`). A count must never share a property name with a colour token — that bug silently painted nothing once already.
-- `font-variant-numeric: tabular-nums` on every figure. `font-weight: 600` is a no-op in the current mono stack (400/500/600 render identically; only 700 differs), so do not rely on weight for emphasis.
-- The bar's `block-size` is cosmetic (fixed 11 px / 9 px); **length** encodes the value.
+- Usage chart on /account: see [chart.md](./chart.md).
 
 ## Open
 - **Font stacks.** Candidates: (a) `--font-display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif`; `--font-sans: ui-sans-serif, system-ui, "Segoe UI", sans-serif`; `--font-mono: ui-monospace, "Cascadia Code", monospace`. (b) `--font-sans: ui-sans-serif, system-ui, sans-serif`; `--font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace` (no display stack). Then the shipped-weight map for `chef/no-faux-font-weight`, after measuring the system faces. Does display stay a serif stack?
@@ -200,10 +172,6 @@ Tooltip · popover · CSS anchor positioning · the always-visible data table ·
 - Real z-index names and ranks; what to do if a non-modal `show()` sheet ships.
 - Allow in-component `color-mix` via the custom rule, or derived tokens only?
 - Ban `fontFamily` outside the typography file? Limit width/height later (recommendation: no)?
-- Floor tooling (proposed): `stylelint-no-unsupported-browser-features` for CSS and `eslint-plugin-compat` for JS, both reading `browserslist`. Confirm the Samsung Internet / Opera entries and whether to list `and_chr` / `and_ff` with `npx browserslist` before committing.
+- **Leave `op_mob` out of the floor.** `caniuse-lite` only lists `op_mob 80` and Presto 10–12.1. Opera for Android **80** is Chromium **120** ([Opera forums](https://forums.opera.com/topic/69468/opera-for-android-80)), **below** the Chrome 123 floor, so `op_mob >= 80` would weaken it. Later Opera Android versions exist in the wild (e.g. `OPR/100` ≈ Chromium 149) but are not in `caniuse-lite`. Revisit when the database has a version at Chromium 123+.
+- **`and_ff`** (Firefox for Android) is still unreviewed.
 - Build targets (proposed): keep Vite 8's default JS target (no `@vitejs/plugin-legacy`, no `browserslist-to-esbuild`); `build.cssTarget: ['chrome123', 'safari18.3', 'firefox128']`; `css.transformer: 'lightningcss'` with `exclude: Features.LightDark` (in Vite and in the StyleX plugin's `lightningcssOptions`) so `light-dark()` is never rewritten; `modulePreload: { polyfill: false }`. After `vite build`, fail on any legacy bundle or `nomodule`, on `--lightningcss-light` in the CSS, on missing `light-dark(`, or on a leftover `@stylex;`.
-
-### Usage chart
-- The rail threshold is 560 px for a 4-bucket month. The week probably needs to switch later — the same rail takes the same 104 px and leaves seven buckets far less bar. One number to decide, not a structural question.
-- A 3 px zero tick and a 3 px segment clamp are the same width for different reasons; confirm they do not read as the same thing at 9 px bar height.
-- Whether the year silhouette deserves a separate range-level summary.

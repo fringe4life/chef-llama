@@ -45,9 +45,11 @@ Topic files in `docs/` are the **only** place decisions live. Each has a **Decid
 | Data: ULID ids, recipe slugs, Drizzle, D1, DOs, KV, Queues, Vectorize, write path | `docs/data.md` |
 | AI Generate: model, prompt, Recipe JSON, chips, cancel | `docs/ai.md` |
 | Payments: Stripe packs, Credits, free-cook pool and status, 00:00 UTC reset, tax, topup | `docs/payments.md` |
-| Caching, 0-JS public pages, Save on the cached recipe page, robots.txt, sitemap.xml, SEO | `docs/caching.md` |
+| Caching, 0-JS public pages, Save on the cached recipe page | `docs/caching.md` |
+| SEO: indexing and `noindex`, Popular purge, head tags and Open Graph (PNG `og:image`), sitemaps, robots.txt, AI crawlers, llms.txt | `docs/seo.md` |
 | Security: rate limits, WAF, zone hardening, session IP, secrets + Varlock | `docs/security.md` |
-| Theme: shadcn-style oklch tokens, light/dark, browser floor, typography, z-index, native overlays, usage chart spec, design loop | `docs/theme.md` |
+| Theme: shadcn-style oklch tokens, light/dark, browser floor, typography, z-index, native overlays, design loop | `docs/theme.md` |
+| Usage chart on `/account`: sideways CSS bars, full spec | `docs/chart.md` |
 | Lint: ESLint 10 + Fallow + `svelte-check --tsgo`, `chef/*` rules, slop, pre-commit (husky + lint-staged) | `docs/lint.md` |
 | Cursor hooks: `.cursor/hooks.json` running ESLint and Fallow for agents | `docs/cursor-hooks.md` |
 | Agent skills: Matt Pocock's skills in `.agents/skills/` | `docs/skills.md` |

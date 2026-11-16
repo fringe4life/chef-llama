@@ -11,7 +11,7 @@
 | ESLint + Fallow + `svelte-check --tsgo` | none (`contents: read`) |
 | Tests (unit + the single Playwright target, see [tests.md](./tests.md)) | none |
 | bundlewatch on the built client | none |
-| `bun audit --audit-level=high` + OSV-Scanner `--lockfile bun.lock` | none |
+| `bun audit --audit-level=high` + `bun dedupe --check` + OSV-Scanner `--lockfile bun.lock` | none |
 | Preview deploy | Infisical OIDC (`id-token: write`) |
 | Production deploy | Infisical OIDC; protected environment |
 - Do not inject Infisical into lint.
@@ -45,9 +45,9 @@
 - **Dependabot is not configured yet:** the repo has no `.github/` folder on any branch (checked 16 Nov 2026 NZDT), so there is no `dependabot.yml` and no workflow. Add `.github/dependabot.yml` when coding starts, with `package-ecosystem: "bun"` (Dependabot supports the text `bun.lock`, Bun ≥ 1.1.39) and `package-ecosystem: "github-actions"`, `schedule.interval: weekly`, and a `cooldown` (Dependabot's default is 3 days for version updates; security updates skip it).
 
 ### Hooks
-- Git hooks: husky + lint-staged. `pre-commit` runs `eslint --fix --cache` on staged files; `pre-push` runs `bun audit --audit-level=high`. Details, speed rules and how they relate to CI: [lint.md](./lint.md#pre-commit-husky--lint-staged).
+- Git hooks: husky + lint-staged. While the codebase is small, `pre-commit` runs lint-staged `eslint --fix --cache` on staged files, then `bun dedupe --check`, `bun test` and `svelte-check --tsgo` (`svelte-check` stays on pre-commit). `pre-push` runs the **same** `bun audit --audit-level=high` as CI (full audit, no `--prod`; justification in [lint.md](./lint.md#pre-commit-husky--lint-staged)). Thresholds can move unit tests later, not `svelte-check`. Hooks can be skipped, so they do not replace the jobs above.
 - Cursor agent hooks (`.cursor/hooks.json`): [cursor-hooks.md](./cursor-hooks.md).
-- Neither replaces CI: the jobs above are the required checks.
+- Neither replaces CI: the jobs above are the required checks. CI still runs full ESLint, Fallow, `svelte-check --tsgo`, unit tests, Playwright on the preview, `bun audit --audit-level=high`, and `bun dedupe --check`.
 
 ### Workflows beyond the gate
 - `flag-hazardous-files.yml`: labels PRs touching `*.hazardous.*` and writes a sticky comment (see [lint.md](./lint.md)).
