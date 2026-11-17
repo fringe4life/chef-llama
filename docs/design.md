@@ -1,6 +1,6 @@
 # AI chef site — design system
 
-Working visual name for tokens and mock: **Larder**. Product/repo name is still open.
+Product, repo and token-set name: **Chef Llama**. **Larder** was the pre-rename repo and the old working name; nothing user-facing uses it.
 
 This file is the v1 design contract: toolchain, tokens, IA, native UI. **Working draft (not locked, not Code):** the 28 Oct 2026 Kombai `/` + sticker, better than `01`–`03` and [`design-mock.html`](./design-mock.html) — [04-landing.html](./designs/04-landing.html) · [04-landing-dark.html](./designs/04-landing-dark.html) · [05-token-sticker.html](./designs/05-token-sticker.html) · [05-token-sticker-dark.html](./designs/05-token-sticker-dark.html). Improve in place. No Figma.
 
@@ -132,7 +132,7 @@ Do not install third-party login proxies. CLI `paper mcp` (stdio) is already on 
 
 ---
 
-## Larder tokens (shadcn-compatible)
+## Chef Llama tokens (shadcn-compatible)
 
 StyleX-on-Svelte is **viable**, not a poor fit: official SvelteKit install (`@stylexjs/unplugin`) and `stylex.attrs` (class, not `className`). Native `<dialog>` / `[popover]` still need **real CSS custom properties** for UA-drawn parts (backdrop, ::backdrop, form controls). So:
 
@@ -140,7 +140,7 @@ StyleX-on-Svelte is **viable**, not a poor fit: official SvelteKit install (`@st
 
 **StyleX:** `defineVars` with `--` keys so StyleX emits the **same** names (no hashed vars). Native Dialog/Popover consume the variables. Light/dark is **`light-dark()`** + `color-scheme` on `html`, not a StyleX `createTheme` subtree. **No** `.dark` fallback.
 
-Token set name: **Larder**. Groups: `color`, `radius`, `type`, `spacing`.
+Token set name: **Chef Llama**. Groups: `color`, `radius`, `type`, `spacing`.
 
 ### color
 
@@ -184,16 +184,7 @@ Slightly squared — enamelware, not iOS pills.
 
 ### type
 
-| Token | Value |
-| --- | --- |
-| `--font-display` | `"Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif` |
-| `--font-sans` | `ui-sans-serif, system-ui, "Segoe UI", sans-serif` |
-| `--font-mono` | `ui-monospace, "Cascadia Code", monospace` (credits, IDs) |
-| `--text-xs` … `--text-2xl` | `0.75rem` / `0.875` / `1` / `1.125` / `1.5` / `1.875rem` |
-| `--leading-tight` / `--leading-body` | `1.2` / `1.55` |
-| `--tracking-display` | `-0.02em` |
-
-Display only on wordmark, recipe titles, empty-state headlines. UI chrome stays sans. **This system stack is v1** — no later Fontsource / Fraunces pass (see [theme.md](./theme.md)).
+Owned by [theme.md](./theme.md#fonts): three system families — `display` (Georgia), `sans` (humanist), `mono` (aligned figures) — no webfonts. The scale, leadings, tracking and the weight limits live there; this file does not restate them.
 
 ### spacing
 
@@ -235,7 +226,7 @@ One aesthetic: **working kitchen, not generative-AI purple.**
 
 ## Local mock
 
-**Working draft:** [`docs/designs/04-landing.html`](./designs/04-landing.html) (parchment) and [`04-landing-dark.html`](./designs/04-landing-dark.html) (cast iron), plus token stickers `05-*`. File preview: Tailwind CDN + `color-scheme` on the **same** `:root` rule as `light-dark()` tokens. Canvas: `.kombai/canvas/larder-site.canvas`. **Fonts: system stack only** (`--font-display` / `--font-sans` / `--font-mono` above). No Fontsource pass. **Not locked.**
+**Working draft:** [`docs/designs/04-landing.html`](./designs/04-landing.html) (parchment) and [`04-landing-dark.html`](./designs/04-landing-dark.html) (cast iron), plus token stickers `05-*`. File preview: Tailwind CDN + `color-scheme` on the **same** `:root` rule as `light-dark()` tokens. Canvas: `.kombai/canvas/chef-llama.canvas` (moved from the old `larder` workspace, 2026-11-17). **Fonts: system stacks only** ([theme.md](./theme.md#fonts)) — the `04`/`05` mocks still carry the old Iowan Old Style + `ui-sans-serif` stacks, so treat their type as stale. **Not locked.**
 
 Earlier sketch: [`design-mock.html`](./design-mock.html) (pantry/results/detail in one file). Keep for chip/dialog notes; do not treat as the current look.
 

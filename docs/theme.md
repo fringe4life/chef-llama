@@ -55,14 +55,37 @@
 - `build.cssTarget` = browsers with `light-dark()`, or Vite polyfills `color-scheme`.
 
 ### Fonts
-- **System font stacks only.** No webfonts: no Fontsource, no Fraunces, no Google Fonts `@import`/`<link>`. The stacks themselves are Open.
-- `tabular-nums` where figures line up (credits, kcal).
+- **System font stacks only.** No webfonts: no Fontsource, no Fraunces, no Google Fonts `@import`/`<link>`. Payload is zero bytes.
+- **Three families, three jobs.** Chrome shares the reading face: nav, buttons, controls, section headings, labels and chips are all `sans`. There is no second sans, because `system-ui` and this humanist stack resolve to the same font on iOS, Android and most Linux desktops — the fourth family was only ever visible on macOS and Windows, and barely there.
+
+| Token (variant) | Stack | Job |
+| --- | --- | --- |
+| `--font-display` (`display`) | `Georgia, "Times New Roman", serif` | Wordmark, dish names, empty-state headlines. Never body, never labels, **never a figure** (see [Type limits](#type-limits)). |
+| `--font-sans` (`sans`) | `Seravek, "Gill Sans Nova", Ubuntu, Calibri, "Noto Sans", "DejaVu Sans", source-sans-pro, sans-serif` | Everything read or clicked: headnotes, method steps, ingredient names, nav, buttons, section headings, caps labels, chips, one-line status. |
+| `--font-mono` (`mono`) | `ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, "DejaVu Sans Mono", monospace` | Every figure that aligns with another figure: ingredient quantities, step numbers, kcal, cook times, Credits and money, chart values, timestamps, ledger columns. |
+
+- Resolves to **Seravek or Gill Sans Nova** on Apple, **Calibri** on Windows, **Roboto or Noto Sans** on Android, **Ubuntu** on Linux. Georgia everywhere it exists; Noto Serif or DejaVu Serif only where it does not.
+- `display` leads with Georgia rather than `ui-serif` or Iowan Old Style. `ui-serif` gives New York in Safari and Georgia in Chrome **on the same Mac**, and Iowan Old Style is Apple-only, so the wordmark would change face by browser. One consistent serif beats two finer ones.
+- `sans` leads with a named humanist face rather than `system-ui`: on macOS `system-ui` is SF Pro, a neo-grotesque, and humanist letterforms are the entire reason for this reading face.
+- **Never lead a stack with a `ui-*` family.** `ui-serif`, `ui-sans-serif`, `ui-monospace` and `ui-rounded` are WebKit-only — Chromium and Gecko treat them as unknown names and skip to the next candidate, so a stack that starts with one silently loses that family on two of the three engines.
+- Navigational numbers (a page count, an unaligned badge) and digits inside prose do not need `mono`. The rule is alignment, not the presence of a number.
+
+### Type limits
+- **400 and 700 are the only load-bearing weights.** Georgia, Calibri, Consolas, Menlo and DejaVu ship no semibold, so `font-weight: 600` is matched up to 700 by CSS font matching. 600 is a platform accident, not a token: allowed where snapping to 700 is visually harmless (nav, buttons, section headings, caps labels), never used to tell one heading level from another.
+- **There is no light weight.** Georgia 400 is the quietest display tone available; quiet copy is made with `--muted-foreground` and size, not `font-weight: 300`.
+- `font-synthesis: none` on `:root` (see [Native overlays](#native-overlays)) stops faux bold and faux italic, but it does **not** stop the 600 → 700 match. Georgia and Calibri have true italics; most mono faces only an oblique, so do not set `font-style: italic` on `mono`.
+- **The lint weight map is `sans 400/700`, `display 400/700`, `mono 400/700`**, with 600 accepted as a platform extra in all three. That is what `chef/no-faux-font-weight` carries.
+- **Georgia's figures are old-style** — varying heights and a short 3, 4, 5, 7, 9. Never put a figure, price or time in `display`.
+- **Metrics differ between the humanist faces.** Seravek, Calibri, Ubuntu and Roboto differ in x-height and advance width, so long method text breaks into a different number of lines per platform. Leave slack in fixed-height containers and never design a method step to end exactly on its last line. `font-size-adjust` is the fallback if the line count proves unstable in practice.
+- **Georgia has no optical-size axis and no small caps.** Set display tracking by hand (`--tracking-display`). Real small caps are unavailable everywhere in this set, so small type is uppercase plus letter-spacing, never `font-variant-caps`.
+- **`tnum` is not verified** on the Android-shipped Roboto or on distro DejaVu/Liberation builds, so a sans figure can shift width. Anything that must line up goes in `mono`, which is fixed-width by design; `font-variant-numeric: tabular-nums` on `mono` is redundant but harmless.
+- **Fallback serifs are wider than Georgia.** Cap the display measure by character count (about 19 characters at 44 px) so Georgia and Noto Serif both break at a sensible point.
 
 ### Typography variants
 - Named StyleX typography variants lock **`fontSize`, `fontWeight`, `lineHeight` and `letterSpacing` together**. Components compose `stylex.attrs(typography.body, styles.root)`; agents add a new variant rather than setting those properties ad hoc. This is stricter than dollar-holler `money()`.
 - `font-synthesis: none` on `:root` in `tokens.css`, repeated as `fontSynthesis: 'none'` on each variant.
 - Lint: `chef/no-adhoc-typography` (the four properties are banned outside `typography.ts`) and `chef/no-faux-font-weight` (per-family shipped-weight map). See [lint.md](./lint.md).
-- **PLACEHOLDER:** the family names (`sans`/`display`/`mono`) and the weight map (`sans 400/500/600/700`, `display 400/700`, `mono 400/700`) are stand-ins until the real system faces are measured. Sketch values are also stand-ins.
+- Family names are settled in [Fonts](#fonts) and the weight map in [Type limits](#type-limits). **PLACEHOLDER:** the per-variant sketch values (`fontSize`, `lineHeight`, `letterSpacing`) are still stand-ins.
 
 ### Token enforcement
 - Stay on ESLint 10, not Oxlint (Oxlint JS plugins are alpha and don't run on `.svelte`). `@stylexjs/eslint-plugin` **0.19.2 exports only `rules`**: there is no `configs.recommended`, so list rules explicitly. Pin it exactly (see [ci.md](./ci.md#dependencies)).
@@ -166,7 +189,8 @@ Prefer `gridTemplateAreas` (for example `"header" "content" "footer"` on small c
 - Usage chart on /account: see [chart.md](./chart.md).
 
 ## Open
-- **Font stacks.** Candidates: (a) `--font-display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif`; `--font-sans: ui-sans-serif, system-ui, "Segoe UI", sans-serif`; `--font-mono: ui-monospace, "Cascadia Code", monospace`. (b) `--font-sans: ui-sans-serif, system-ui, sans-serif`; `--font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace` (no display stack). Then the shipped-weight map for `chef/no-faux-font-weight`, after measuring the system faces. Does display stay a serif stack?
+- **Georgia at display size on the dark ground.** Only the light plate has been built; check 44 px / 400 / −0.015em against the cast-iron `--background` dark value before locking `display`.
+- **Method line count across platforms.** If Calibri and Seravek break a long method into visibly different line counts, choose between extra slack, `font-size-adjust`, and a shorter measure — in that order.
 - Optional `--chart-1` … `--chart-5` values.
 - Literal allowlist table (colour `transparent`/`currentColor`; spacing `0`/`auto`; radius `0`; duration `0`; easing: is `linear` allowed?; z-index `0`/`auto`).
 - Real z-index names and ranks; what to do if a non-modal `show()` sheet ships.
