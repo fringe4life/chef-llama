@@ -31,7 +31,7 @@ Why: agents get lint and Fallow feedback **while they work**, instead of at comm
     "beforeShellExecution": [
       {
         "command": ".cursor/hooks/guard-shell.sh",
-        "matcher": "--no-verify|HUSKY=0|push (-f|--force)|\\bnpm\\b|\\bpnpm\\b|\\byarn\\b|bun add|bun i(nstall)?\\b|alchemy (deploy|destroy|dev|nuke)",
+        "matcher": "\\bgit\\b|\\bnpm\\b|\\bpnpm\\b|\\byarn\\b|\\bbun\\b|alchemy|HUSKY",
         "failClosed": true
       }
     ],
@@ -39,7 +39,7 @@ Why: agents get lint and Fallow feedback **while they work**, instead of at comm
       { "command": ".cursor/hooks/guard-write.sh", "matcher": "Write|Delete", "failClosed": true, "timeout": 10 }
     ],
     "beforeReadFile": [
-      { "command": ".cursor/hooks/guard-read.sh", "timeout": 10 }
+      { "command": ".cursor/hooks/guard-read.sh", "failClosed": true, "timeout": 10 }
     ]
   }
 }
@@ -49,10 +49,10 @@ Why: agents get lint and Fallow feedback **while they work**, instead of at comm
 |---|---|---|
 | `afterFileEdit` (input: `file_path`, `edits`) | `eslint-fix.sh` | If `file_path` is `.ts`/`.js`/`.svelte` (or `.md`/`.json`/`.css`), run `bunx eslint --fix --cache` on that file with unused-import autofix **off**: `--rule unused-imports/no-unused-imports:off --rule unused-imports/no-unused-vars:off --rule no-unused-vars:off --rule @typescript-eslint/no-unused-vars:off` (whichever of those are enabled). Box-tested 16 Nov 2026 NZDT: a full `--fix` deleted an unused `readFile` import mid-edit; `--fix` with those rules off, and `--fix --fix-type layout`, left it. This hook cannot message or block the agent (no documented output). Always exits `0`. |
 | `postToolUse` (matcher `Write`; output: `additional_context`) | `eslint-report.sh` | Report-only: run ESLint **without** `--fix` on the written path and, if there are remaining errors (including unused imports), return them in `additional_context`. Confirm the Write tool's path field when wiring the script. |
-| `stop` (input: `status`, `loop_count`) | `check.sh` | When the agent finishes (`status: "completed"`): full `bunx eslint --fix --cache --max-warnings=0` on changed files (`git diff --name-only HEAD` plus untracked), **including** unused-import fixes, then `bunx fallow audit --quiet` (new issues only, as in the PR gate). Optional: scan those files for secrets (gitleaks/trufflehog or the same denylist as the retro redaction) and include a hit in `followup_message`. If anything is still dirty, print `{"followup_message": "<trimmed errors>. Fix these, then stop."}`; otherwise `{}`. `loop_limit: 3` stops endless fix loops. |
-| `beforeShellExecution` (input: `command`; matcher on the command text) | `guard-shell.sh` | Deny: `--no-verify`, `HUSKY=0`, `git commit --no-verify`, `push -f` / `--force`; `npm` / `pnpm` / `yarn`; `bun add` / `bun i` / `bun install` of a package **without an exact `@version`**; `bun add -g`. `bun install` with no package args (lockfile install) is allowed. Also deny **`alchemy deploy|destroy|dev` targeting stage `prod`** (and `production`) and **`alchemy nuke`**. Do not blanket-deny `alchemy destroy`: stages are isolated, so `destroy --stage pr-N` or `live_$USER` only removes that stage and is legitimate. Answer `{"permission": "deny", "agent_message": "…"}`. `failClosed` so a crashed guard blocks rather than allows. Reasoning: [below](#alchemy-prod-and-destroy). |
+| `stop` (input: `status`, `loop_count`) | `check.sh` | When the agent finishes (`status: "completed"`): build the file list from `git diff --name-only --diff-filter=d HEAD` plus `git ls-files --others --exclude-standard`, filter to the lint-staged extensions (`.js`/`.mjs`/`.cjs`/`.ts`/`.mts`/`.svelte` and `.md`/`.json`/`.css`), then run full `bunx eslint --fix --cache --max-warnings=0 --no-warn-ignored --no-error-on-unmatched-pattern` on that list (**including** unused-import fixes). **Skip ESLint when the list is empty.** Then `bunx fallow audit --quiet` (new issues only, as in the PR gate). Optional: scan those files for secrets (gitleaks/trufflehog or the same denylist as the retro redaction) and include a hit in `followup_message`. If anything is still dirty, print `{"followup_message": "<trimmed errors>. Fix these, then stop."}`; otherwise `{}`. `loop_limit: 3` stops endless fix loops. |
+| `beforeShellExecution` (input: `command`; matcher on the command text) | `guard-shell.sh` | Matcher: `\bgit\b|\bnpm\b|\bpnpm\b|\byarn\b|\bbun\b|alchemy|HUSKY`. Deny: `-f`, `--force*` and `+refspec` anywhere in `push`; `-n` and `--no-verify` on `commit`; any `core.hooksPath` override; `HUSKY=0`; `npm` / `pnpm` / `yarn`; `bun add` / `bun i` / `bun install` of a package **without an exact `@version`**; `bun add -g`. `bun install` with no package args (lockfile install) is allowed. Also deny **`alchemy deploy|destroy|dev` targeting stage `prod`** (and `production`) and **`alchemy nuke`**. Do not blanket-deny `alchemy destroy`: stages are isolated, so `destroy --stage pr-N` or `live_$USER` only removes that stage and is legitimate. Answer `{"permission": "deny", "agent_message": "…"}`. `failClosed` so a crashed guard blocks rather than allows. Reasoning: [below](#alchemy-prod-and-destroy). |
 | `preToolUse` (matcher `Write` or `Delete`; output: `permission` / `agent_message`) | `guard-write.sh` | Deny writes/deletes under `docs/archive/**`, generated trees (`.svelte-kit/**`, `dist/**`), and secret files (`.env`, `*.pem`, Infisical dumps). **Do not** blanket-deny `bun.lock`: an exact-pinned `bun add pkg@1.2.3` must be able to update it. Belt for [theme.md](./theme.md#native-overlays): **deny any Write that creates or edits `src/app.css`** (that file is not part of the app; the CSS entry is `src/lib/theme/tokens.css` imported from the root layout). ESLint `chef/no-app-css` is the matching lint gate. |
-| `beforeReadFile` (input: `file_path`, `content`, `attachments`; output: `permission`) | `guard-read.sh` | Deny or redact `.env`, private keys and credential files so they do not enter the model. Not a substitute for vault rules. |
+| `beforeReadFile` (input: `file_path`, `content`, `attachments`; output: `permission`) | `guard-read.sh` | Deny or redact `.env`, private keys and credential files so they do not enter the model. `failClosed: true`. The main control is keeping secrets out of the repo and the cloud env (Infisical); the hook is defence in depth. |
 
 - **Not in the Cursor hooks:** `svelte-check`, unit tests and Playwright. Those are too slow for every `stop`. While the codebase is small they run in the Git pre-commit hook instead; Playwright stays on the deployed preview (see [lint.md](./lint.md#pre-commit-husky--lint-staged) and [tests.md](./tests.md#playwright)).
 - No Ultracite/Biome hooks copied from other projects: the hooks run this repo's ESLint and Fallow only.
@@ -70,7 +70,7 @@ So the shell guard denies prod/production deploy, destroy and dev, and denies `n
 | Layer | When | Scope | Can be skipped? |
 |---|---|---|---|
 | Cursor hooks | during an agent session | edited/changed files + Fallow new-only | yes (non-Cursor tools, hook failure fails open unless `failClosed`) |
-| husky + lint-staged | `git commit` / `git push` | staged ESLint, plus (while small) `bun dedupe --check`, `bun test`, `svelte-check --tsgo` on pre-commit; `bun audit --audit-level=high` on pre-push (same command as CI) | yes (`--no-verify`, which the shell guard denies for agents) |
+| husky + lint-staged | `git commit` / `git push` | staged ESLint, plus (while small) `bun dedupe --check`, `bun run test`, `svelte-check --tsgo` on pre-commit; `bun audit --audit-level=high` on pre-push (same command as CI) | yes (`--no-verify`, which the shell guard denies for agents) |
 | CI | every PR | whole project | no: required checks |
 
 ## Open

@@ -27,10 +27,10 @@ Skip Paper MCP during exploration (**100 calls/week**). Do not Figma MCP. Do not
 | Site landing | `/` | Brochure + top 5 Popular (SSR HTML, not an island). Cook CTA = plain HTML form/links to `/pantry?i=`. |
 | Terms / privacy | `/terms` `/privacy` | Long legal. Minimal chrome. |
 | Pantry | `/pantry` | Chips (≥3), Diet overrides this run, generate, credits pill. Pending **stays here** ([cupboard.svg](./designs/cupboard.svg) **draft**), then goto recipe. No extra routes. No Code. |
-| Recipe | `/recipes/[slug]` | Method, `kcal` + `kcal_over`, swaps if `kind: "swap"`, save, **+/- servings** (no new Generate). Narrow = same route as sheet. |
+| Recipe | `/recipes/[slug]` | Method, `kcal` + `kcal_over`, swaps if `kind: "swap"`, save. Servings scaling is v2. Narrow = same route as sheet. |
 | Saved | `/saved` | List. Empty state. |
 | **Diet** | dialog on `/pantry` | Blocking first-run: name, flags, allergies, optional kcal, servings default 2, optional max time. Not `/kitchen`. Multi-Diet picker is v2. |
-| **Sign-in** | `/sign-in` | Google, Apple, email OTP, Facebook. Last-used badge. Chef Llama chrome around Better Auth. Passkeys later. |
+| **Sign-in** | `/sign-in` | Google + email OTP only. Last-used badge. Chef Llama chrome around Better Auth. Passkeys later. |
 | **Exhausted / topup** | dialog then Checkout | Pack SKUs **NZD $8 / $16 / $32** → 20 / 50 / 120 Credits. No card fields. Return to `/pantry`. |
 | **404** | `+error.svelte` | Site vs `(app)` chrome. Popular hole uses boundary, not this. |
 | **Popular** | `/` top 5 + `/popular` | Cards → `/recipes/[slug]`. Empty / stale list. v2 `/popular/[type]` later. |
@@ -57,7 +57,7 @@ No JS animation libraries. No `transition: all`. No `scale(0)`. Enter/exit: `tra
 
 ## Theme toggle (inline script in `app.html`)
 
-Radios `#scheme-system` `#scheme-light` `#scheme-dark`. Public pages: blocking inline script reads the cookie; **do not** server-render theme from cookies. `(app)` may use `html:has(#scheme-dark:checked) { color-scheme: dark }` plus `html[data-colorscheme]`. Do not put radios inside the chip list.
+Radios `#scheme-system` `#scheme-light` `#scheme-dark`. Theme override: see [theme.md § Light and dark](./theme.md#light-and-dark) (localStorage, attribute on `<body>`, no cookie). Do not put radios inside the chip list.
 
 ## Copy / stress ([break-ui](https://github.com/emilkowalski/skills/tree/main/skills/break-ui))
 

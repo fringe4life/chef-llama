@@ -21,7 +21,7 @@ This file is the v1 design contract: toolchain, tokens, IA, native UI. **Working
 1. **Lock Larder tokens** in CSS (this doc + mock). Kombai and Paper must reuse these names, not invent a purple system.
 2. **Explore a screen in Kombai Design mode** (or Pencil). Export / copy HTML+CSS. Do not ask Kombai to invent a new palette.
 3. **Optional Paper pass** only for a token sticker sheet or one selected frame (`get_computed_styles` / `get_jsx`). Budget ~5–15 MCP calls per screen. Stop before the weekly 100 is gone.
-4. **Implement in SvelteKit** against native `<dialog>`, Popover API, and CSS anchor positioning. StyleX `stylex.attrs` for component styles; CSS variables for theme.
+4. **Implement in SvelteKit** against native `<dialog>` and Popover API (no CSS anchor positioning; see [theme.md](./theme.md#native-overlays)). StyleX `stylex.attrs` for component styles; CSS variables for theme.
 5. **Verify** in the browser (light, dark, empty pantry, one recipe, saved list).
 
 Kombai is the UI-generation engine. Paper is optional. The **working draft** is the Kombai `/` + sticker HTML in [`docs/designs/`](./designs/README.md). [`design-mock.html`](./design-mock.html) is an earlier sketch. Do not Code-design until Coinnich accepts.
@@ -199,7 +199,7 @@ Display only on wordmark, recipe titles, empty-state headlines. UI chrome stays 
 
 4px grid: `--space-1` `0.25rem` … `--space-16` `4rem`. Layout: `--space-page` `1.25rem` (mobile) / `2rem` (desktop). Chip gap `--space-2`. Card padding `--space-5`.
 
-User override: blocking inline script in `app.html` reads the cookie and sets `html[data-colorscheme]` (public pages must **not** server-render theme from cookies). `(app)` may also use `html:has(#scheme-dark:checked)`. Default: `color-scheme: light dark` so `light-dark()` follows `prefers-color-scheme`. No `.dark` fallback. No `localStorage` as source of truth.
+Light/dark override: see [theme.md § Light and dark](./theme.md#light-and-dark) (localStorage, `data-colorscheme` on `<body>`, no cookie).
 
 ---
 
@@ -209,8 +209,8 @@ Prefer these over shadcn JS overlays. Style with Larder variables.
 
 | Primitive | Where | Behavior |
 | --- | --- | --- |
-| **Popover API** + **CSS `anchor-name` / `position-anchor`** | Ingredient **chips** | Click chip → popover: edit spelling, remove. Anchor below the chip. Esc / light-dismiss. |
-| Same | Recipe card **⋯** | Save, copy link, not interested. Anchor to the button, `position-area: bottom end`. |
+| **Popover API** (plain top-layer placement; no CSS anchor) | Ingredient **chips** | Click chip → popover: edit spelling, remove. Esc / light-dismiss. |
+| Same | Recipe card **⋯** | Save, copy link, not interested. |
 | Same | **Account** control | Menu: theme, credits, sign out. Top-end of header. |
 | **`<dialog>`** | Generate confirm when filters are empty? Skip. Use for **credits exhausted**, **sign-in required**, and **unsaved leave** on a long detail edit. | `showModal()`, `::backdrop` uses `--foreground` at 40% opacity. |
 | **`<dialog>`** (non-modal, optional) | Recipe detail on small screens as a sheet | If Popover overlay is enough, skip. Prefer a route on desktop, `dialog` sheet on narrow. |

@@ -14,11 +14,12 @@
 ### Prompt
 - JSON-only output (no markdown, so the App binds `have`/`need`/`steps` without parsing prose). One compact few-shot example. A **tiny staple list** in the prompt (the model has no product meaning for "staple").
 - `max_tokens` truncates; it does not make steps short. Conciseness comes from the prompt and the schema: 6–8 one-clause steps of about 80 characters at most, with 768 as the safety net. Measured: a compact minified 8-step swap Recipe is about 120–160 tokens, a "fat" pretty one about 270–360 tokens, so 512 would truncate and 768 is the default.
+- Chips with `cooked: true` are sent as cooked. The method reheats or assembles them (added late) and never prepares them from raw. Highlight them in have/steps.
 
 ### Recipe JSON
 - JSON + Valibot. A decode failure → tagged error, no Recipe row, and the Credit hold is **released**. Do not import `effect/Schema` on Generate.
 - `kind: "plain" | "swap"` (a tagged union, not optional-key soup).
-- Fields: `title` ≤80, `minutes`, `servings`, `kcal`, `kcal_over` (boolean: over the Diet or this run's kcal cap; it is **not** token overflow), `have` ≤16, `need`, `steps` 6–8, `flags` (≤8, omitted when empty).
+- Fields: `title` ≤80, `minutes`, `servings`, `kcal`, `kcal_over` (boolean: over the Diet or this run's kcal cap; it is **not** token overflow), `have` ≤16, `need` ≤2 (Staples only), `steps` 6–8, `flags` (≤8, omitted when empty).
 - `swaps: { from, to }[]` is a sibling of `steps`, present **only** on `kind: "swap"`, where it must be non-empty. `kind: "plain"` has **no** `swaps` key (never an empty array). The prompt includes swaps only when a swap happened.
 - `have` lists the replacement (`to`), never the forbidden chip. The UI lists swaps above the method.
 - A Diet is not a `kind`; Diet restrictions show up as `flags` and swaps (see [data.md](./data.md#diet-lives-in-a-durable-object)).

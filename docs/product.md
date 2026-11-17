@@ -20,9 +20,9 @@
 
 | Group | Routes | Notes |
 |---|---|---|
-| `(static)` | `/about` `/pricing` `/how-to` `/terms` `/privacy` | prerender, `csr=false` |
-| `(site)` | `/` (top 5 + HTML form → `/pantry?i=`), `/popular`, `/popular/[type=popularType]` (v2), `/recipes/[slug=slug]` | edge SSR, `csr=false`, Workers Cache; `/` is not prerendered |
-| — | `/sign-in`, `/api/auth/[...all]`, `sitemap.xml`, `robots.txt` | |
+| `(static)` | `/about` `/pricing` `/how-to` `/terms` `/privacy` `/llms.txt` | prerender, `csr=false` |
+| `(site)` | `/` (top 5 + HTML form → `/pantry?i=`), `/popular`, `/popular/[type=popularType]` (v2), `/recipes/[slug=slug]`, `/sitemap-popular.xml`, `/sitemap-index.xml` | edge SSR, `csr=false`, Workers Cache; `/` is not prerendered |
+| — | `/sign-in`, `/api/auth/[...all]`, `robots.txt` | `/sitemap.xml` is a build-time static asset from svelte-sitemap, not a Kit route (see [seo.md](./seo.md#sitemaps)) |
 | `(app)` | `/pantry` `/saved` `/account` `/account/usage` `/account/packs` | signed in, `csr=true`, `private, no-store` |
 - Folder layout: [folder-organisation.md](./folder-organisation.md).
 

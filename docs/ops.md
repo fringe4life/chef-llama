@@ -16,24 +16,22 @@
 - **Synthetic check schedule (v1.1): GitHub Actions.** GitHub Actions `schedule` (outside-in, off-the-hour minute) + the post-deploy run + `workflow_dispatch`, rather than a Cloudflare Cron Trigger. GitHub can delay or drop scheduled runs at busy times (especially on the hour), and on public repos it disables scheduled workflows after 60 days without activity ([GitHub Docs: `schedule`](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule), fetched 16 Nov 2026). The post-deploy run is the guaranteed one, and a monthly check confirms the workflow is still enabled. Details in [tests.md](./tests.md#synthetic-check).
 
 ### Logging
-- One sanctioned logger, `src/lib/server/log.hazardous.ts`; `console` only in `.hazardous.` files and `scripts/*.mjs` (lint rules in [lint.md](./lint.md)). Full write-up with citations: `/workspace/spikes/lint-guardrails/LOGGING.md`.
-- **Mechanics.** One sanctioned **hazardous** module, `src/lib/server/log.hazardous.ts`, holds the Effect Logger (flat object per entry) plus a `log.*` helper. Console is allowed only in `*.hazardous.ts` / `*.hazardous.svelte` / `*.hazardous.svelte.ts` files (plus `scripts/*.mjs`), so the hazardous-files CI flag catches new logging modules. Request annotations: `requestId`, `rayId`, `route` (= `event.route.id`), `stage`, `appEnv`, `userHash` (an HMAC, never the raw id).
-- **Levels (detailed-logs switch).** `LOG_LEVEL` = `Info` on prod and `Debug` on `pr-{n}` previews and locally. Redeploy a stage with `LOG_LEVEL=Debug` to switch detailed logs on temporarily.
-- **Sampling.** Logs `head_sampling_rate` is 1 on previews and 1 on prod at launch.
-- **Scope.** No Tail Worker or Logpush in v1.
-- **Client logging: none in v1.** The `hooks.client` `handleError` beacon is a **v2-or-later** option ([v2.md](./v2.md)).
-- **Recommendations** (not yet ruled on):
-  - **Durations:** `Effect.withLogSpan` now (they're free, on the same log object).
-  - **Traces:** real traces only on `pr-{n}` previews when chasing performance, via Alchemy `Cloudflare.Telemetry()` (needs compat date ≥ 2026-07-28) or `observability.traces`. Sources: [Workers tracing](https://developers.cloudflare.com/workers/observability/traces/), updated 12 Nov 2026 (early beta; counts toward the same GB allowance from 1 Dec).
+- **Sanctioned module.** `src/lib/server/log.hazardous.ts` is the only logging module: an Effect Logger that always passes **one flat plain object** to console (Workers Logs indexes object keys; never `JSON.stringify` a string), plus a tiny `log.debug/info/warn/error` helper for hooks and glue. Level → console method: `error`/`fatal` → `console.error`, `warn` → `console.warn`, `debug`/`trace` → `console.debug`, else `console.log`.
+- **`no-console` hatch.** Console is allowed only in `*.hazardous.ts` / `*.hazardous.svelte` / `*.hazardous.svelte.ts` (same suffix as `$effect`) and `scripts/*.mjs` (synthetic check / CI stdout — decided). Lint details: [lint.md](./lint.md). The hazardous-files CI flag catches new logging modules. `hooks.server.ts` has no console exemption; cache-guard prod hits go through `log.error`.
+- **Request annotations** (attached once in `hooks.server.ts` / Effect edges): `requestId` (`cf-ray` or `crypto.randomUUID()`), `rayId`, `route` (= `event.route.id`), `stage`, `appEnv`, `userHash` (HMAC-SHA-256 truncated to 16 hex, never the raw id, email, IP, session, prompt or recipe).
+- **Levels (detailed-logs switch).** `LOG_LEVEL` = `Info` on prod and `Debug` on `pr-{n}` previews and locally (case-sensitive Effect Config values). Redeploy a stage with `LOG_LEVEL=Debug` to switch detailed logs on temporarily. No per-request "debug me" header in v1.
+- **Sampling.** Logs `head_sampling_rate` is 1 on previews and 1 on prod at launch. Prefer cutting noise over sampling (sampled-out requests appear to lose errors too).
+- **Scope.** Workers Logs + Workers Issues + Analytics Engine only. No Tail Worker or Logpush in v1.
+- **Client logging: none in v1** (decided). The `hooks.client` `handleError` beacon is a **v2-or-later** option ([v2.md](./v2.md)).
+- **What to log.** One `info` per meaningful domain event (generate started/finished with neurons and ms, credit hold/settle/release, webhook handled). `warn` for expected-but-notable; `error` for real failures only — not expected 402s.
 - **Over- vs under-logging:**
   - **Always log:** errors with context, auth and credit state changes, AI calls (model, tokens, latency), cache-guard hits and Stripe webhooks.
   - **Never log:** PII, secrets, full prompts or recipes (log a length or hash), bodies, or per-item loop lines.
-  - **Limits:** cut noise before sampling (sampling also drops errors). 256 KB per request is shared by all logs, so one big dump can hide an error.
+  - **Limits:** cut noise before sampling. 256 KB per request is shared by all logs, so one big dump can hide an error. Log errors before optional detail.
 - **Pricing.** Until 30 Nov 2026, Paid includes 20M log events/mo (+$0.60/M) with 7-day retention, and Free gets 200k/day with 3-day retention. From 1 Dec 2026 [Cloudflare Observability pricing](https://developers.cloudflare.com/observability/pricing/) (updated 11 Nov 2026) applies:
   - Paid: 50 GB ingestion/cycle (+$0.25/GB) plus 10 GB-month storage (+$0.10).
   - Free: 0.5 GB/day, then ingestion stops until 00:00 UTC.
-  - So entry size matters.
-- **Still to check on the first preview:** does `Website.SvelteKit` pass `observability` through, and is `cf-ray` on incoming requests?
+  - So entry size matters; logs and traces share the allowance.
 
 ### Agent skills
 - Matt Pocock's skills, which ones and how they are installed: [skills.md](./skills.md). There is no deslop skill; ESLint does that job (see [lint.md](./lint.md#eslint-plugin-slop-kept)).
@@ -41,7 +39,8 @@
 ## Open
 - **Domain spelling check:** confirm the exact registered spelling in the Cloudflare dashboard before anything is wired up (Custom Domains, Access, WAF, DNS/mail records, OAuth clients, Stripe webhook). The project Gmail's Cloudflare verification email (14 Nov) said `cheflamma.nz`.
 - **Architecture hunt cadence:** fortnightly or weekly.
-- Tracing: previews only, on demand (recommended above).
+- **Logging still open:** Coinnich's explicit yes on the whole C15 design beyond the decided pieces above; the C16 edge list (where `makeLoggerLive` is provided); the user-hash secret name; whether to log a short prompt hash or length instead of any prompt text; whether `Website.SvelteKit` passes `observability` through, and whether `cf-ray` is on incoming requests (check on the first preview).
+- **Recommendations** (not decisions): `Effect.withLogSpan` durations now (free on the same log object); real traces only on `pr-{n}` previews when chasing performance, via Alchemy `Cloudflare.Telemetry()` (needs compat date ≥ 2026-07-28) or `observability.traces` ([Workers tracing](https://developers.cloudflare.com/workers/observability/traces/), updated 12 Nov 2026; early beta; counts toward the same GB allowance from 1 Dec). Leave traces off on prod by default.
 - Rotation owner for Infisical secrets, and how bots get Infisical-managed values.
 - Confirm in the **web** Automations picker that Grok 4.6 + medium + Fast off is selectable for the retro.
 - Monthly deps review format: keep, replace with a browser/Kit/Cloudflare built-in, or go leaner.

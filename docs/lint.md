@@ -1,6 +1,6 @@
 # Lint and static guardrails
 
-> Topic file (docs-restructure spike, 16 Nov 2026 NZDT). This file is the only place these decisions live. **Decided** is settled; **Open** is not. Working material: the lint-guardrails spike (`/workspace/spikes/lint-guardrails/`, incl. `LOGGING.md`) and the StyleX spike.
+> Topic file (docs-restructure spike, 16 Nov 2026 NZDT). This file is the only place these decisions live. **Decided** is settled; **Open** is not. Logging mechanics: [ops.md § Logging](./ops.md#logging). StyleX tokens: [theme.md](./theme.md).
 
 ## Decided
 
@@ -61,7 +61,7 @@
 
 ### TypeScript, console, imports
 - `@typescript-eslint/no-explicit-any`, `no-non-null-assertion` (enabled explicitly) and `ban-ts-comment`, all `error`.
-- `no-console` (the logging design; full write-up in [ops.md § Logging](./ops.md#logging) and the spike's `LOGGING.md`):
+- `no-console` (the logging design; full write-up in [ops.md § Logging](./ops.md#logging)):
   - `error` everywhere: app, **`hooks.server.ts`**, tests, Playwright, `alchemy.run.ts`.
   - Off only in **`*.hazardous.ts` / `*.hazardous.svelte` / `*.hazardous.svelte.ts`** (the `$effect` hatch names CI flags; deliberately not `*.hazardous.*`, which would include `.js`/`.md`) and `scripts/*.mjs` (the synthetic check, CI stdout).
   - The sanctioned logger is `src/lib/server/log.hazardous.ts`. New logging modules get the hazardous CI label.
@@ -99,14 +99,18 @@
 
 ### StyleX
 - `@stylexjs/valid-styles` + `propLimits`, `chef/no-raw-stylex-values`, `chef/no-adhoc-typography`, `chef/no-faux-font-weight`, `enforce-extension`, `no-nonstandard-styles`, `no-lookahead-selectors` (warn; treated as **discouraged** — with `--max-warnings=0` a warning still fails the hook and CI). Details in [theme.md](./theme.md).
-- `chef/prefer-named-grid-areas` (`error`, **discouraged**): in `stylex.create` / `stylex.defineVars` objects, if `display` is `'grid'` or `'inline-grid'` and `gridTemplateColumns` or `gridTemplateRows` is set, `gridTemplateAreas` is required. Built-in exception (no disable needed): the columns/rows value is a `repeat(auto-fill|auto-fit, …)` or minmax-only track list. Belt: `no-restricted-syntax` flags numeric `gridColumn` / `gridRow` / `gridArea` / `gridColumnStart|End` / `gridRowStart|End` (number literals or strings starting with a digit). StyleX `valid-styles` does not enforce this.
+- `chef/prefer-named-grid-areas` (`error`, **discouraged**): in `stylex.create` / `stylex.defineVars` objects, if `display` is `'grid'` or `'inline-grid'` and `gridTemplateColumns` or `gridTemplateRows` is set, `gridTemplateAreas` is required. Built-in exception (no disable needed): the columns/rows value is a `repeat(auto-fill|auto-fit, …)` or minmax-only track list. Belt: `no-restricted-syntax` flags numeric `gridColumn` / `gridRow` / `gridArea` / `gridColumnStart|End` / `gridRowStart|End` (number literals or strings starting with a digit). StyleX `valid-styles` does not enforce this. Pair of selectors per key (string form + number form):
   ```js
   {
-    selector: "Property[key.name='gridColumn'][value.type='Literal'][value.value=/^\s*\d/]",
+    selector: "Property[key.name='gridColumn'][value.type='Literal'][value.value=/^\\s*\\d/]",
+    message: "Use a named grid area (gridArea: 'content'), not a numeric grid-column line. See docs/theme.md. Disable only with a reason."
+  },
+  {
+    selector: "Property[key.name='gridColumn'][value.value=type(number)]",
     message: "Use a named grid area (gridArea: 'content'), not a numeric grid-column line. See docs/theme.md. Disable only with a reason."
   }
   ```
-  Same pattern for `gridRow`, `gridArea`, and `key.name=/^grid(Column|Row)(Start|End)$/`. Named areas and `span` with a name are allowed. Hatch: `eslint-disable-next-line chef/prefer-named-grid-areas -- <reason>` (`eslint-comments/require-description`). No `*.discouraged.*` suffix and no path allowlist.
+  Same pair for `gridRow`, `gridArea`, `gridColumnStart`, `gridColumnEnd`, `gridRowStart`, and `gridRowEnd`. Named areas and `span` with a name are allowed. Hatch: `eslint-disable-next-line chef/prefer-named-grid-areas -- <reason>` (`eslint-comments/require-description`). No `*.discouraged.*` suffix and no path allowlist.
 - **No `src/app.css`.** Token *values* live in StyleX `defineVars` (`*.stylex.ts`, `--` keys, including `light-dark()` colour strings). The remaining raw CSS (`color-scheme` / `:has()` scheme switching, `font-synthesis`, `@property` if used, `::backdrop` / `@starting-style` / UA-drawn overlays) lives in `src/lib/theme/tokens.css`, imported from `src/routes/+layout.svelte` as `import '$lib/theme/tokens.css'`. That import is the Vite CSS asset `@stylexjs/unplugin` appends compiled StyleX to (docs: provide a CSS entry so Vite emits an asset; if none exists the plugin may emit an unlinked `stylex.css`). Do not add an `@stylex;` at-rule: it is only for `@stylexjs/postcss-plugin` (which replaces it); unplugin never looks for it and a box build with unplugin 0.19.2 left a leftover `@stylex;` in the production CSS ([theme.md](./theme.md#native-overlays)). Enforcement: `chef/no-app-css` (`error`) on `src/app.css` under `language: "css/css"` — if the file appears, report "do not add `src/app.css`; import `$lib/theme/tokens.css` from the root layout." Plus a `preToolUse` deny on Write/Delete of `src/app.css` (see [cursor-hooks.md](./cursor-hooks.md) and [theme.md](./theme.md#native-overlays)).
 
 ### Browser-floor linting
@@ -188,7 +192,7 @@ Its diff-only default also suits agent PRs (noise only on new code).
       "prepare": "husky",
       "lint": "eslint --cache --cache-location node_modules/.cache/eslint/ --max-warnings=0 .",
       "check": "svelte-kit sync && svelte-check --tsgo --tsconfig ./tsconfig.json --output machine",
-      "test": "bun test"
+      "test": "vitest run"
     },
     "lint-staged": {
       "*.{js,mjs,cjs,ts,mts,svelte}": "eslint --fix --cache --cache-location node_modules/.cache/eslint/ --max-warnings=0",
@@ -196,12 +200,12 @@ Its diff-only default also suits agent PRs (noise only on new code).
     }
   }
   ```
-  `eslint --fix` uses the full merged config (slop included). Fixes are restaged automatically. `svelte-check` is **whole-project** (no per-staged-file mode). Use **TS ~6** for `--tsgo`, not `--tsgo-experimental-api` (see [ci.md](./ci.md#type-check)).
+  `eslint --fix` uses the full merged config (slop included). Fixes are restaged automatically. `svelte-check` is **whole-project** (no per-staged-file mode). Use **TS ~6** for `--tsgo`, not `--tsgo-experimental-api` (see [ci.md](./ci.md#type-check)). Hooks and CI call **`bun run test`** (which runs Vitest); never bare `bun test` (that starts Bun's own runner). See [tests.md](./tests.md).
 - **`.husky/pre-commit`:**
   ```sh
   bunx lint-staged
   bun dedupe --check
-  bun test
+  bun run test
   bun run check
   ```
   Order is deliberate: autofix first, then the cheap lockfile check, then tests, then typecheck.
@@ -214,7 +218,7 @@ Its diff-only default also suits agent PRs (noise only on new code).
 - **Playwright** and **Fallow** stay out of the Git hooks. Playwright needs a deployed preview ([tests.md](./tests.md#playwright)). Fallow runs in the Cursor `stop` hook and in CI ([cursor-hooks.md](./cursor-hooks.md)).
 - **`svelte-check --tsgo` stays on pre-commit.** Do not move it to pre-push.
 - **Timing caveats and move-later thresholds** (for other steps only). Measure a *typical* commit after a warm ESLint cache (second run, not a cold `bun install`) with `/usr/bin/time -f '%e'` (or `TIMEFORMAT='%R'; time …`) for each hook step, from a mid-size edit, and write the numbers down when proposing a move.
-  - If a typical **pre-commit** exceeds **~10 seconds** because of **unit tests**, move `bun test` to pre-push or switch it to `bun test --changed` (exists in Bun 1.4.4). Leave `lint-staged`, `bun dedupe --check` and `bun run check` (`svelte-check --tsgo`) on pre-commit.
+  - If a typical **pre-commit** exceeds **~10 seconds** because of **unit tests**, move `bun run test` to pre-push or switch it to `vitest run --changed`. Leave `lint-staged`, `bun dedupe --check` and `bun run check` (`svelte-check --tsgo`) on pre-commit.
   - If a typical **pre-push** exceeds **~60 seconds**, drop the slow step from the hook (it stays in CI). Pre-push should still run `bun audit --audit-level=high` (fast).
   - If type-aware ESLint rules alone make a typical commit slow, move those rules to a CI-only config block rather than dropping them.
 - **Relation to CI:** the hooks are a local early warning, not the gate. They can be skipped (`git commit --no-verify`, `HUSKY=0`), and CI does not run them: CI installs with lifecycle scripts off, so `prepare` never runs there. CI runs the full ESLint (all files), Fallow, `svelte-check --tsgo`, unit tests, Playwright on the preview, the same `bun audit --audit-level=high`, and `bun dedupe --check` (see [ci.md](./ci.md#jobs-and-secrets)), and those are the required checks. Agents are told not to skip the hook, and the Cursor shell hook denies `--no-verify` / `HUSKY=0` (see [cursor-hooks.md](./cursor-hooks.md)).
