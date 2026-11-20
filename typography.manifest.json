@@ -1,0 +1,328 @@
+{
+  "contract": "Closed typography vocabulary for Chef Llama. Adding a variant or a token is a decision, not a detail. See docs/theme.md, Typography variants.",
+  "budget": {
+    "variants": 14,
+    "sizes": 8,
+    "leadings": 4,
+    "trackings": 3,
+    "weights": 2,
+    "faces": 3
+  },
+  "values": {
+    "faces": [
+      "sans",
+      "mono",
+      "display"
+    ],
+    "weights": [
+      400,
+      700
+    ],
+    "sizes": [
+      "2xs",
+      "xs",
+      "sm",
+      "base",
+      "lg",
+      "xl",
+      "2xl",
+      "4xl"
+    ],
+    "leadings": {
+      "solid": 1,
+      "tight": 1.2,
+      "ui": 1.45,
+      "body": 1.55
+    },
+    "trackings": {
+      "zero": "0",
+      "tight": "-0.01em",
+      "display": "-0.02em",
+      "caps": "0.14em"
+    }
+  },
+  "variants": {
+    "ui": {
+      "face": "sans",
+      "size": "xs",
+      "weight": 400,
+      "leading": "ui",
+      "tracking": "zero",
+      "job": "Label, nav item, meta line or table cell that is read rather than scanned",
+      "firstUse": "/pantry, /account"
+    },
+    "uiStrong": {
+      "face": "sans",
+      "size": "xs",
+      "weight": 700,
+      "leading": "ui",
+      "tracking": "zero",
+      "job": "The only emphasis inside a dense table or list: a row number or initials",
+      "firstUse": "/account/billing"
+    },
+    "prose": {
+      "face": "sans",
+      "size": "sm",
+      "weight": 400,
+      "leading": "body",
+      "tracking": "zero",
+      "job": "Body copy that runs past a single line",
+      "firstUse": "/ (landing), /how-to"
+    },
+    "chrome": {
+      "face": "sans",
+      "size": "sm",
+      "weight": 700,
+      "leading": "ui",
+      "tracking": "zero",
+      "job": "Button and link label, the thing you press",
+      "firstUse": "/ (header), /pricing"
+    },
+    "caps": {
+      "face": "mono",
+      "size": "2xs",
+      "weight": 400,
+      "leading": "ui",
+      "tracking": "caps",
+      "job": "Uppercase label above a figure or a table column",
+      "firstUse": "/account, /recipes"
+    },
+    "figure": {
+      "face": "mono",
+      "size": "xs",
+      "weight": 400,
+      "leading": "ui",
+      "tracking": "zero",
+      "job": "Any figure that aligns with another figure, including dates and counts",
+      "firstUse": "/account, /popular"
+    },
+    "figureMeta": {
+      "face": "mono",
+      "size": "xs",
+      "weight": 400,
+      "leading": "tight",
+      "tracking": "display",
+      "job": "Figure inside a card meta row, where the line box is fixed",
+      "firstUse": "/ (recipe card)"
+    },
+    "heading": {
+      "face": "sans",
+      "size": "base",
+      "weight": 700,
+      "leading": "body",
+      "tracking": "tight",
+      "job": "Section heading inside a page",
+      "firstUse": "/account, /how-to"
+    },
+    "pageTitle": {
+      "face": "sans",
+      "size": "xl",
+      "weight": 700,
+      "leading": "tight",
+      "tracking": "display",
+      "job": "The one title at the top of a page",
+      "firstUse": "/account, /popular"
+    },
+    "wordmark": {
+      "face": "display",
+      "size": "xl",
+      "weight": 400,
+      "leading": "solid",
+      "tracking": "display",
+      "job": "Chef Llama, once per surface, in the header",
+      "firstUse": "all surfaces"
+    },
+    "dishName": {
+      "face": "display",
+      "size": "xl",
+      "weight": 700,
+      "leading": "tight",
+      "tracking": "tight",
+      "job": "Recipe name on a card; the lead card scales up with the card, not with the viewport",
+      "firstUse": "/popular, /saved",
+      "conditional": {
+        "when": "@container card (inline-size >= 780px)",
+        "size": "2xl"
+      }
+    },
+    "rank": {
+      "face": "mono",
+      "size": "xl",
+      "weight": 400,
+      "leading": "solid",
+      "tracking": "zero",
+      "job": "Position in a ranked list, set as the largest figure in the card",
+      "firstUse": "/popular",
+      "conditional": {
+        "when": "@container card (inline-size <= 379px)",
+        "size": "lg"
+      }
+    },
+    "price": {
+      "face": "mono",
+      "size": "2xl",
+      "weight": 400,
+      "leading": "solid",
+      "tracking": "display",
+      "job": "The largest figure on a surface: a pack price or a band total",
+      "firstUse": "/pricing, /account"
+    },
+    "hero": {
+      "face": "display",
+      "size": "4xl",
+      "weight": 700,
+      "leading": "tight",
+      "tracking": "display",
+      "job": "Landing headline, one per page",
+      "firstUse": "/ (landing)"
+    }
+  },
+  "census": {
+    "measuredAt": "2026-11-19T02:37:20.904Z",
+    "scope": [
+      "account",
+      "brand",
+      "chart",
+      "index",
+      "landing"
+    ],
+    "declarations": 564,
+    "coverage": {
+      "sizes": {
+        "distinct": 8,
+        "declarations": 485,
+        "named": 485,
+        "percent": 100
+      },
+      "leadings": {
+        "distinct": 4,
+        "declarations": 141,
+        "named": 141,
+        "percent": 100
+      },
+      "trackings": {
+        "distinct": 4,
+        "declarations": 156,
+        "named": 156,
+        "percent": 100
+      },
+      "weights": {
+        "distinct": 2,
+        "declarations": 195,
+        "named": 195,
+        "percent": 100
+      },
+      "faces": {
+        "distinct": 3,
+        "declarations": 252,
+        "named": 252,
+        "percent": 100
+      },
+      "violations": {
+        "sizes": 0,
+        "leadings": 0,
+        "trackings": 0,
+        "weights": 0,
+        "faces": 0
+      }
+    },
+    "values": {
+      "sizes": [
+        {
+          "key": "xs",
+          "count": 216
+        },
+        {
+          "key": "sm",
+          "count": 98
+        },
+        {
+          "key": "2xs",
+          "count": 59
+        },
+        {
+          "key": "xl",
+          "count": 56
+        },
+        {
+          "key": "2xl",
+          "count": 22
+        },
+        {
+          "key": "base",
+          "count": 15
+        },
+        {
+          "key": "lg",
+          "count": 13
+        },
+        {
+          "key": "4xl",
+          "count": 6
+        }
+      ],
+      "leadings": [
+        {
+          "key": "leading-ui",
+          "count": 51
+        },
+        {
+          "key": "leading-tight",
+          "count": 49
+        },
+        {
+          "key": "leading-solid",
+          "count": 29
+        },
+        {
+          "key": "leading-body",
+          "count": 12
+        }
+      ],
+      "trackings": [
+        {
+          "key": "tracking-display",
+          "count": 60
+        },
+        {
+          "key": "tracking-caps",
+          "count": 47
+        },
+        {
+          "key": "tracking-tight",
+          "count": 37
+        },
+        {
+          "key": "zero",
+          "count": 12
+        }
+      ],
+      "weights": [
+        {
+          "key": "weight 700",
+          "count": 159
+        },
+        {
+          "key": "weight 400",
+          "count": 36
+        }
+      ],
+      "faces": [
+        {
+          "key": "mono",
+          "count": 167
+        },
+        {
+          "key": "sans",
+          "count": 49
+        },
+        {
+          "key": "display",
+          "count": 36
+        }
+      ]
+    },
+    "combinations": 76,
+    "violations": 0
+  }
+}

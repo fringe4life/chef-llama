@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html><head>
+  <meta charset="utf-8">
+  <meta name="kombai-design-canvas" content="true">
+  
+  
+  
+  
+  
+  
+  <style>html, body { margin: 0; padding: 0; } #root { display: contents; }</style>
+</head><body>
+  <div id="root"><style>
+:root{
+  color-scheme: light dark;
+  --background: light-dark(hsl(38 42% 96%), hsl(30 12% 8%));
+  --surface-2: light-dark(hsl(36 34% 93%), hsl(30 9% 15%));
+  --ink: light-dark(hsl(28 24% 15%), hsl(36 28% 93%));
+  --ink-muted: light-dark(hsl(30 9% 38%), hsl(30 8% 66%));
+  --ink-faint: light-dark(hsl(30 7% 50%), hsl(30 7% 54%));
+  --rule: light-dark(hsl(34 24% 85%), hsl(30 8% 21%));
+  --rule-hair: light-dark(hsl(34 22% 90%), hsl(30 8% 16%));
+  --rule-strong: light-dark(hsl(32 18% 70%), hsl(30 8% 30%));
+  --accent: light-dark(hsl(30 74% 37%), hsl(34 82% 60%));
+  --gift: light-dark(hsl(168 18% 43%), hsl(168 24% 54%));
+  --gift-ink: light-dark(hsl(168 18% 39%), hsl(168 24% 54%));
+  --credit-ink: light-dark(hsl(30 74% 36%), hsl(34 82% 60%));
+  --sans: ui-sans-serif, system-ui, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --serif: ui-serif, Georgia, "Times New Roman", serif;
+}
+body{
+  margin:0;background:var(--background);color:var(--ink);
+  font-family:var(--sans);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased;
+}
+p,ul,pre{margin:0}
+ul{padding:0;list-style:none}
+.page{max-width:1040px;margin:0 auto;padding:40px 24px 48px;box-sizing:border-box}
+.head h1{margin:0;font-size:22px;font-weight:600;letter-spacing:-.015em}
+.sub{font-family:var(--serif);font-size:13px;color:var(--ink-faint);margin-top:4px}
+.block{margin-top:34px;padding-top:20px;border-top:1px solid var(--rule)}
+.block h2{margin:0;font-size:13.5px;font-weight:600}
+.note{margin-top:6px;font-size:12.5px;color:var(--ink-muted);max-width:74ch}
+.note code{font-family:var(--mono);font-size:11.5px;background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+.code{
+  margin-top:14px;padding:14px 16px;background:var(--surface-2);
+  border:1px solid var(--rule-hair);border-radius:8px;overflow-x:auto;
+  font-family:var(--mono);font-size:11.5px;line-height:1.65;color:var(--ink);
+  max-width:640px;
+}
+.code b{font-weight:600;color:var(--ink-muted)}
+.code em{font-style:normal;color:var(--credit-ink)}
+
+/* ---------------- the card is the query container ---------------- */
+.card{
+  width:390px;max-width:100%;margin-top:16px;padding:16px;box-sizing:border-box;
+  border:1px solid var(--rule-strong);border-radius:10px;
+  container-type:inline-size;
+}
+.card--wide{width:720px}
+.card h3{margin:0;font-size:15px;font-weight:600}
+.card .sub{font-size:12px}
+.card__size{
+  margin-top:2px;font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);letter-spacing:.02em;
+}
+.legend{display:flex;align-items:center;gap:16px;font-size:11.5px;color:var(--ink-muted);flex-wrap:wrap;margin-top:10px}
+.legend li{display:inline-flex;align-items:center;gap:6px}
+.sw{width:11px;height:11px;border-radius:1px;display:inline-block}
+.sw--gift{background:var(--gift)}
+.sw--credit{background:var(--accent)}
+.sw--prev{
+  background:linear-gradient(to top,
+    color-mix(in oklab,var(--gift) 45%,var(--background)) 0 calc(50% - 1px),
+    var(--background) calc(50% - 1px) calc(50% + 1px),
+    color-mix(in oklab,var(--accent) 45%,var(--background)) calc(50% + 1px) 100%);
+  box-shadow:inset 0 0 0 1px var(--ink-faint);
+}
+
+/* ---------------- the lane: one DOM, two templates ---------------- */
+.lanes{margin-top:10px}
+.lane{
+  display:grid;
+  grid-template-columns:24px minmax(0,1fr);
+  grid-template-areas:
+    "head head"
+    "tagN now"
+    "tagP prev"
+    "figs figs";
+  column-gap:10px;row-gap:3px;
+  padding:11px 0;
+  border-block-end:1px solid var(--rule-hair);
+  align-items:center;
+}
+.lane:last-child{border-block-end:0}
+
+.lane__head{grid-area:head;display:flex;align-items:baseline;gap:8px}
+.lane__date{font-family:var(--serif);font-size:12.5px;color:var(--ink)}
+.delta{margin-inline-start:auto;width:18px;height:18px;color:var(--ink-muted);flex:none;align-self:center}
+.lane__nodash{margin-inline-start:auto;font-family:var(--mono);font-size:12px;color:var(--ink-faint)}
+
+.lane__tag{font-size:10.5px;color:var(--ink-faint);align-self:center}
+.lane__tag--now{grid-area:tagN}
+.lane__tag--prev{grid-area:tagP}
+
+.bar{
+  --c-gift:var(--gift);--c-credit:var(--accent);
+  --split:calc(var(--g) / var(--t) * 100%);
+  display:block;align-self:center;block-size:11px;
+  inline-size:calc(var(--t) / var(--max) * 100%);
+  background-image:linear-gradient(to right,
+    var(--c-gift) 0 var(--split),
+    var(--background) var(--split) calc(var(--split) + 2px),
+    var(--c-credit) calc(var(--split) + 2px) 100%);
+  background-repeat:no-repeat;
+}
+.bar--now{grid-area:now}
+.bar--prev{
+  grid-area:prev;
+  --c-gift:color-mix(in oklab,var(--gift) 45%,var(--background));
+  --c-credit:color-mix(in oklab,var(--accent) 45%,var(--background));
+  --split:calc(var(--pg) / var(--pt) * 100%);
+  block-size:9px;
+  inline-size:calc(var(--pt) / var(--max) * 100%);
+  box-shadow:inset 0 0 0 1px var(--ink-faint);
+}
+/* a measured zero keeps a tick, never nothing */
+.bar[data-shape='none']{inline-size:3px;background:var(--ink-muted);background-image:none;box-shadow:none}
+.bar[data-shape='gift']{background-image:linear-gradient(var(--c-gift) 0 0)}
+.bar[data-shape='credit']{background-image:linear-gradient(var(--c-credit) 0 0)}
+
+/* ---------------- the figures: matrix, no header when narrow ---------------- */
+.figs{
+  grid-area:figs;
+  display:grid;
+  grid-template-columns:auto 2.4em 2.4em;
+  column-gap:6px;row-gap:1px;
+  align-items:baseline;
+  justify-self:start;
+  inline-size:max-content;
+  margin-top:5px;
+  font-size:11px;
+}
+.figs__hd,
+.figs__k{font-size:10.5px;color:var(--ink-faint)}
+.figs__hd{font-family:var(--sans);letter-spacing:.03em}
+.fig{
+  font-family:var(--mono);font-variant-numeric:tabular-nums;
+  font-weight:600;font-size:11.5px;text-align:right;
+}
+.fig--free{color:var(--gift-ink)}
+.fig--paid{color:var(--credit-ink)}
+.fig--prev{color:var(--ink-muted)}
+
+/* ---------------- tablet and up: the rail appears ---------------- */
+@container (min-width:560px){
+  .lane{
+    grid-template-columns:24px minmax(0,1fr) 104px;
+    grid-template-areas:
+      "head head figs"
+      "tagN now  figs"
+      "tagP prev figs";
+    row-gap:4px;
+  }
+  .figs{margin-top:0;align-self:center}
+}
+
+/* ---------------- delta arrows ---------------- */
+.arrows{display:flex;gap:26px;margin-top:16px;align-items:flex-end;flex-wrap:wrap}
+.arrows figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:8px}
+.arrows figcaption{font-size:11px;color:var(--ink-faint);text-align:center;line-height:1.3}
+.a-small{width:14px;height:14px;color:var(--ink-muted)}
+.a-large{width:44px;height:44px;color:var(--ink-muted);margin-bottom:4px}
+</style>
+
+<div class="page">
+  <div class="head">
+    <h1>One DOM, two templates: the rail appears when the container allows it</h1>
+    <p class="sub">Named grid areas, one container query, no duplicated markup and no second component</p>
+  </div>
+
+  <section class="block">
+    <h2>The whole mechanism</h2>
+    <p class="note">Six grid items per lane — heading, two tags, two bars, one figure block. Narrow puts the figures underneath on their own row; wide moves <code>figs</code> into a right-hand column and lets the two bars and their tags stack against it. Nothing is added, removed or reordered. <code>container-type</code> sits on the card, because an element cannot query its own size.</p>
+    <pre class="code"><b>/* narrow — figures underneath */</b>
+.lane{grid-template-columns:24px minmax(0,1fr);grid-template-areas:
+  "head head"
+  "tagN now"
+  "tagP prev"
+  <em>"figs figs"</em>}
+
+<b>/* tablet — the same six items, rail on the right */</b>
+@container (min-width:560px){
+  .lane{grid-template-columns:24px minmax(0,1fr) 104px;grid-template-areas:
+    "head head <em>figs</em>"
+    "tagN now  <em>figs</em>"
+    "tagP prev <em>figs</em>"}
+}</pre>
+  </section>
+
+  <section class="block">
+    <h2>390px — figures underneath</h2>
+    <p class="note">The figure block is the same 3-column matrix as in the wide card — heading row included — so the second figure column is never an unlabelled number. It is labelled once by row and once by column, and the previous column is muted because the heading already says which period it is. Nothing about it is hidden at this width; only its grid area differs.</p>
+    <div class="card">
+      <h3>Cooks</h3>
+      <p class="sub">7 October – 3 November 2026</p>
+      <p class="card__size">390px container · rail off</p>
+      <ul class="legend">
+        <li><span class="sw sw--gift"></span>Gift</li>
+        <li><span class="sw sw--credit"></span>Credit</li>
+        <li><span class="sw sw--prev"></span>Previous</li>
+      </ul>
+      <ul class="lanes" style="--max:10">
+        <li class="lane">
+          <span class="lane__head"><span class="lane__date">7–13 Oct</span><span class="lane__nodash">—</span></span>
+          <span class="lane__tag lane__tag--now">Now</span>
+          <span class="bar bar--now" data-shape="both" style="--g:2;--t:8"></span>
+          <span class="lane__tag lane__tag--prev">Prev</span>
+          <span class="bar bar--prev" style="--pg:0;--pt:0"></span>
+          <span class="figs">
+            <span class="figs__hd"></span><span class="figs__hd">Now</span><span class="figs__hd">Prev</span>
+            <span class="figs__k">free</span><span class="fig fig--free">2</span><span class="fig fig--prev">–</span>
+            <span class="figs__k">paid</span><span class="fig fig--paid">6</span><span class="fig fig--prev">–</span>
+          </span>
+        </li>
+        <li class="lane">
+          <span class="lane__head"><span class="lane__date">14–20 Oct</span>
+            <svg class="delta" viewBox="0 0 14 14" role="img"><title>1 more than the previous week</title>
+              <circle cx="7" cy="7" r="5.6" fill="none" stroke="currentColor" stroke-width=".9"/>
+              <line x1="7" y1="7" x2="10.18" y2="3.82" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <circle cx="7" cy="7" r="1" fill="currentColor"/></svg>
+          </span>
+          <span class="lane__tag lane__tag--now">Now</span>
+          <span class="bar bar--now" data-shape="both" style="--g:1;--t:9"></span>
+          <span class="lane__tag lane__tag--prev">Prev</span>
+          <span class="bar bar--prev" style="--pg:2;--pt:8"></span>
+          <span class="figs">
+            <span class="figs__hd"></span><span class="figs__hd">Now</span><span class="figs__hd">Prev</span>
+            <span class="figs__k">free</span><span class="fig fig--free">1</span><span class="fig fig--prev">2</span>
+            <span class="figs__k">paid</span><span class="fig fig--paid">8</span><span class="fig fig--prev">6</span>
+          </span>
+        </li>
+        <li class="lane">
+          <span class="lane__head"><span class="lane__date">21–27 Oct</span>
+            <svg class="delta" viewBox="0 0 14 14" role="img"><title>2 fewer than the previous week</title>
+              <circle cx="7" cy="7" r="5.6" fill="none" stroke="currentColor" stroke-width=".9"/>
+              <line x1="7" y1="7" x2="10.18" y2="10.18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <circle cx="7" cy="7" r="1" fill="currentColor"/></svg>
+          </span>
+          <span class="lane__tag lane__tag--now">Now</span>
+          <span class="bar bar--now" data-shape="both" style="--g:2;--t:7"></span>
+          <span class="lane__tag lane__tag--prev">Prev</span>
+          <span class="bar bar--prev" style="--pg:2;--pt:9"></span>
+          <span class="figs">
+            <span class="figs__hd"></span><span class="figs__hd">Now</span><span class="figs__hd">Prev</span>
+            <span class="figs__k">free</span><span class="fig fig--free">2</span><span class="fig fig--prev">2</span>
+            <span class="figs__k">paid</span><span class="fig fig--paid">5</span><span class="fig fig--prev">7</span>
+          </span>
+        </li>
+        <li class="lane">
+          <span class="lane__head"><span class="lane__date">28 Oct–3 Nov</span>
+            <svg class="delta" viewBox="0 0 14 14" role="img"><title>2 more than the previous week</title>
+              <circle cx="7" cy="7" r="5.6" fill="none" stroke="currentColor" stroke-width=".9"/>
+              <line x1="7" y1="7" x2="9.25" y2="3.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <circle cx="7" cy="7" r="1" fill="currentColor"/></svg>
+          </span>
+          <span class="lane__tag lane__tag--now">Now</span>
+          <span class="bar bar--now" data-shape="both" style="--g:1;--t:9"></span>
+          <span class="lane__tag lane__tag--prev">Prev</span>
+          <span class="bar bar--prev" style="--pg:2;--pt:7"></span>
+          <span class="figs">
+            <span class="figs__hd"></span><span class="figs__hd">Now</span><span class="figs__hd">Prev</span>
+            <span class="figs__k">free</span><span class="fig fig--free">1</span><span class="fig fig--prev">2</span>
+            <span class="figs__k">paid</span><span class="fig fig--paid">8</span><span class="fig fig--prev">5</span>
+          </span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>720px — the rail switches on</h2>
+    <p class="note">Identical markup. Same six items, one different <code>grid-template-areas</code>, and the figure block's heading row revealed by a single <code>display</code> rule. The bar keeps the rest of the width, so the month reads across as well as down.</p>
+    <div class="card card--wide">
+      <h3>Cooks</h3>
+      <p class="sub">7 October – 3 November 2026</p>
+      <p class="card__size">720px container · rail on, threshold 560px</p>
+      <ul class="legend">
+        <li><span class="sw sw--gift"></span>Gift</li>
+        <li><span class="sw sw--credit"></span>Credit</li>
+        <li><span class="sw sw--prev"></span>Previous</li>
+      </ul>
+      <ul class="lanes" style="--max:10">
+        <li class="lane">
+          <span class="lane__head"><span class="lane__date">7–13 Oct</span><span class="lane__nodash">—</span></span>
+          <span class="lane__tag lane__tag--now">Now</span>
+          <span class="bar bar--now" data-shape="both" style="--g:2;--t:8"></span>
+          <span class="lane__tag lane__tag--prev">Prev</span>
+          <span class="bar bar--prev" style="--pg:0;--pt:0"></span>
+          <span class="figs">
+            <span class="figs__hd"></span><span class="figs__hd">Now</span><span class="figs__hd">Prev</span>
+            <span class="figs__k">free</span><span class="fig fig--free">2</span><span class="fig fig--prev">–</span>
+            <span class="figs__k">paid</span><span class="fig fig--paid">6</span><span class="fig fig--prev">–</span>
+          </span>
+        </li>
+        <li class="lane">
+          <span class="lane__head"><span class="lane__date">14–20 Oct</span>
+            <svg class="delta" viewBox="0 0 14 14" role="img"><title>1 more than the previous week</title>
+              <circle cx="7" cy="7" r="5.6" fill="none" stroke="currentColor" stroke-width=".9"/>
+              <line x1="7" y1="7" x2="10.18" y2="3.82" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <circle cx="7" cy="7" r="1" fill="currentColor"/></svg>
+          </span>
+          <span class="lane__tag lane__tag--now">Now</span>
+          <span class="bar bar--now" data-shape="both" style="--g:1;--t:9"></span>
+          <span class="lane__tag lane__tag--prev">Prev</span>
+          <span class="bar bar--prev" style="--pg:2;--pt:8"></span>
+          <span class="figs">
+            <span class="figs__hd"></span><span class="figs__hd">Now</span><span class="figs__hd">Prev</span>
+            <span class="figs__k">free</span><span class="fig fig--free">1</span><span class="fig fig--prev">2</span>
+            <span class="figs__k">paid</span><span class="fig fig--paid">8</span><span class="fig fig--prev">6</span>
+          </span>
+        </li>
+        <li class="lane">
+          <span class="lane__head"><span class="lane__date">21–27 Oct</span>
+            <svg class="delta" viewBox="0 0 14 14" role="img"><title>2 fewer than the previous week</title>
+              <circle cx="7" cy="7" r="5.6" fill="none" stroke="currentColor" stroke-width=".9"/>
+              <line x1="7" y1="7" x2="10.18" y2="10.18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <circle cx="7" cy="7" r="1" fill="currentColor"/></svg>
+          </span>
+          <span class="lane__tag lane__tag--now">Now</span>
+          <span class="bar bar--now" data-shape="both" style="--g:2;--t:7"></span>
+          <span class="lane__tag lane__tag--prev">Prev</span>
+          <span class="bar bar--prev" style="--pg:2;--pt:9"></span>
+          <span class="figs">
+            <span class="figs__hd"></span><span class="figs__hd">Now</span><span class="figs__hd">Prev</span>
+            <span class="figs__k">free</span><span class="fig fig--free">2</span><span class="fig fig--prev">2</span>
+            <span class="figs__k">paid</span><span class="fig fig--paid">5</span><span class="fig fig--prev">7</span>
+          </span>
+        </li>
+        <li class="lane">
+          <span class="lane__head"><span class="lane__date">28 Oct–3 Nov</span>
+            <svg class="delta" viewBox="0 0 14 14" role="img"><title>2 more than the previous week</title>
+              <circle cx="7" cy="7" r="5.6" fill="none" stroke="currentColor" stroke-width=".9"/>
+              <line x1="7" y1="7" x2="9.25" y2="3.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <circle cx="7" cy="7" r="1" fill="currentColor"/></svg>
+          </span>
+          <span class="lane__tag lane__tag--now">Now</span>
+          <span class="bar bar--now" data-shape="both" style="--g:1;--t:9"></span>
+          <span class="lane__tag lane__tag--prev">Prev</span>
+          <span class="bar bar--prev" style="--pg:2;--pt:7"></span>
+          <span class="figs">
+            <span class="figs__hd"></span><span class="figs__hd">Now</span><span class="figs__hd">Prev</span>
+            <span class="figs__k">free</span><span class="fig fig--free">1</span><span class="fig fig--prev">2</span>
+            <span class="figs__k">paid</span><span class="fig fig--paid">8</span><span class="fig fig--prev">5</span>
+          </span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>The delta stays a clock hand</h2>
+    <p class="note">The needle swings between the one and five o'clock positions: above the horizontal for an increase, below for a decrease, flat for unchanged, and nothing at all when there is no earlier period to compare with — the dash in the first row. Direction is legible without reading a glyph, and it cannot be mistaken for a fifth number sitting beside four figures. The angle is coarse on purpose: three steps each way, because a needle that claims to encode an exact ratio is a lie at 14px.</p>
+    <div class="arrows">
+      <figure>
+        <svg class="a-large" viewBox="0 0 14 14" role="img"><title>2 fewer</title>
+          <circle cx="7" cy="7" r="5.6" fill="none" stroke="currentColor" stroke-width=".9"/>
+          <line x1="7" y1="7" x2="9.25" y2="10.9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="7" cy="7" r="1" fill="currentColor"/></svg>
+        <svg class="a-small" viewBox="0 0 14 14" aria-hidden="true">
+          <circle cx="7" cy="7" r="5.6" fill="none" stroke="currentColor" stroke-width=".9"/>
+          <line x1="7" y1="7" x2="9.25" y2="10.9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="7" cy="7" r="1" fill="currentColor"/></svg>
+        <figcaption>down far<br>2 or more</figcaption>
+      </figure>
+      <figure>
+        <svg class="a-large" viewBox="0 0 14 14" role="img"><title>1 fewer</title>
+          <circle cx="7" cy="7" r="5.6" fill="none" stroke="currentColor" stroke-width=".9"/>
+          <line x1="7" y1="7" x2="10.18" y2="10.18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="7" cy="7" r="1" fill="currentColor"/></svg>
+        <svg class="a-small" viewBox="0 0 14 14" aria-hidden="true">
+          <circle cx="7" cy="7" r="5.6" fill="none" stroke="currentColor" stroke-width=".9"/>
+          <line x1="7" y1="7" x2="10.18" y2="10.18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="7" cy="7" r="1" fill="currentColor"/></svg>
+        <figcaption>down<br>1</figcaption>
+      </figure>
+      <figure>
+        <svg class="a-large" viewBox="0 0 14 14" role="img"><title>unchanged</title>
+          <circle cx="7" cy="7" r="5.6" fill="none" stroke="currentColor" stroke-width=".9"/>
+          <line x1="7" y1="7" x2="11.6" y2="7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="7" cy="7" r="1" fill="currentColor"/></svg>
+        <svg class="a-small" viewBox="0 0 14 14" aria-hidden="true">
+          <circle cx="7" cy="7" r="5.6" fill="none" stroke="currentColor" stroke-width=".9"/>
+          <line x1="7" y1="7" x2="11.6" y2="7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="7" cy="7" r="1" fill="currentColor"/></svg>
+        <figcaption>level<br>0</figcaption>
+      </figure>
+      <figure>
+        <svg class="a-large" viewBox="0 0 14 14" role="img"><title>1 more</title>
+          <circle cx="7" cy="7" r="5.6" fill="none" stroke="currentColor" stroke-width=".9"/>
+          <line x1="7" y1="7" x2="10.18" y2="3.82" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="7" cy="7" r="1" fill="currentColor"/></svg>
+        <svg class="a-small" viewBox="0 0 14 14" aria-hidden="true">
+          <circle cx="7" cy="7" r="5.6" fill="none" stroke="currentColor" stroke-width=".9"/>
+          <line x1="7" y1="7" x2="10.18" y2="3.82" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="7" cy="7" r="1" fill="currentColor"/></svg>
+        <figcaption>up<br>1</figcaption>
+      </figure>
+      <figure>
+        <svg class="a-large" viewBox="0 0 14 14" role="img"><title>3 more</title>
+          <circle cx="7" cy="7" r="5.6" fill="none" stroke="currentColor" stroke-width=".9"/>
+          <line x1="7" y1="7" x2="9.25" y2="3.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="7" cy="7" r="1" fill="currentColor"/></svg>
+        <svg class="a-small" viewBox="0 0 14 14" aria-hidden="true">
+          <circle cx="7" cy="7" r="5.6" fill="none" stroke="currentColor" stroke-width=".9"/>
+          <line x1="7" y1="7" x2="9.25" y2="3.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="7" cy="7" r="1" fill="currentColor"/></svg>
+        <figcaption>up far<br>2 or more</figcaption>
+      </figure>
+      <figure>
+        <svg class="a-large" viewBox="0 0 14 14" style="color:var(--ink-faint)" aria-hidden="true">
+          <circle cx="7" cy="7" r="5.6" fill="none" stroke="currentColor" stroke-width=".9" stroke-dasharray="1.6 2"/>
+        </svg>
+        <svg class="a-small" viewBox="0 0 14 14" style="color:var(--ink-faint)" aria-hidden="true">
+          <circle cx="7" cy="7" r="5.6" fill="none" stroke="currentColor" stroke-width=".9" stroke-dasharray="1.6 2"/>
+        </svg>
+        <figcaption>no earlier<br>period</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>What the threshold costs</h2>
+    <p class="note">At 560px the rail takes 104px and leaves the bar about 330px at a 4-bucket month, which is plenty. The threshold is a content-box width, so it is the card's padding-free width that decides — not the viewport. Two things to settle: whether 560 is the right number for a monthly hero card, and whether the week view (seven buckets) should switch at the same width, since the same rail leaves it far less bar.</p>
+  </section>
+</div>
+</div>
+</body></html>

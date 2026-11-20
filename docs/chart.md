@@ -4,7 +4,7 @@
 
 ## Decided
 
-**The usage chart is sideways CSS bars**: rows, one per bucket, with no chart library. An earlier design ("CSS marks + popover, no chart library") lost three premises: the popover, the always-visible table of exact numbers, and the column chart. The constraints that survived are restated here in full so the chart can be built from this file alone. Background and the rejected paths were in the research note `2026-11-06-bucket-composition-states.md` (not in this repo). Kombai canvas references: `var_rail_collect_1107` (final form, 390 and 720), `var_narrow_place_1107` (value placement comparison), `var_markcount_1107` (mark-count arithmetic), `var_bucketstates_1106` (state matrix).
+**The usage chart is sideways CSS bars**: rows, one per bucket, with no chart library. An earlier design ("CSS marks + popover, no chart library") lost three premises: the popover, the always-visible table of exact numbers, and the column chart. The constraints that survived are restated here in full so the chart can be built from this file alone. Background and the rejected paths were in the research note `2026-11-06-bucket-composition-states.md` (not in this repo). Kombai canvas references, all in `.kombai/canvas/chart.canvas`: `var_rail_collect_1107` (final form, 390 and 720), `var_narrow_place_1107` (value placement comparison), `var_markcount_1107` (mark-count arithmetic), `var_bucketstates_1106` (state matrix).
 
 ### 1. Sideways, not columns
 The chart is a list of rows, one per bucket, each row carrying the current period and the previous period as two bars on a shared scale. There is no column form.
@@ -27,8 +27,10 @@ Cost accepted: a column chart shows the year's silhouette at a glance and a row 
 - **A zero bucket keeps a 3 px tick**, not an empty space and not a floating `0`. Zero is measured; it is not absence. The tick must be present in the row form, not only in a column form.
 - **An absent or short previous period draws nothing.** A comparison that cannot be made is not shown, rather than shown hatching a caveat.
 - **A non-zero segment clamps to 3 px** so one cook is never invisible and the gap never swallows it.
-- **Previous period is the same geometry, washed** (`color-mix(in oklab, …, 45%)`) with a faint ink rim (a derived theme token, called `--ink-faint` in the original design; it must come from the theme, see [theme.md § `color-mix()`](./theme.md#color-mix)) — the rim is load-bearing, since no wash of this hue reaches 3:1.
+- **Previous period is the same geometry, washed** to its mark's wash token, with a faint ink rim on the previous bar only — the rim is load-bearing, since no wash of this hue reaches 3:1. Both tokens are the theme's (see below).
 - **No hatch, no `data-incomplete`.** With no short-window ghost there is nothing for it to mark.
+
+**Colour is two marks.** The gift mark paints the free segment, the credit mark the paid one; each carries a wash for the previous period and an ink for its count figure, and the bar outline is shared. The token names, values and mixes are defined once, in [theme.md § Chart marks](./theme.md#chart-marks), and are not restated here.
 
 ### 3. Values are text in the chart
 Every funding count for every period is a **real text node** — not a tooltip, not a table, not generated content.
@@ -102,6 +104,4 @@ Tooltip · popover · CSS anchor positioning · the always-visible data table ·
 - The rail threshold is 560 px for a 4-bucket month. The week probably needs to switch later — the same rail takes the same 104 px and leaves seven buckets far less bar. One number to decide, not a structural question.
 - A 3 px zero tick and a 3 px segment clamp are the same width for different reasons; confirm they do not read as the same thing at 9 px bar height.
 - Whether the year silhouette deserves a separate range-level summary.
-- The faint rim on the previous-period bar needs a named derived token in the theme (called `--ink-faint` in the original design); add it to theme.md's derived tokens when the chart is built.
-- Optional `--chart-*` colour tokens (open in [theme.md](./theme.md#open)): does the chart use them, or existing semantic tokens for the gift and credit segments?
 - The chart ships with `/account`, whose scope is still open (see [auth.md](./auth.md#open)). Proposed data source: the Credit DO debit rows, bucketed by period.
