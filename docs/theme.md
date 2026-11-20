@@ -1,6 +1,6 @@
 # Theme: tokens, colour scheme, typography, z-index, motion, icons, design loop
 
-> Topic file (docs-restructure spike, 16 Nov 2026 NZDT). This file is the only place these decisions live. **Decided** is settled; **Open** is not. Working material: the StyleX tokens spike (`/workspace/spikes/stylex-tokens/PROPOSAL.md`).
+> Topic file (docs-restructure spike, 16 Nov 2026 NZDT). This file is the only place these decisions live. **Decided** is settled; **Open** is not.
 
 ## Decided
 
@@ -80,7 +80,7 @@
 - **PLACEHOLDER** names `base`/`raised`/`sticky`/`header`/`toast` — not the Chef Llama scale.
 
 ### Motion
-- Only prose so far: 120–180 ms opacity/transform on popovers. The spike says to add shared duration/easing tokens before the motion `propLimits` are useful.
+- Only prose so far: 120–180 ms opacity/transform on popovers. Add shared duration/easing tokens before the motion `propLimits` are useful.
 
 ### Browser floor
 - `package.json` `browserslist` is the machine-readable floor: `chrome >= 123`, `edge >= 123`, `and_chr >= 123`, `samsung >= 27`, `opera >= 109`, `ios_saf >= 18.3`, `safari >= 18.3`, `firefox >= 128`. The floor is set by `light-dark()` in Chromium, popover light dismiss in WebKit and `@property` in Gecko; WebKit is about 29% of NZ page views. Review 2027-05-06.

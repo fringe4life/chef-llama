@@ -15,10 +15,10 @@
 ```
 src/
   routes/                       # Fallow "app" zone
-    (static)/  about pricing how-to terms privacy
-    (site)/    +page  popular/  popular/[type=popularType]/  recipes/[slug=slug]/
+    (static)/  about pricing how-to terms privacy  llms.txt/
+    (site)/    +page  popular/  popular/[type=popularType]/  recipes/[slug=slug]/  sitemap-popular.xml/  sitemap-index.xml/
     (app)/     pantry/  saved/  account/{,usage,packs}/
-    sign-in/  api/auth/[...all]/  robots.txt/  sitemap.xml/
+    sign-in/  api/auth/[...all]/  robots.txt/
   features/
     diet/                       # v1 feature, Diet DO
   shared/                       # chip canonicalizer, string-only
