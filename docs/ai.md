@@ -21,8 +21,9 @@
 - `kind: "plain" | "swap"` (a tagged union, not optional-key soup).
 - Fields: `title` ≤80, `minutes`, `servings`, `kcal`, `kcal_over` (boolean: over the Diet or this run's kcal cap; it is **not** token overflow), `have` ≤16, `need` ≤2 (Staples only), `steps` 6–8, `flags` (≤8, omitted when empty).
 - `swaps: { from, to }[]` is a sibling of `steps`, present **only** on `kind: "swap"`, where it must be non-empty. `kind: "plain"` has **no** `swaps` key (never an empty array). The prompt includes swaps only when a swap happened.
-- `have` lists the replacement (`to`), never the forbidden chip. The UI lists swaps above the method.
-- A Diet is not a `kind`; Diet restrictions show up as `flags` and swaps (see [data.md](./data.md#diet-lives-in-a-durable-object)).
+- `have` lists the replacement (`to`), never the forbidden chip. The UI lists swaps above the method and highlights them.
+- **Allergies always win:** a pantry Chip that conflicts with an allergy must become a Swap; this-run toggles never drop or ignore allergies. Remaining diet-flag conflicts after this-run toggles also Swap. See [product.md](./product.md#diet).
+- A Diet is not a `kind`; Diet restrictions show up as `flags` and swaps (see [data.md](./data.md#diet-lives-in-a-durable-object)). Each Recipe records which Diet it was cooked for.
 
 ### Chips
 - In-process string canonicalizer in `src/shared/`: split, NFKC + lowercase, strip quantities, units and prep adjectives, a tiny closed NZ synonym map, dedupe, max 16 chips. Leftovers become `{ "name": "rice", "cooked": true }`. Sentence-like paste is rejected.

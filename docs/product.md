@@ -36,8 +36,9 @@
 ### Diet
 - **Required** before the first Generate: a first-run **blocking dialog on `/pantry`** creates the first Diet.
   - Fields: `name` (default Home); `flags[]` from the closed list vegan | vegetarian | gluten_free (hard, empty OK); allergy chips via the chip canonicalizer (hard, max 16, empty OK); optional `kcal` (target → `kcal_over`); `servings` 1–12, default 2; optional `max_minutes` (target, no overtime kind). No keto/halal/paleo in v1.
-- This run's chips override the Diet, and Chef Llama **swaps** conflicting chips rather than ignoring them.
-- Storage is the per-user Diet DO with `getActive()` (see [data.md](./data.md#diet-lives-in-a-durable-object)). The multi-Diet picker is v2.
+- **Allergies always win.** A pantry Chip that conflicts with an allergy is **swapped** and highlighted, never used as-is. This-run toggles may tighten or loosen diet **flags** (for example drop vegetarian for one cook) and change servings, time, and kcal, but they can **never** remove or ignore an allergy.
+- **Multi-Diet in v1:** `/pantry` has a Diet switcher that sets the active Diet before Generate. Cooks can add, rename, edit, and delete Diets (reuse the first-run dialog). Deleting the active Diet falls back to another remaining Diet. Each Recipe records which Diet it was cooked for.
+- Storage is the per-user Diet DO with `getActive()` (see [data.md](./data.md#diet-lives-in-a-durable-object)).
 
 ### Popular
 - Rank by **rolling 7-day saves of public-by-URL rows**, not views. Cap 20, at least 5 distinct savers, cron KV snapshot. When the 7-day window is thin, the rest is **filled from the all-time ranking**. `/` shows the top 5; `/popular` is a v1 URL. Details: [caching.md](./caching.md#popular-snapshot-cron-not-per-save).
@@ -66,9 +67,8 @@
 - **Three scheduled Cursor Automations**: architecture hunt, **agent-friction retro every 3 days** (the third Automation) on Grok 4.6 medium, and the monthly deps review. **No slop cron**; `eslint-plugin-slop` runs in lint instead (see [lint.md](./lint.md)). Details: [factory.md](./factory.md); ops summary: [ops.md](./ops.md).
 
 ## Open
-- Generate do's and don'ts (proposed): a **collapsed** disclosure under the chip list, above the Generate button, titled "How to get the most out of Chef Llama" (not a dialog, not on `/`). Keep: Diet first; leftover chips; free cooks then Credits; one Recipe per Generate; ≥3 chips / max 16; Staples assumed; chips override this run and get swapped, not ignored; an AI-untested disclaimer; Save if you like it; metric and NZ names. Still to pick: always visible vs collapsed; whether a failed Generate refunds; a lawyer pass on the allergy wording.
+- Generate do's and don'ts (proposed): a **collapsed** disclosure under the chip list, above the Generate button, titled "How to get the most out of Chef Llama" (not a dialog, not on `/`). Keep: Diet first; leftover chips; free cooks then Credits; one Recipe per Generate; ≥3 chips / max 16; Staples assumed; allergies always win (conflicting pantry Chips are swapped and highlighted); this-run toggles may change flags / servings / time / kcal but never drop an allergy; an AI-untested disclaimer; Save if you like it; metric and NZ names. Still to pick: always visible vs collapsed; whether a failed Generate refunds; a lawyer pass on the allergy wording.
 - Popular: does the author's own save count, and the counting mechanism (see [caching.md](./caching.md#other-open-items)).
-- Diet edit surface after first run: a popover or a `/diet` page.
 - Account page scope and usage bars (see [auth.md](./auth.md#open)).
 - Pending art and the robot design (draft).
 - Exact `/about` `/pricing` `/how-to` paths.
