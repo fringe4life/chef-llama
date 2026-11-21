@@ -46,7 +46,7 @@ Workstreams **#3–#14**. Later issues through **#92**. Round 31 filed **#79** c
 | 84 | Session-gated /account spend + packs (issue title still Clerk-gated) | `research`, `feature`, `docs` | — | https://github.com/fringe4life/chef-llama/issues/84 |
 | 88 | v1 every Generate is public-by-URL; private Recipe store is v2 | `research`, `feature`, `docs` | — | https://github.com/fringe4life/chef-llama/issues/88 |
 | 89 | Proposal: Starter pack (once-only NZD trial SKU) | `proposal`, `docs`, `research`, `feature` | — | https://github.com/fringe4life/chef-llama/issues/89 |
-| 90 | Proposal: Popular cap, cache-hit index, quiet-week all-time | `proposal`, `docs`, `research` | — | https://github.com/fringe4life/chef-llama/issues/90 |
+| 90 | Proposal: Popular cap, cache-hit index, quiet-week all-time | `proposal`, `docs`, `research` | **superseded** for ranking: Popular is ingredients (pairs/triples), not recipe saves — see [product.md](./product.md#popular) | https://github.com/fringe4life/chef-llama/issues/90 |
 | 91 | Proposal: Generate do’s and don’ts near Generate | `proposal`, `docs`, `design` | — | https://github.com/fringe4life/chef-llama/issues/91 |
 | 92 | Proposal: Reconsider guest Generate | `proposal`, `docs`, `research`, `feature` | — | https://github.com/fringe4life/chef-llama/issues/92 |
 

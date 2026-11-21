@@ -24,16 +24,16 @@ Skip Paper MCP during exploration (**100 calls/week**). Do not Figma MCP. Do not
 
 | Surface | URL today | Design as |
 |---|---|---|
-| Site landing | `/` | Brochure + top 5 Popular (SSR HTML, not an island). Cook CTA = plain HTML form/links to `/pantry?i=`. |
+| Site landing | `/` | Brochure + top 5 Popular **ingredient** combinations (SSR HTML, not an island). Cook CTA = plain HTML form/links to `/pantry?i=`. |
 | Terms / privacy | `/terms` `/privacy` | Long legal. Minimal chrome. |
-| Pantry | `/pantry` | Chips (≥3), Diet switcher + this-run toggles (flags / servings / time / kcal; allergies always win), generate, credits pill. Pending **stays here** ([cupboard.svg](./designs/cupboard.svg) **draft**), then goto recipe. No extra routes. No Code. |
+| Pantry | `/pantry` | Chips (≥3), Diet switcher + this-run toggles (flags / servings / time / kcal / skill / method / devices; allergies always win), generate, credits pill. Pending **stays here** ([cupboard.svg](./designs/cupboard.svg) **draft**), then goto recipe. No extra routes. No Code. |
 | Recipe | `/recipes/[slug]` | Method, `kcal` + `kcal_over`, swaps if `kind: "swap"` (allergy or flag conflict; highlighted), which Diet it was cooked for, save. Servings scaling is v2. Narrow = same route as sheet. |
 | Saved | `/saved` | List. Empty state. |
-| **Diet** | dialog + switcher on `/pantry` | Blocking first-run creates Diet #1: name, flags, allergies, optional kcal, servings default 2, optional max time. Not `/kitchen`. **v1 multi-Diet:** switcher sets active Diet before Generate; add / rename / edit / delete reuse the dialog; delete-active falls back to another Diet. |
+| **Diet** | dialog + switcher on `/pantry` | Blocking first-run creates Diet #1: name, flags, allergies, optional kcal, servings default 2, optional max time, skill (three levels), method + optional devices. Not `/kitchen`. **v1 multi-Diet:** switcher sets active Diet before Generate; add / rename / edit / delete reuse the dialog; delete-active falls back to another Diet. |
 | **Sign-in** | `/sign-in` | Google + email OTP only. Last-used badge. Chef Llama chrome around Better Auth. Passkeys later. |
 | **Exhausted / topup** | dialog then Checkout | Pack SKUs **NZD $8 / $16 / $32** → 20 / 50 / 120 Credits. No card fields. Return to `/pantry`. |
 | **404** | `+error.svelte` | Site vs `(app)` chrome. Popular hole uses boundary, not this. |
-| **Popular** | `/` top 5 + `/popular` | Cards → `/recipes/[slug]`. Empty / stale list. v2 `/popular/[type]` later. |
+| **Popular** | `/` top 5 + `/popular` | Popular **ingredients** (pairs/triples). Cards → `/pantry?i=`. Empty / stale list. v2 `/popular/[type]` later. |
 | Account | popover | Theme radios, credits, sign out. |
 
 Photo and chat: **slots only**, disabled.

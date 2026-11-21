@@ -11,20 +11,16 @@
 ### What is indexed
 | Route | Index | Notes |
 |---|---|---|
-| `/`, `/popular` | yes | Edge SSR + Workers Cache (see [caching.md](./caching.md#public-pages-are-0-js-sveltekit-ogygia-dropped)) |
+| `/`, `/popular` | yes | Edge SSR + Workers Cache. Pages list **Popular ingredients** (pairs/triples), not Recipes (see [product.md](./product.md#popular); [caching.md](./caching.md#public-pages-are-0-js-sveltekit-ogygia-dropped)) |
 | `/about` `/pricing` `/how-to` `/terms` `/privacy` | yes | Prerendered `(static)` pages |
-| `/recipes/[slug]` on Popular | yes | Listed in `sitemap-popular.xml` |
+| `/recipes/[slug]` formerly "on Popular" | **PENDING** | Old rule indexed recipes that were on a Popular *recipe* list via `sitemap-popular.xml`. Popular is now ingredient combinations, so recipe indexation / sitemap membership tied to Popular is **PENDING** until the ID set and sitemap shape are decided. Until then, treat generated recipes as **`noindex`** by default. |
 | every other `/recipes/[slug]` | **`noindex`** | Public, unauthenticated SSR so links unfurl |
 | `/pantry` `/saved` `/sign-in` | no | Session pages: `noindex` and `robots.txt` Disallow |
 
 - **Every Generate is public by URL.** There is no privacy picker in v1 (a private recipe store is v2, see [v2.md](./v2.md)). `/recipes/[slug]` is never auth-gated: gating it would break link previews (Facebook's `facebookexternalhit`, Slack, iMessage fetch it anonymously).
 - **`noindex` with a robots meta tag, not a `robots.txt` Disallow**, on recipe pages, so crawlers can fetch the page and see the `noindex`.
-- **A recipe's cached page is purged when it joins or leaves Popular**, so its robots meta flips without waiting out the one-year edge TTL:
-  - **Who:** the weekly Popular cron, in the same run that rebuilds the Popular snapshot (and so `sitemap-popular.xml`). It already diffs the new snapshot against the old one; the recipes that entered or left any Popular list are the ones to purge.
-  - **How:** a Workers Cache purge **by tag**, `recipe-{ulid}` for each of those recipes, in the same call as the changed `popular*` tags (one call, at most 100 tags; Workers Cache always gets the Free-tier purge limit of 5 calls a minute, so one call a week is far inside it). Workers Cache has no purge-by-URL mode, and the tags already exist.
-  - Workers Cache purges must run in the Worker that filled the cache: only the **Site Worker** can purge it, and a zone purge (dashboard or API) does not touch it. That is why the cron calls the Site Worker **over a service binding**; the Site Worker runs `cache.purge({ tags })`.
-  - The purge route is reachable only through that binding from the cron Worker: no custom domain, route or `workers.dev` hostname for it, and anything that didn't arrive through the binding is rejected. Guard details in [caching.md](./caching.md#popular-snapshot-cron-not-per-save).
-- One canonical URL per recipe: `/recipes/{title}-{8-char suffix}`. A bare suffix or wrong title part gets a SvelteKit `redirect(301)` to the canonical slug; unknown is 404; deleted is 410 and leaves the Popular sitemap. None of these are cached (see [data.md](./data.md) and [caching.md](./caching.md#headers-by-route)).
+- **Weekly Popular purge / recipe robots flip — PENDING.** The previous plan purged `recipe-{ulid}` when a recipe joined or left a Popular *recipe* list (one-year edge TTL + robots meta). Popular ingredients do not put Recipes on that list, so that purge path, the one-year "on Popular" TTL, and any recipe listing in `sitemap-popular.xml` are **PENDING** until the canonical ingredient ID set and edge cases are decided. Do **not** change cron code yet. The service-binding purge route and guards remain as documented in [caching.md](./caching.md#popular-snapshot-cron-not-per-save) for whatever tags the eventual job needs.
+- One canonical URL per recipe: `/recipes/{title}-{8-char suffix}`. A bare suffix or wrong title part gets a SvelteKit `redirect(301)` to the canonical slug; unknown is 404; deleted is 410. None of these are cached (see [data.md](./data.md) and [caching.md](./caching.md#headers-by-route)).
 
 ### Head tags
 - **Kit's own `<svelte:head>`**, with values from `load`, not from remote functions. **No SEO library:** not `svelte-seo` (its 2.0 tests pin Kit 2, and its JSON-LD support would go unused), not `svelte-meta-tags`.
@@ -43,13 +39,13 @@
 ### Sitemaps
 - **Two sitemaps plus an index; `robots.txt` lists the index:**
   - **`/sitemap.xml`, built at build time by svelte-sitemap** (Vite plugin in `vite.config.ts`). It lists the prerendered `(static)` pages it finds, plus `/` and `/popular` through its `additional` option (they are edge SSR, so it can't find them). Settings: `outDir: '.svelte-kit/cloudflare'`, `ignore: ['404.html']`. That is the folder Alchemy's SvelteKit adapter writes and uploads as static assets, and the plugin runs after the adapter, so the file ships as a static asset. Box-tested with Kit 3.2 and both adapter-cloudflare and Alchemy's own adapter (16 Nov 2026 NZDT).
-  - **`/sitemap-popular.xml`, an edge route** (`+server.ts` in `(site)`) that reads the Popular snapshot from KV (`popular:all`) and lists those recipes as `/recipes/{slug}`. `publicCache` with tag `popular`, so the weekly cron's `popular` purge refreshes it whenever the snapshot changes. No R2 or extra KV write.
+  - **`/sitemap-popular.xml` — PENDING rewrite.** Previously an edge route reading the Popular *recipe* snapshot from KV (`popular:all`) and listing `/recipes/{slug}`. Popular is now **ingredient combinations**, so what this sitemap lists (if anything beyond `/` and `/popular` themselves, which already sit in `sitemap.xml`) is **PENDING** until the ID set and edge cases are decided. Keep the route + `publicCache` tag `popular` skeleton; do not ship a new cron until then.
   - **`/sitemap-index.xml`, an edge route** that lists the two sitemaps above. Same `publicCache` and `popular` tag as the Popular sitemap.
 - **`<lastmod>`:**
-  - Each recipe URL in `/sitemap-popular.xml` carries the **recipe's creation time** (or its last edit, if recipes ever become editable). Google uses `<lastmod>` only when it is "consistently and verifiably" accurate for the page itself ([Google: build a sitemap](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap)), so a weekly stamp on unchanged pages would risk Google ignoring it site-wide.
-  - In `/sitemap-index.xml`, the `sitemap-popular.xml` entry's `<lastmod>` is the **time the weekly snapshot was generated** (stored with the snapshot in KV), and the `sitemap.xml` entry's is the build time.
+  - **PENDING** for entries inside `/sitemap-popular.xml` once its contents are decided. Google uses `<lastmod>` only when it is "consistently and verifiably" accurate for the page itself ([Google: build a sitemap](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap)).
+  - In `/sitemap-index.xml`, the `sitemap-popular.xml` entry's `<lastmod>` remains the **time the weekly snapshot was generated** (once that job exists again), and the `sitemap.xml` entry's is the build time.
 - svelte-sitemap always writes `sitemap.xml` (no file-name option), which is why the build-time file keeps that name, the Popular one gets its own, and a separate index file ties them together.
-- Account deletion removes that Cook's recipes from the Popular snapshot, so they leave `sitemap-popular.xml` with the next `popular` purge.
+- Account deletion still removes that Cook's Generate rows and ingredient-set contributions; any sitemap / Popular KV cleanup tied to the old recipe list is **PENDING** with the cron rewrite.
 
 ### robots.txt and AI crawlers
 - Origin `robots.txt/+server.ts`:
@@ -69,6 +65,7 @@
 - Crawler GETs on public pages should be Workers Cache hits, so search traffic never touches D1, KV or Vectorize. Public pages send no `Set-Cookie` and no `Vary: Cookie`, and their bodies are the same for every visitor. Mechanism: [caching.md](./caching.md).
 
 ## Open
+- **Popular ingredients sitemap / purge / recipe indexation:** what `/sitemap-popular.xml` contains; whether any `/recipes/[slug]` is ever indexable after Popular stopped being a recipe list; weekly purge tags once the KV snapshot is ingredient combinations. All **PENDING** on the canonical ID set (see [product.md](./product.md#open), [data.md](./data.md#open)).
 - **v2 `/popular/[type]` lists in `/sitemap-popular.xml`.**
 - **CI check** that the committed `og:image` PNG matches the SVG (optional).
 - **Markdown copies of pages for agents** (later, not v1): `/recipes/{slug}.md` (and Site pages) with a canonical `Link` header and `X-Robots-Tag: noindex`, cache tag `recipe-{ulid}` so the same purge covers it, kept out of the sitemaps; plus `<link rel="alternate" type="text/markdown">` on the HTML page. Prefer a `.md` URL over `Accept: text/markdown` on the same URL, which would need `Vary: Accept` on cached pages. Cloudflare's Markdown for Agents does this conversion at the edge, but it needs the Pro plan, and it labels pages `ai-train=yes` unless the origin sends its own `Content-Signal` header.
@@ -81,4 +78,4 @@
 - **`hreflang="en-NZ"` + `x-default` on `/`:** was listed as optional. Add or skip.
 - **Preview stages:** preview Custom Domains don't send `X-Robots-Tag: noindex` automatically. Add the header on non-production stages as a backstop behind Access (see [previews.md](./previews.md)).
 - **v2 `/popular/[type]` pages:** indexable, and in the sitemap? See [v2.md](./v2.md).
-- **Guest Generate (if adopted):** guest recipes are never on Popular, so they stay `noindex` and out of the sitemaps (see [auth.md](./auth.md#open)).
+- **Guest Generate (if adopted):** guest Generates never contribute to Popular ingredient counts; guest recipes stay `noindex` and out of any recipe sitemaps (see [auth.md](./auth.md#open)).

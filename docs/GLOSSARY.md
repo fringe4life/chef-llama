@@ -33,8 +33,16 @@ A closed list the Recipe may add if forgotten: water, salt, pepper, oil, butter.
 _Avoid_: Optional extra, shopping item, garnish, milk (when dairy is excluded)
 
 **Diet**:
-One named set of saved defaults: name, diet flags (vegan / vegetarian / gluten_free), allergies, optional kcal, servings (default 2), optional max minutes. A Cook may have many Diets in v1; one is **active** for Generate (Diet switcher on `/pantry`). First login creates Diet #1 before the first Generate. This-run toggles may change flags, servings, time, and kcal for one cook; **allergies always win** and cannot be removed or ignored. Each Recipe records which Diet it was cooked for.
+One named set of saved defaults: name, diet flags (vegan / vegetarian / gluten_free), allergies, optional kcal, servings (default 2), optional max minutes, **skill** (three levels), **method** (primary cooking method) and optional **devices**. A Cook may have many Diets in v1; one is **active** for Generate (Diet switcher on `/pantry`). First login creates Diet #1 before the first Generate. This-run toggles may change flags, servings, time, kcal, skill, method, and devices for one cook; **allergies always win** and cannot be removed or ignored. Each Recipe records which Diet it was cooked for.
 _Avoid_: Kitchen, Profile, Pantry prefs, account settings, Better Auth user metadata, "chips override Diet"
+
+**Skill**:
+A v1 Diet field with three levels, plus a this-run toggle. It steers technique choice, step detail, parallel steps, and time estimates in Generate.
+_Avoid_: difficulty as a Recipe kind, free-text skill, hiding skill only in the prompt with no Diet field
+
+**Method / devices**:
+Diet cooking gear. `method` is the primary pick from the closed list fry-pan | saucepan | oven | air-fryer | slow-cooker | pressure-cooker | grill | no-cook. `devices` is optional (same enum, max 3 in the schema); product intent is primary plus a second. See [product.md](./product.md#diet).
+_Avoid_: free-text appliances, treating devices as the only method field, inventing gear outside the picklist
 
 **Swap**:
 A Chip Llama replaces because it conflicts with an **allergy** (always) or with remaining diet-flag hard constraints after this-run toggles. Swapped Chips are highlighted and never used as-is. Recorded only on Recipes with `kind: "swap"` as `{ from, to }[]`.
@@ -77,8 +85,8 @@ On a Recipe detail page, change the person count without a new Generate. Serving
 _Avoid_: second Generate, spice-law in the model, scaling cook time
 
 **Popular**:
-Public Recipes on `/` (top 5) and `/popular`. v1: rolling 7-day saves of public-by-URL rows, cap 20, ≥5 distinct savers, cron KV snapshot, not anonymous views. How those saves are counted (bare `save_count` vs a 7-day saver ledger) is **open**.
-_Avoid_: HN gravity, view-count ranking, ogygia island, per-save rebuild, ranking private documents, assuming a bare `save_count` is enough
+**Popular ingredients** on `/` (top combinations) and `/popular`: common pantry **pairs** and **triples** from Generates over a rolling 7 days, with a minimum distinct-user threshold — not a leaderboard of saved Recipes, not anonymous views. Each Generate records a sorted set of canonical ingredient IDs; the weekly job ranks combinations. Cron, cache, and sitemap updates are **PENDING** until the ID set and edge cases are decided.
+_Avoid_: Popular recipes, HN gravity, view-count or save-count recipe ranking, ogygia island, per-save rebuild, ranking private documents
 
 **Tool**:
 A page tool that calls the same command as a Pantry control (`add_ingredients`, `remove_ingredients`, `make_recipe`, `topup`).

@@ -5,6 +5,7 @@
 ## Decided
 - **Observability v1**: Workers Paid **Logs + Issues + Analytics Engine** `writeDataPoint` per Generate. **No Sentry in v1.** No `@effect/opentelemetry` NodeSdk on workerd.
 - **Workers are not always-on**: rely on cache + a small isolate, not min-instances or cron pings. No cron ping of `/`.
+- **Popular ingredients weekly job — PENDING.** Product direction is a Jobs Worker weekly aggregate of common pantry **pairs/triples** (canonical ingredient IDs, 7-day window, distinct-user threshold) into KV for `/` and `/popular` — not a Popular *recipes* save ranking. Cron code, cache tags / purge, and `sitemap-popular.xml` stay unchanged until the ID set and edge cases are decided. See [product.md](./product.md#popular), [data.md](./data.md#popular-ingredient-sets), [caching.md](./caching.md#popular-snapshot-cron-not-per-save), [seo.md](./seo.md).
 - **Request billing with Workers Cache on:** every request to the Site Worker is billed, including cache hits, static-asset requests and service-binding calls; cache storage is free. Workers Paid includes 10M requests/month, then US$0.30 per million. Details: [caching.md](./caching.md#decided).
 - **Production exceptions**: Cloudflare Workers Issues → Cursor Automation → draft fix PRs. An **event** path, not a fourth scheduled hunt. Don't poll Logs from GitHub Actions.
 - **Three scheduled Cursor Automations** (the cap is 3). Premium is required. Spend cap. PR creation off unless a run is explicitly allowed to open one draft digest. Never the cook model or Workers AI (Neurons are account-wide and would eat the gift). Details and cost: [factory.md](./factory.md).
@@ -38,6 +39,7 @@
 
 ## Open
 - **Domain spelling check:** confirm the exact registered spelling in the Cloudflare dashboard before anything is wired up (Custom Domains, Access, WAF, DNS/mail records, OAuth clients, Stripe webhook). The project Gmail's Cloudflare verification email (14 Nov) said `cheflamma.nz`.
+- **Popular ingredients cron:** schedule confirmation and observability once the PENDING rewrite ships (pair/triple counts, empty snapshot, purge failures). Blocked on the canonical ID set (see [product.md](./product.md#open)).
 - **Architecture hunt cadence:** fortnightly or weekly.
 - **Logging still open:** Coinnich's explicit yes on the whole C15 design beyond the decided pieces above; the C16 edge list (where `makeLoggerLive` is provided); the user-hash secret name; whether to log a short prompt hash or length instead of any prompt text; whether `Website.SvelteKit` passes `observability` through, and whether `cf-ray` is on incoming requests (check on the first preview).
 - **Recommendations** (not decisions): `Effect.withLogSpan` durations now (free on the same log object); real traces only on `pr-{n}` previews when chasing performance, via Alchemy `Cloudflare.Telemetry()` (needs compat date ≥ 2026-07-28) or `observability.traces` ([Workers tracing](https://developers.cloudflare.com/workers/observability/traces/), updated 12 Nov 2026; early beta; counts toward the same GB allowance from 1 Dec). Leave traces off on prod by default.

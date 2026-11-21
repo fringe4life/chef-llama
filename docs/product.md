@@ -21,7 +21,7 @@
 | Group | Routes | Notes |
 |---|---|---|
 | `(static)` | `/about` `/pricing` `/how-to` `/terms` `/privacy` `/llms.txt` | prerender, `csr=false` |
-| `(site)` | `/` (top 5 + HTML form → `/pantry?i=`), `/popular`, `/popular/[type=popularType]` (v2), `/recipes/[slug=slug]`, `/sitemap-popular.xml`, `/sitemap-index.xml` | edge SSR, `csr=false`, Workers Cache; `/` is not prerendered |
+| `(site)` | `/` (top 5 Popular ingredients + HTML form → `/pantry?i=`), `/popular`, `/popular/[type=popularType]` (v2), `/recipes/[slug=slug]`, `/sitemap-popular.xml`, `/sitemap-index.xml` | edge SSR, `csr=false`, Workers Cache; `/` is not prerendered. Popular surfaces list **ingredient combinations**, not Recipes (see [Popular](#popular)). Sitemap / cron / cache behaviour for Popular is **PENDING** (see [seo.md](./seo.md), [caching.md](./caching.md)). |
 | — | `/sign-in`, `/api/auth/[...all]`, `robots.txt` | `/sitemap.xml` is a build-time static asset from svelte-sitemap, not a Kit route (see [seo.md](./seo.md#sitemaps)) |
 | `(app)` | `/pantry` `/saved` `/account` `/account/usage` `/account/packs` | signed in, `csr=true`, `private, no-store` |
 - Folder layout: [folder-organisation.md](./folder-organisation.md).
@@ -35,15 +35,30 @@
 
 ### Diet
 - **Required** before the first Generate: a first-run **blocking dialog on `/pantry`** creates the first Diet.
-  - Fields: `name` (default Home); `flags[]` from the closed list vegan | vegetarian | gluten_free (hard, empty OK); allergy chips via the chip canonicalizer (hard, max 16, empty OK); optional `kcal` (target → `kcal_over`); `servings` 1–12, default 2; optional `max_minutes` (target, no overtime kind). No keto/halal/paleo in v1.
-- **Allergies always win.** A pantry Chip that conflicts with an allergy is **swapped** and highlighted, never used as-is. This-run toggles may tighten or loosen diet **flags** (for example drop vegetarian for one cook) and change servings, time, and kcal, but they can **never** remove or ignore an allergy.
+  - Fields: `name` (default Home); `flags[]` from the closed list vegan | vegetarian | gluten_free (hard, empty OK); allergy chips via the chip canonicalizer (hard, max 16, empty OK); optional `kcal` (target → `kcal_over`); `servings` 1–12, default 2; optional `max_minutes` (target, no overtime kind); **`skill`** (closed three-level picklist — see below); **`method`** and optional **`devices`** (see below). No keto/halal/paleo in v1.
+- **Skill level** is a v1 Diet field with **three levels**, plus a **this-run toggle** on `/pantry`. It steers the cook: technique choice, step detail, whether steps may run in parallel, and time estimates. Exact level labels are Open.
+- **Cooking method and devices** (v1 Diet fields; Valibot shape, also in [data.md](./data.md) / [ai.md](./ai.md)):
+
+  ```ts
+  method: v.picklist(['fry-pan','saucepan','oven','air-fryer','slow-cooker','pressure-cooker','grill','no-cook'])
+  devices: v.optional(v.pipe(v.array(methodEnum), v.maxLength(3)))
+  ```
+
+  Product intent: a **primary** `method`, plus optionally a **second** device for that cook. The schema allows up to three entries in `devices`; v1 UI aims at primary + one optional second. This-run toggles may change method / devices for one Generate.
+- **Allergies always win.** A pantry Chip that conflicts with an allergy is **swapped** and highlighted, never used as-is. This-run toggles may tighten or loosen diet **flags** (for example drop vegetarian for one cook) and change servings, time, kcal, skill, method, and devices, but they can **never** remove or ignore an allergy.
 - **Multi-Diet in v1:** `/pantry` has a Diet switcher that sets the active Diet before Generate. Cooks can add, rename, edit, and delete Diets (reuse the first-run dialog). Deleting the active Diet falls back to another remaining Diet. Each Recipe records which Diet it was cooked for.
 - Storage is the per-user Diet DO with `getActive()` (see [data.md](./data.md#diet-lives-in-a-durable-object)).
 
 ### Popular
-- Rank by **rolling 7-day saves of public-by-URL rows**, not views. Cap 20, at least 5 distinct savers, cron KV snapshot. When the 7-day window is thin, the rest is **filled from the all-time ranking**. `/` shows the top 5; `/popular` is a v1 URL. Details: [caching.md](./caching.md#popular-snapshot-cron-not-per-save).
+- Popular is **Popular ingredients**, not Popular recipes. It surfaces common pantry combinations so Cooks can start from what others generate with — not a leaderboard of saved Recipe pages.
+- **Planned ranking (Decided direction):**
+  1. Normalise each pantry Chip to a **canonical ingredient ID**.
+  2. On each Generate, record the **sorted ID set** for that run (see [data.md](./data.md)).
+  3. A weekly job counts the most common **pairs** and **triples** over the last **7 days**, with a **minimum distinct-user** threshold (exact threshold Open).
+- `/` shows the top combinations (still "top 5" slots); `/popular` is the v1 list URL. Cards seed `/pantry?i=` (same shape as the landing form), not `/recipes/[slug]`.
 - Popular is **SSR HTML**, not an island. An unknown `/popular/[type]` is a plain uncached 404.
 - v2 `/popular/[type]`: a closed list; allergy tags fail closed.
+- **PENDING** until the canonical ID set and edge cases are decided: weekly cron rewrite, KV snapshot shape, Workers Cache tags / purge, one-year recipe edge TTL tied to "on Popular", and `sitemap-popular.xml` contents. Do **not** change cron code until those land. See [caching.md](./caching.md#popular-snapshot-cron-not-per-save), [seo.md](./seo.md), [ops.md](./ops.md), [data.md](./data.md).
 
 ### Generate pending
 - Stay on `/pantry` while Generate runs, until the Valibot decode succeeds and the row has an id, then `goto('/recipes/{slug}')`. A Recipe URL is always a finished row; never land a live job there.
@@ -58,7 +73,7 @@
 - Living feature-detect (`light-dark`, `showModal`, `popover`, `sessionStorage`) before a Checkout Session (see [payments.md](./payments.md)).
 
 ### Icons
-- No Lucide / Simple Icons / Tabler / Phosphor / Iconify. Chrome pictograms are custom animated SVG. OAuth marks come from official kits (see [theme.md](./theme.md#icons)).
+- No Lucide / Simple Icons / Tabler / Phosphor / Iconify. Chrome pictograms are custom animated SVG. OAuth marks come from official kits (see [theme.md](./theme.md#icons)). **Kombai owns icon artwork**; there is no separate icons topic file.
 
 ### Tools vs buttons
 - `add_ingredients`, `remove_ingredients` and `topup` are free. `make_recipe` costs 1 Credit after the gift. The brochure chat composer is rejected.
@@ -67,8 +82,9 @@
 - **Three scheduled Cursor Automations**: architecture hunt, **agent-friction retro every 3 days** (the third Automation) on Grok 4.6 medium, and the monthly deps review. **No slop cron**; `eslint-plugin-slop` runs in lint instead (see [lint.md](./lint.md)). Details: [factory.md](./factory.md); ops summary: [ops.md](./ops.md).
 
 ## Open
-- Generate do's and don'ts (proposed): a **collapsed** disclosure under the chip list, above the Generate button, titled "How to get the most out of Chef Llama" (not a dialog, not on `/`). Keep: Diet first; leftover chips; free cooks then Credits; one Recipe per Generate; ≥3 chips / max 16; Staples assumed; allergies always win (conflicting pantry Chips are swapped and highlighted); this-run toggles may change flags / servings / time / kcal but never drop an allergy; an AI-untested disclaimer; Save if you like it; metric and NZ names. Still to pick: always visible vs collapsed; whether a failed Generate refunds; a lawyer pass on the allergy wording.
-- Popular: does the author's own save count, and the counting mechanism (see [caching.md](./caching.md#other-open-items)).
+- Generate do's and don'ts (proposed): a **collapsed** disclosure under the chip list, above the Generate button, titled "How to get the most out of Chef Llama" (not a dialog, not on `/`). Keep: Diet first; leftover chips; free cooks then Credits; one Recipe per Generate; ≥3 chips / max 16; Staples assumed; allergies always win (conflicting pantry Chips are swapped and highlighted); this-run toggles may change flags / servings / time / kcal / skill / method / devices but never drop an allergy; an AI-untested disclaimer; Save if you like it; metric and NZ names. Still to pick: always visible vs collapsed; whether a failed Generate refunds; a lawyer pass on the allergy wording.
+- **Skill level labels:** the three closed levels (proposed: beginner | intermediate | advanced — not locked).
+- **Popular ingredients:** canonical ingredient ID set; distinct-user threshold; pairs vs triples mix and caps; how Staples and `cooked: true` chips count; whether guest Generates contribute; edge cases for sets larger than three. Cron, cache, and sitemap stay **PENDING** until these are decided (see [caching.md](./caching.md#other-open-items)).
 - Account page scope and usage bars (see [auth.md](./auth.md#open)).
 - Pending art and the robot design (draft).
 - Exact `/about` `/pricing` `/how-to` paths.

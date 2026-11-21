@@ -213,7 +213,7 @@ Prefer these over shadcn JS overlays. Style with Larder variables.
 | Same | Recipe card **⋯** | Save, copy link, not interested. |
 | Same | **Account** control | Menu: theme, credits, sign out. Top-end of header. |
 | Same or compact control | **Diet switcher** on `/pantry` | Sets the active Diet before Generate (v1 multi-Diet). Not a separate `/diet` route. |
-| **`<dialog>`** | **Diet** first-run (blocking) and later add / rename / edit / delete Diets (reuse the same dialog). Also **credits exhausted**, **sign-in required**, and **unsaved leave** on a long detail edit. Skip empty-filter Generate confirm. | `showModal()`, `::backdrop` uses `--foreground` at 40% opacity. Delete-active falls back to another Diet. |
+| **`<dialog>`** | **Diet** first-run (blocking) and later add / rename / edit / delete Diets (reuse the same dialog): name, flags, allergies, kcal, servings, max time, **skill**, **method** / **devices**. Also **credits exhausted**, **sign-in required**, and **unsaved leave** on a long detail edit. Skip empty-filter Generate confirm. | `showModal()`, `::backdrop` uses `--foreground` at 40% opacity. Delete-active falls back to another Diet. |
 | **`<dialog>`** (non-modal, optional) | Recipe detail on small screens as a sheet | If Popover overlay is enough, skip. Prefer a route on desktop, `dialog` sheet on narrow. |
 | **Invokers** (`commandfor` / `popovertarget`) | All of the above | No extra click JS when the browser supports it; small Svelte fallback. |
 

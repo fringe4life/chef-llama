@@ -110,7 +110,7 @@ Still uncertain:
 - Rotation owner, and how bots get Infisical-managed values.
 
 ### Other open items
-- Guest Generate: (a) 1 per day with a signed cookie + Turnstile and no Guest DO, or (c) keep the login gate. The gate stays until this is picked. If (a): hashed IP is burst-only, guest recipes never fill Popular, Save stays login-walled.
+- Guest Generate: (a) 1 per day with a signed cookie + Turnstile and no Guest DO, or (c) keep the login gate. The gate stays until this is picked. If (a): hashed IP is burst-only, guest Generates never fill Popular ingredient counts, Save stays login-walled.
 - Unverified burst numbers (binding 30 / 10 s, R1 20 / 10 s): accept, tighten or defer until traffic exists.
 - Public cache-miss GETs: fail open when the binding is down?
 - Generate form-action path (likely under `/pantry`) and the Stripe webhook path.
