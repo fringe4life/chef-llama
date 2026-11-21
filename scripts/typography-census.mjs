@@ -1,18 +1,46 @@
 #!/usr/bin/env node
 import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const CANVAS_DIR = '.kombai/canvas';
+const DEFAULT_CANVAS_DIR = '.kombai/canvas';
 const MANIFEST = 'typography.manifest.json';
-const PRODUCT = ['account', 'brand', 'chart', 'index', 'landing'];
+/** Specimen plate and superseded monolith — not product surfaces. */
+const NON_PRODUCT = new Set(['type', 'chef-llama']);
 const MANIFEST_SCOPE = ['sizes', 'leadings', 'trackings', 'weights', 'faces'];
 
-const args = process.argv.slice(2);
-const has = (name) => args.includes(name);
-const valueOf = (name, fallback) => {
-  const at = args.indexOf(name);
-  return at === -1 ? fallback : args[at + 1];
+export const leadingToken = (ratio) => {
+  const map = { 1: 'leading-solid', 1.2: 'leading-tight', 1.45: 'leading-ui', 1.55: 'leading-body' };
+  return map[ratio] ?? null;
 };
+
+export const trackingToken = (em) => {
+  const map = { 0: 'zero', '-0.01': 'tracking-tight', '-0.02': 'tracking-display', '0.14': 'tracking-caps' };
+  return map[String(em)] ?? null;
+};
+
+/** Default product scope: every top-level `*.canvas` except NON_PRODUCT. */
+export function listProductCanvasFiles(canvasDir = DEFAULT_CANVAS_DIR, { all = false } = {}) {
+  return readdirSync(canvasDir)
+    .filter((file) => file.endsWith('.canvas'))
+    .filter((file) => {
+      const name = file.replace(/\.canvas$/, '');
+      return all || !NON_PRODUCT.has(name);
+    })
+    .map((file) => join(canvasDir, file))
+    .sort();
+}
+
+export function rowIsViolation(row) {
+  const offSize = row.sizeToken === null && row.sizePx !== null;
+  const offLeading =
+    row.leading === 'unnamed' || (typeof row.leading === 'number' && leadingToken(row.leading) === null);
+  const offTracking =
+    row.tracking === 'unnamed' || (typeof row.tracking === 'number' && trackingToken(row.tracking) === null);
+  const offWeight = row.weight !== null && ![400, 700].includes(row.weight);
+  const offFace = row.face.startsWith('literal:') || row.face === 'inherit';
+  return offSize || offLeading || offTracking || offWeight || offFace;
+}
 
 const stripComments = (raw) =>
   raw
@@ -113,7 +141,7 @@ function faceOf(value, tokens) {
   return `literal:${resolved.split(',')[0].trim()}`;
 }
 
-function collectCanvas(file) {
+export function collectCanvas(file) {
   const raw = readFileSync(file, 'utf8');
   const data = JSON.parse(stripComments(raw));
   const name = file.split('/').pop().replace('.canvas', '');
@@ -125,7 +153,7 @@ function collectCanvas(file) {
   return { name, nodes };
 }
 
-function rowsFor(canvas) {
+export function rowsFor(canvas) {
   const rows = [];
   for (const node of canvas.nodes) {
     const css = [...node.html.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map((m) => m[1]).join('\n');
@@ -194,14 +222,6 @@ function rowsFor(canvas) {
   return rows;
 }
 
-const canvases = readdirSync(CANVAS_DIR)
-  .filter((file) => file.endsWith('.canvas'))
-  .map((file) => join(CANVAS_DIR, file))
-  .filter((file) => has('--all') || PRODUCT.includes(file.split('/').pop().replace('.canvas', '')))
-  .map(collectCanvas);
-
-const rows = canvases.flatMap(rowsFor);
-
 function tally(collection, pick, label) {
   const seen = new Map();
   for (const row of collection) {
@@ -213,81 +233,69 @@ function tally(collection, pick, label) {
   return { label, distinct: entries.length, total: entries.reduce((n, [, c]) => n + c, 0), entries };
 }
 
-const named = (tokenName) => (row, value) => (tokenName(row) === null ? `off-token ${value}` : tokenName(row));
+export function buildReport(rows, scope) {
+  const sizes = tally(rows, (row) => {
+    if (row.sizeToken === null && row.sizePx === null) return 'absent';
+    return row.sizeToken ?? `off-token ${row.sizePx}`;
+  }, 'size');
+  const weights = tally(rows, (row) => (row.weight === null ? 'absent' : `weight ${row.weight}`), 'weight');
+  const faces = tally(rows, (row) => row.face, 'face');
 
-const sizes = tally(rows, (row) => {
-  if (row.sizeToken === null && row.sizePx === null) return 'absent';
-  return row.sizeToken ?? `off-token ${row.sizePx}`;
-}, 'size');
-const weights = tally(rows, (row) => (row.weight === null ? 'absent' : `weight ${row.weight}`), 'weight');
-const faces = tally(rows, (row) => row.face, 'face');
+  const leadings = tally(rows, (row) => {
+    if (row.leading === 'absent') return 'absent';
+    if (row.leading === 'unnamed') return 'unnamed';
+    return leadingToken(row.leading) ?? `off-token ${row.leading}`;
+  }, 'leading');
 
-const leadingToken = (ratio) => {
-  const map = { 1: 'leading-solid', 1.2: 'leading-tight', 1.45: 'leading-ui', 1.55: 'leading-body' };
-  return map[ratio] ?? null;
-};
-const trackingToken = (em) => {
-  const map = { 0: 'zero', '-0.01': 'tracking-tight', '-0.02': 'tracking-display', '0.14': 'tracking-caps' };
-  return map[String(em)] ?? null;
-};
+  const trackings = tally(rows, (row) => {
+    if (row.tracking === 'absent') return 'absent';
+    if (row.tracking === 'unnamed') return 'unnamed';
+    return trackingToken(row.tracking) ?? `off-token ${row.tracking}`;
+  }, 'tracking');
 
-const leadings = tally(rows, (row) => {
-  if (row.leading === 'absent') return 'absent';
-  if (row.leading === 'unnamed') return 'unnamed';
-  return leadingToken(row.leading) ?? `off-token ${row.leading}`;
-}, 'leading');
-
-const trackings = tally(rows, (row) => {
-  if (row.tracking === 'absent') return 'absent';
-  if (row.tracking === 'unnamed') return 'unnamed';
-  return trackingToken(row.tracking) ?? `off-token ${row.tracking}`;
-}, 'tracking');
-
-const coverage = () => {
-  const namedKeys = {
-    sizes: (key) => !key.startsWith('off-token'),
-    leadings: (key) => key.startsWith('leading-'),
-    trackings: (key) => key === 'zero' || key.startsWith('tracking-'),
-    weights: (key) => key === 'weight 400' || key === 'weight 700',
-    faces: (key) => ['sans', 'mono', 'display'].includes(key),
-  };
-  const build = (bucket, accepts) => {
-    const named = bucket.entries.filter(([key]) => accepts(key)).reduce((n, [, count]) => n + count, 0);
-    return {
-      distinct: bucket.distinct,
-      declarations: bucket.total,
-      named,
-      percent: bucket.total ? Number(((named / bucket.total) * 100).toFixed(1)) : 100,
+  const coverage = () => {
+    const namedKeys = {
+      sizes: (key) => !key.startsWith('off-token'),
+      leadings: (key) => key.startsWith('leading-'),
+      trackings: (key) => key === 'zero' || key.startsWith('tracking-'),
+      weights: (key) => key === 'weight 400' || key === 'weight 700',
+      faces: (key) => ['sans', 'mono', 'display'].includes(key),
     };
+    const build = (bucket, accepts) => {
+      const named = bucket.entries.filter(([key]) => accepts(key)).reduce((n, [, count]) => n + count, 0);
+      return {
+        distinct: bucket.distinct,
+        declarations: bucket.total,
+        named,
+        percent: bucket.total ? Number(((named / bucket.total) * 100).toFixed(1)) : 100,
+      };
+    };
+    const byAxis = {
+      sizes: build(sizes, namedKeys.sizes),
+      leadings: build(leadings, namedKeys.leadings),
+      trackings: build(trackings, namedKeys.trackings),
+      weights: build(weights, namedKeys.weights),
+      faces: build(faces, namedKeys.faces),
+    };
+    byAxis.violations = Object.fromEntries(Object.entries(byAxis).map(([axis, bucket]) => [axis, bucket.declarations - bucket.named]));
+    return byAxis;
   };
-  const byAxis = {
-    sizes: build(sizes, namedKeys.sizes),
-    leadings: build(leadings, namedKeys.leadings),
-    trackings: build(trackings, namedKeys.trackings),
-    weights: build(weights, namedKeys.weights),
-    faces: build(faces, namedKeys.faces),
-  };
-  byAxis.violations = Object.fromEntries(Object.entries(byAxis).map(([axis, bucket]) => [axis, bucket.declarations - bucket.named]));
-  return byAxis;
-};
 
-const comboKey = (row) =>
-  [row.face, row.sizeToken ?? `off:${row.sizePx}`, row.weight ?? '-', leadingToken(row.leading) ?? row.leading, trackingToken(row.tracking) ?? row.tracking].join(' | ');
+  const comboKey = (row) =>
+    [row.face, row.sizeToken ?? `off:${row.sizePx}`, row.weight ?? '-', leadingToken(row.leading) ?? row.leading, trackingToken(row.tracking) ?? row.tracking].join(' | ');
 
-const combos = new Map();
-for (const row of rows) {
-  if (row.sizeToken === null) continue;
-  const key = comboKey(row);
-  const entry = combos.get(key) ?? { key, count: 0, nodes: new Set(), samples: [] };
-  entry.count += 1;
-  entry.nodes.add(`${row.canvas}/${row.node}`);
-  if (entry.samples.length < 2) entry.samples.push(`${row.selector} (${row.canvas})`);
-  combos.set(key, entry);
-}
+  const combos = new Map();
+  for (const row of rows) {
+    if (row.sizeToken === null) continue;
+    const key = comboKey(row);
+    const entry = combos.get(key) ?? { key, count: 0, nodes: new Set(), samples: [] };
+    entry.count += 1;
+    entry.nodes.add(`${row.canvas}/${row.node}`);
+    if (entry.samples.length < 2) entry.samples.push(`${row.selector} (${row.canvas})`);
+    combos.set(key, entry);
+  }
 
-const violations = rows
-  .filter((row) => (row.sizeToken === null && row.sizePx !== null) || row.leading === 'unnamed' || row.tracking === 'unnamed' || (row.weight !== null && ![400, 700].includes(row.weight)) || row.face.startsWith('literal:') || row.face === 'inherit')
-  .map((row) => ({
+  const violations = rows.filter(rowIsViolation).map((row) => ({
     where: `${row.canvas}/${row.node}`,
     selector: row.selector,
     size: row.sizeToken ?? row.sizePx,
@@ -297,53 +305,94 @@ const violations = rows
     face: row.face,
   }));
 
-const report = {
-  measuredAt: new Date().toISOString(),
-  scope: canvases.map((c) => c.name).sort(),
-  declarations: rows.length,
-  coverage: coverage(rows),
-  values: {
-    sizes: sizes.entries.map(([key, count]) => ({ key, count })),
-    leadings: leadings.entries.map(([key, count]) => ({ key, count })),
-    trackings: trackings.entries.map(([key, count]) => ({ key, count })),
-    weights: weights.entries.map(([key, count]) => ({ key, count })),
-    faces: faces.entries.map(([key, count]) => ({ key, count })),
-  },
-  combos: [...combos.values()].map((entry) => ({ key: entry.key, count: entry.count, nodes: entry.nodes.size, samples: entry.samples })).sort((a, b) => b.nodes - a.nodes || b.count - a.count),
-  violations,
-};
-
-const line = (label, bucket) => `${label.padEnd(9)} ${String(bucket.distinct).padStart(3)} distinct  ${String(bucket.total).padStart(4)} decls  ${bucket.entries.slice(0, 6).map(([k, c]) => `${k} x${c}`).join(', ')}`;
-
-if (!has('--quiet')) {
-  console.log(`typography census  scope: ${report.scope.join(', ')}`);
-  console.log(`${report.declarations} typography declarations\n`);
-  console.log(line('sizes', sizes));
-  console.log(line('leadings', leadings));
-  console.log(line('trackings', trackings));
-  console.log(line('weights', weights));
-  console.log(line('faces', faces));
-  console.log('\ncoverage', JSON.stringify(report.coverage));
-  console.log(`combinations ${combos.size}, violations ${violations.length}`);
-  for (const violation of violations.slice(0, 25)) console.log('  !', JSON.stringify(violation));
-  if (violations.length > 25) console.log(`  ... ${violations.length - 25} more`);
-}
-
-if (has('--json')) writeFileSync(valueOf('--json', 'typography.census.json'), `${JSON.stringify(report, null, 2)}\n`);
-
-if (has('--write') && existsSync(MANIFEST)) {
-  const manifest = JSON.parse(readFileSync(MANIFEST, 'utf8'));
-  manifest.census = {
-    measuredAt: report.measuredAt,
-    scope: report.scope,
-    declarations: report.declarations,
-    coverage: report.coverage,
-    values: report.values,
-    combinations: report.combos.length,
-    violations: report.violations.length,
+  return {
+    measuredAt: new Date().toISOString(),
+    scope: [...scope].sort(),
+    declarations: rows.length,
+    coverage: coverage(),
+    values: {
+      sizes: sizes.entries.map(([key, count]) => ({ key, count })),
+      leadings: leadings.entries.map(([key, count]) => ({ key, count })),
+      trackings: trackings.entries.map(([key, count]) => ({ key, count })),
+      weights: weights.entries.map(([key, count]) => ({ key, count })),
+      faces: faces.entries.map(([key, count]) => ({ key, count })),
+    },
+    combos: [...combos.values()].map((entry) => ({ key: entry.key, count: entry.count, nodes: entry.nodes.size, samples: entry.samples })).sort((a, b) => b.nodes - a.nodes || b.count - a.count),
+    violations,
+    buckets: { sizes, leadings, trackings, weights, faces },
   };
-  writeFileSync(MANIFEST, `${JSON.stringify(manifest, null, 2)}\n`);
-  if (!has('--quiet')) console.log(`\n${MANIFEST} census block updated`);
 }
 
-if (has('--strict') && violations.length > 0) process.exitCode = 1;
+export function runCensus({
+  canvasDir = DEFAULT_CANVAS_DIR,
+  all = false,
+  quiet = false,
+  jsonPath = null,
+  writeManifest = false,
+  strict = false,
+} = {}) {
+  const files = listProductCanvasFiles(canvasDir, { all });
+  const canvases = files.map(collectCanvas);
+  const rows = canvases.flatMap(rowsFor);
+  const report = buildReport(rows, canvases.map((c) => c.name));
+  const { sizes, leadings, trackings, weights, faces } = report.buckets;
+
+  const line = (label, bucket) => `${label.padEnd(9)} ${String(bucket.distinct).padStart(3)} distinct  ${String(bucket.total).padStart(4)} decls  ${bucket.entries.slice(0, 6).map(([k, c]) => `${k} x${c}`).join(', ')}`;
+
+  if (!quiet) {
+    console.log(`typography census  scope: ${report.scope.join(', ')}`);
+    console.log(`${report.declarations} typography declarations\n`);
+    console.log(line('sizes', sizes));
+    console.log(line('leadings', leadings));
+    console.log(line('trackings', trackings));
+    console.log(line('weights', weights));
+    console.log(line('faces', faces));
+    console.log('\ncoverage', JSON.stringify(report.coverage));
+    console.log(`combinations ${report.combos.length}, violations ${report.violations.length}`);
+    for (const violation of report.violations.slice(0, 25)) console.log('  !', JSON.stringify(violation));
+    if (report.violations.length > 25) console.log(`  ... ${report.violations.length - 25} more`);
+  }
+
+  if (jsonPath) writeFileSync(jsonPath, `${JSON.stringify(report, null, 2)}\n`);
+
+  if (writeManifest && existsSync(MANIFEST)) {
+    const manifest = JSON.parse(readFileSync(MANIFEST, 'utf8'));
+    manifest.census = {
+      measuredAt: report.measuredAt,
+      scope: report.scope,
+      declarations: report.declarations,
+      coverage: report.coverage,
+      values: report.values,
+      combinations: report.combos.length,
+      violations: report.violations.length,
+    };
+    writeFileSync(MANIFEST, `${JSON.stringify(manifest, null, 2)}\n`);
+    if (!quiet) console.log(`\n${MANIFEST} census block updated`);
+  }
+
+  return { report, exitCode: strict && report.violations.length > 0 ? 1 : 0 };
+}
+
+function main(argv = process.argv.slice(2)) {
+  const has = (name) => argv.includes(name);
+  const valueOf = (name, fallback) => {
+    const at = argv.indexOf(name);
+    return at === -1 ? fallback : argv[at + 1];
+  };
+
+  void MANIFEST_SCOPE;
+  const { exitCode } = runCensus({
+    canvasDir: valueOf('--dir', DEFAULT_CANVAS_DIR),
+    all: has('--all'),
+    quiet: has('--quiet'),
+    jsonPath: has('--json') ? valueOf('--json', 'typography.census.json') : null,
+    writeManifest: has('--write'),
+    strict: has('--strict'),
+  });
+  if (exitCode !== 0) process.exitCode = exitCode;
+}
+
+const isMain =
+  process.argv[1] !== undefined && resolve(fileURLToPath(import.meta.url)) === resolve(process.argv[1]);
+
+if (isMain) main();

@@ -2,7 +2,7 @@
 
 **Token-cheap loop (round 19 accepted).** Coinnich **GO** 28 Oct 2026. Electron **2.0.160**. Design mode **only** landing `/` + token sticker. Variants/Passes **1**. **Do not** Code-design every route.
 
-**Working draft (not locked, not Code):** the canvases in `.kombai/canvas/` — `index`, `landing`, `account`, `chart`, `pricing`, `type`, and `brand` for the mark; `index.canvas` lists what each holds. The `designs/` HTML mocks are gone; do not cite them. Improve in place. **No Code design, no extra routes** until Coinnich accepts. Fonts: three system families, no webfonts (see [theme.md](./theme.md#fonts)).
+**Working draft (not locked, not Code):** the canvases in `.kombai/canvas/` — `index`, `landing`, `account`, `chart`, `type`, and `brand` for the mark; `index.canvas` lists what each holds. The `designs/` HTML mocks are gone; do not cite them. Improve in place. **No Code design, no extra routes** until Coinnich accepts. Fonts: three system families, no webfonts (see [theme.md](./theme.md#fonts)).
 
 0. Repo CSS: shadcn **names** as `--` vars, `light-dark()` only, full oklch colours (see [theme.md](./theme.md)). Iterate the existing canvas nodes (`.kombai/canvas/`) with **no** Kombai.
 1. Kombai **Design mode**, **one** `/` + token sticker. Settings: Variants **1**, Passes **1**. Attach a Chef Llama `.ds` from that CSS / `design.md`. **Edit Designs** by hand (no prompt). No **Code design**.
@@ -26,7 +26,7 @@ Skip Paper MCP during exploration (**100 calls/week**). Do not Figma MCP. Do not
 |---|---|---|
 | Site landing | `/` | Brochure + top 5 Popular (SSR HTML, not an island). Cook CTA = plain HTML form/links to `/pantry?i=`. |
 | Terms / privacy | `/terms` `/privacy` | Long legal. Minimal chrome. |
-| Pantry | `/pantry` | Chips (≥3), Diet overrides this run, generate, credits pill. Pending **stays here** (loading state not drawn yet; there is no pantry canvas), then goto recipe. No extra routes. No Code. |
+| Pantry | `/pantry` | Chips (≥3), Diet overrides this run, generate, credits pill. Pending **stays here** (a draft placeholder exists in `pantry.canvas`; the final loading design is still to come), then goto recipe. No extra routes. No Code. |
 | Recipe | `/recipes/[slug]` | Method, `kcal` + `kcal_over`, swaps if `kind: "swap"`, save. Servings scaling is v2. Narrow = same route as sheet. |
 | Saved | `/saved` | List. Empty state. |
 | **Diet** | dialog on `/pantry` | Blocking first-run: name, flags, allergies, optional kcal, servings default 2, optional max time. Not `/kitchen`. Multi-Diet picker is v2. |

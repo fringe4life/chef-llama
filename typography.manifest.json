@@ -178,50 +178,53 @@
     }
   },
   "census": {
-    "measuredAt": "2026-11-19T02:37:20.904Z",
+    "measuredAt": "2026-11-21T00:23:04.744Z",
     "scope": [
       "account",
       "brand",
       "chart",
       "index",
-      "landing"
+      "landing",
+      "pantry",
+      "recipe",
+      "saved"
     ],
-    "declarations": 564,
+    "declarations": 748,
     "coverage": {
       "sizes": {
         "distinct": 8,
-        "declarations": 485,
-        "named": 485,
+        "declarations": 662,
+        "named": 662,
         "percent": 100
       },
       "leadings": {
         "distinct": 4,
-        "declarations": 141,
-        "named": 141,
+        "declarations": 222,
+        "named": 222,
         "percent": 100
       },
       "trackings": {
-        "distinct": 4,
-        "declarations": 156,
-        "named": 156,
-        "percent": 100
+        "distinct": 8,
+        "declarations": 236,
+        "named": 228,
+        "percent": 96.6
       },
       "weights": {
         "distinct": 2,
-        "declarations": 195,
-        "named": 195,
+        "declarations": 254,
+        "named": 254,
         "percent": 100
       },
       "faces": {
         "distinct": 3,
-        "declarations": 252,
-        "named": 252,
+        "declarations": 368,
+        "named": 368,
         "percent": 100
       },
       "violations": {
         "sizes": 0,
         "leadings": 0,
-        "trackings": 0,
+        "trackings": 8,
         "weights": 0,
         "faces": 0
       }
@@ -230,99 +233,115 @@
       "sizes": [
         {
           "key": "xs",
-          "count": 216
+          "count": 248
         },
         {
           "key": "sm",
-          "count": 98
+          "count": 154
         },
         {
           "key": "2xs",
-          "count": 59
+          "count": 103
         },
         {
           "key": "xl",
-          "count": 56
+          "count": 71
         },
         {
           "key": "2xl",
-          "count": 22
-        },
-        {
-          "key": "base",
-          "count": 15
+          "count": 27
         },
         {
           "key": "lg",
-          "count": 13
+          "count": 27
+        },
+        {
+          "key": "base",
+          "count": 24
         },
         {
           "key": "4xl",
-          "count": 6
+          "count": 8
         }
       ],
       "leadings": [
         {
-          "key": "leading-ui",
-          "count": 51
+          "key": "leading-tight",
+          "count": 84
         },
         {
-          "key": "leading-tight",
-          "count": 49
+          "key": "leading-ui",
+          "count": 68
         },
         {
           "key": "leading-solid",
-          "count": 29
+          "count": 45
         },
         {
           "key": "leading-body",
-          "count": 12
+          "count": 25
         }
       ],
       "trackings": [
         {
-          "key": "tracking-display",
-          "count": 60
+          "key": "tracking-caps",
+          "count": 86
         },
         {
-          "key": "tracking-caps",
-          "count": 47
+          "key": "tracking-display",
+          "count": 85
         },
         {
           "key": "tracking-tight",
-          "count": 37
+          "count": 44
         },
         {
           "key": "zero",
-          "count": 12
+          "count": 13
+        },
+        {
+          "key": "off-token 0.02",
+          "count": 3
+        },
+        {
+          "key": "off-token 0.01",
+          "count": 2
+        },
+        {
+          "key": "off-token 0.06",
+          "count": 2
+        },
+        {
+          "key": "off-token 0.08",
+          "count": 1
         }
       ],
       "weights": [
         {
           "key": "weight 700",
-          "count": 159
+          "count": 188
         },
         {
           "key": "weight 400",
-          "count": 36
+          "count": 66
         }
       ],
       "faces": [
         {
           "key": "mono",
-          "count": 167
+          "count": 234
         },
         {
           "key": "sans",
-          "count": 49
+          "count": 68
         },
         {
           "key": "display",
-          "count": 36
+          "count": 66
         }
       ]
     },
-    "combinations": 76,
-    "violations": 0
+    "combinations": 98,
+    "violations": 8
   }
 }

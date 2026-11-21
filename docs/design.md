@@ -2,7 +2,7 @@
 
 Product, repo and token-set name: **Chef Llama**. **Larder** was the pre-rename repo and the old working name; nothing user-facing uses it.
 
-This file is the v1 design contract: toolchain, IA, native UI. **Working draft (not locked, not Code):** the 28 Oct 2026 Kombai `/` + sticker round, improved in place on the canvases in [`.kombai/canvas/`](../.kombai/canvas/) — `index`, `landing`, `account`, `chart`, `pricing`, `type`. The `docs/designs/` HTML mocks and `design-mock.html` no longer exist; do not cite them. No Figma.
+This file is the v1 design contract: toolchain, IA, native UI. **Working draft (not locked, not Code):** the 28 Oct 2026 Kombai `/` + sticker round, improved in place on the canvases in [`.kombai/canvas/`](../.kombai/canvas/) — `index`, `landing`, `account`, `chart`, `type`. The `docs/designs/` HTML mocks and `design-mock.html` no longer exist; do not cite them. No Figma.
 
 ## Recommended toolchain
 
@@ -174,7 +174,7 @@ One aesthetic: **working kitchen, not generative-AI purple.**
 
 ## Local mock
 
-The mock is the canvases in `.kombai/canvas/` — `index`, `landing`, `account`, `chart`, `pricing`, `type`, split on 2026-11-17 from the single `chef-llama.canvas` that came over from the old `larder` workspace; `index.canvas` lists what each holds and which node ids the docs cite. **Fonts: system stacks only** ([theme.md](./theme.md#fonts)). **Not locked.**
+The mock is the canvases in `.kombai/canvas/` — `index`, `landing`, `account`, `chart`, `type`, split on 2026-11-17 from the single `chef-llama.canvas` that came over from the old `larder` workspace; `index.canvas` lists what each holds and which node ids the docs cite. **Fonts: system stacks only** ([theme.md](./theme.md#fonts)). **Not locked.**
 
 ---
 
