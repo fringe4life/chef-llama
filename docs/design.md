@@ -1,8 +1,8 @@
 # AI chef site — design system
 
-Working visual name for tokens and mock: **Larder**. Product/repo name is still open.
+Product, repo and token-set name: **Chef Llama**. **Larder** was the pre-rename repo and the old working name; nothing user-facing uses it.
 
-This file is the v1 design contract: toolchain, tokens, IA, native UI. **Working draft (not locked, not Code):** the 28 Oct 2026 Kombai `/` + sticker, better than `01`–`03` and [`design-mock.html`](./design-mock.html) — [04-landing.html](./designs/04-landing.html) · [04-landing-dark.html](./designs/04-landing-dark.html) · [05-token-sticker.html](./designs/05-token-sticker.html) · [05-token-sticker-dark.html](./designs/05-token-sticker-dark.html). Improve in place. No Figma.
+This file is the v1 design contract: toolchain, IA, native UI. **Working draft (not locked, not Code):** the 28 Oct 2026 Kombai `/` + sticker round, improved in place on the canvases in [`.kombai/canvas/`](../.kombai/canvas/) — `index`, `landing`, `account`, `chart`, `type`. The `docs/designs/` HTML mocks and `design-mock.html` no longer exist; do not cite them. No Figma.
 
 ## Recommended toolchain
 
@@ -18,13 +18,13 @@ This file is the v1 design contract: toolchain, tokens, IA, native UI. **Working
 
 ### Practical pipeline (v1)
 
-1. **Lock Larder tokens** in CSS (this doc + mock). Kombai and Paper must reuse these names, not invent a purple system.
+1. **Lock the tokens** in CSS, per [theme.md](./theme.md#tokens-are-the-theme). Kombai and Paper must reuse these names, not invent a purple system.
 2. **Explore a screen in Kombai Design mode** (or Pencil). Export / copy HTML+CSS. Do not ask Kombai to invent a new palette.
 3. **Optional Paper pass** only for a token sticker sheet or one selected frame (`get_computed_styles` / `get_jsx`). Budget ~5–15 MCP calls per screen. Stop before the weekly 100 is gone.
 4. **Implement in SvelteKit** against native `<dialog>` and Popover API (no CSS anchor positioning; see [theme.md](./theme.md#native-overlays)). StyleX `stylex.attrs` for component styles; CSS variables for theme.
 5. **Verify** in the browser (light, dark, empty pantry, one recipe, saved list).
 
-Kombai is the UI-generation engine. Paper is optional. The **working draft** is the Kombai `/` + sticker HTML in [`docs/designs/`](./designs/README.md). [`design-mock.html`](./design-mock.html) is an earlier sketch. Do not Code-design until Coinnich accepts.
+Kombai is the UI-generation engine. Paper is optional. The **working draft** is the canvas nodes in [`.kombai/canvas/`](../.kombai/canvas/). Do not Code-design until Coinnich accepts.
 
 ---
 
@@ -132,80 +132,19 @@ Do not install third-party login proxies. CLI `paper mcp` (stdio) is already on 
 
 ---
 
-## Larder tokens (shadcn-compatible)
+## Tokens
 
-StyleX-on-Svelte is **viable**, not a poor fit: official SvelteKit install (`@stylexjs/unplugin`) and `stylex.attrs` (class, not `className`). Native `<dialog>` / `[popover]` still need **real CSS custom properties** for UA-drawn parts (backdrop, ::backdrop, form controls). So:
+All tokens — colour, radius, type, spacing and the light/dark switch — are [theme.md](./theme.md#tokens-are-the-theme), including the two chart marks ([§ Chart marks](./theme.md#chart-marks)). That file owns the names, the roles, where values live and how the scheme is chosen; this file carries no token inventory, no values, and no theme override.
 
-**Source of truth:** shadcn **named** CSS variables (`--foreground`, `--primary`, `--background`, …). Those names **are** the theme. **Not** the shadcn / shadcn-svelte / bits-ui component pack.
+StyleX-on-Svelte is **viable**, not a poor fit: official SvelteKit install (`@stylexjs/unplugin`) and `stylex.attrs` (class, not `className`), per [theme.md § StyleX dev runtime](./theme.md#stylex-dev-runtime).
 
-**StyleX:** `defineVars` with `--` keys so StyleX emits the **same** names (no hashed vars). Native Dialog/Popover consume the variables. Light/dark is **`light-dark()`** + `color-scheme` on `html`, not a StyleX `createTheme` subtree. **No** `.dark` fallback.
-
-Token set name: **Larder**. Groups: `color`, `radius`, `type`, `spacing`.
-
-### color
-
-HSL channels (shadcn pattern: `hsl(var(--background))`).
-
-| Token | Light | Dark | Role |
-| --- | --- | --- | --- |
-| `--background` | `38 42% 96%` parchment | `30 12% 8%` cast iron | Page |
-| `--foreground` | `25 20% 14%` | `38 30% 94%` | Body text |
-| `--card` | `40 45% 99%` flour | `30 10% 11%` | Surfaces |
-| `--card-foreground` | same as foreground | same | |
-| `--popover` / `--popover-foreground` | match card | match card | Popover/dialog |
-| `--primary` | `82 28% 28%` olive oil | `82 22% 48%` | Actions |
-| `--primary-foreground` | `40 45% 97%` | `30 12% 8%` | |
-| `--secondary` | `32 38% 90%` linen | `30 10% 16%` | Quiet chrome |
-| `--secondary-foreground` | `25 20% 18%` | `38 25% 90%` | |
-| `--muted` | `36 24% 90%` | `30 8% 15%` | Wells, chips idle |
-| `--muted-foreground` | `25 10% 38%` | `35 12% 68%` | Helper text |
-| `--accent` | `14 58% 42%` paprika | `14 52% 52%` | Highlights, saved |
-| `--accent-foreground` | `40 45% 97%` | `30 12% 8%` | |
-| `--destructive` | `4 72% 42%` | `4 65% 55%` | Remove chip |
-| `--border` | `32 22% 82%` | `30 8% 20%` | |
-| `--input` | `32 22% 82%` | `30 8% 22%` | |
-| `--ring` | `82 28% 28%` | `82 22% 55%` | Focus |
-| `--larder-herb` | `150 25% 32%` | `150 22% 46%` | Vegetarian tag |
-| `--larder-flame` | `22 70% 42%` | `22 62% 52%` | Time / heat |
-
-Also map shadcn `--chart-1`…`--chart-5` to olive, paprika, herb, flame, linen so future usage graphs match.
-
-### radius
-
-| Token | Value | Use |
-| --- | --- | --- |
-| `--radius` | `0.5rem` | Root (shadcn `--radius`) |
-| `--radius-sm` | `calc(var(--radius) - 4px)` | Chips, icon buttons |
-| `--radius-md` | `var(--radius)` | Inputs, menus |
-| `--radius-lg` | `calc(var(--radius) + 4px)` | Cards |
-| `--radius-xl` | `1rem` | Dialogs, detail sheet |
-
-Slightly squared — enamelware, not iOS pills.
-
-### type
-
-| Token | Value |
-| --- | --- |
-| `--font-display` | `"Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif` |
-| `--font-sans` | `ui-sans-serif, system-ui, "Segoe UI", sans-serif` |
-| `--font-mono` | `ui-monospace, "Cascadia Code", monospace` (credits, IDs) |
-| `--text-xs` … `--text-2xl` | `0.75rem` / `0.875` / `1` / `1.125` / `1.5` / `1.875rem` |
-| `--leading-tight` / `--leading-body` | `1.2` / `1.55` |
-| `--tracking-display` | `-0.02em` |
-
-Display only on wordmark, recipe titles, empty-state headlines. UI chrome stays sans. **This system stack is v1** — no later Fontsource / Fraunces pass (see [theme.md](./theme.md)).
-
-### spacing
-
-4px grid: `--space-1` `0.25rem` … `--space-16` `4rem`. Layout: `--space-page` `1.25rem` (mobile) / `2rem` (desktop). Chip gap `--space-2`. Card padding `--space-5`.
-
-Light/dark override: see [theme.md § Light and dark](./theme.md#light-and-dark) (localStorage, `data-colorscheme` on `<body>`, no cookie).
+One design consequence worth keeping: neither the vegetarian tag nor the time / heat group has a colour token of its own — the tag takes the action colour, and heat is plain figures under a hairline divider.
 
 ---
 
 ## Native browser components
 
-Prefer these over shadcn JS overlays. Style with Larder variables.
+Prefer these over shadcn JS overlays. Style with the theme's named variables ([theme.md](./theme.md)).
 
 | Primitive | Where | Behavior |
 | --- | --- | --- |
@@ -216,7 +155,7 @@ Prefer these over shadcn JS overlays. Style with Larder variables.
 | **`<dialog>`** (non-modal, optional) | Recipe detail on small screens as a sheet | If Popover overlay is enough, skip. Prefer a route on desktop, `dialog` sheet on narrow. |
 | **Invokers** (`commandfor` / `popovertarget`) | All of the above | No extra click JS when the browser supports it; small Svelte fallback. |
 
-Do not polyfill custom dropdowns. Focus: `outline: 2px solid hsl(var(--ring)); outline-offset: 2px`.
+Do not polyfill custom dropdowns. Focus: `outline: 2px solid var(--ring); outline-offset: 2px`.
 
 ---
 
@@ -235,14 +174,12 @@ One aesthetic: **working kitchen, not generative-AI purple.**
 
 ## Local mock
 
-**Working draft:** [`docs/designs/04-landing.html`](./designs/04-landing.html) (parchment) and [`04-landing-dark.html`](./designs/04-landing-dark.html) (cast iron), plus token stickers `05-*`. File preview: Tailwind CDN + `color-scheme` on the **same** `:root` rule as `light-dark()` tokens. Canvas: `.kombai/canvas/larder-site.canvas`. **Fonts: system stack only** (`--font-display` / `--font-sans` / `--font-mono` above). No Fontsource pass. **Not locked.**
-
-Earlier sketch: [`design-mock.html`](./design-mock.html) (pantry/results/detail in one file). Keep for chip/dialog notes; do not treat as the current look.
+The mock is the canvases in `.kombai/canvas/` — `index`, `landing`, `account`, `chart`, `type`, split on 2026-11-17 from the single `chef-llama.canvas` that came over from the old `larder` workspace; `index.canvas` lists what each holds and which node ids the docs cite. **Fonts: system stacks only** ([theme.md](./theme.md#fonts)). **Not locked.**
 
 ---
 
 ## Implementation notes for the Svelte app (not done here)
 
-- Put tokens in `src/lib/theme/larder.css` and `*.stylex.ts` with `--` keys.
+- Put tokens in `*.stylex.ts` `defineVars` with `--` keys, and the non-StyleX raw CSS in `src/lib/theme/tokens.css` ([theme.md](./theme.md#native-overlays)).
 - Components: `IngredientChip`, `RecipeCard`, `AccountMenu` wrapping native popover/dialog.
 - Do not introduce Radix/shadcn JS. Compatible **tokens only**.

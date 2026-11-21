@@ -2,9 +2,9 @@
 
 **Token-cheap loop (round 19 accepted).** Coinnich **GO** 28 Oct 2026. Electron **2.0.160**. Design mode **only** landing `/` + token sticker. Variants/Passes **1**. **Do not** Code-design every route.
 
-**Working draft (not locked, not Code):** [04-landing.html](./designs/04-landing.html) · [04-landing-dark.html](./designs/04-landing-dark.html) · [05-token-sticker.html](./designs/05-token-sticker.html) · [05-token-sticker-dark.html](./designs/05-token-sticker-dark.html) · canvas `.kombai/canvas/larder-site.canvas`. Index: [designs/README.md](./designs/README.md). File preview: Tailwind CDN + `color-scheme` on the token `:root` rule. Improve in place. **No Code design, no extra routes** until Coinnich accepts. Fonts: system font stacks only (families TBD; see docs/theme.md).
+**Working draft (not locked, not Code):** the canvases in `.kombai/canvas/` — `index`, `landing`, `account`, `chart`, `type`, and `brand` for the mark; `index.canvas` lists what each holds. The `designs/` HTML mocks are gone; do not cite them. Improve in place. **No Code design, no extra routes** until Coinnich accepts. Fonts: three system families, no webfonts (see [theme.md](./theme.md#fonts)).
 
-0. Repo CSS: shadcn **names** as `--` vars, `light-dark()` only, full oklch colours (see [theme.md](./theme.md)). Iterate [`design-mock.html`](./design-mock.html) with **no** Kombai.
+0. Repo CSS: shadcn **names** as `--` vars, `light-dark()` only, full oklch colours (see [theme.md](./theme.md)). Iterate the existing canvas nodes (`.kombai/canvas/`) with **no** Kombai.
 1. Kombai **Design mode**, **one** `/` + token sticker. Settings: Variants **1**, Passes **1**. Attach a Chef Llama `.ds` from that CSS / `design.md`. **Edit Designs** by hand (no prompt). No **Code design**.
 2. Coinnich accepts landing + tokens.
 3. Next canvas screen (pantry or recipe), same `.ds`.
@@ -26,7 +26,7 @@ Skip Paper MCP during exploration (**100 calls/week**). Do not Figma MCP. Do not
 |---|---|---|
 | Site landing | `/` | Brochure + top 5 Popular (SSR HTML, not an island). Cook CTA = plain HTML form/links to `/pantry?i=`. |
 | Terms / privacy | `/terms` `/privacy` | Long legal. Minimal chrome. |
-| Pantry | `/pantry` | Chips (≥3), Diet overrides this run, generate, credits pill. Pending **stays here** ([cupboard.svg](./designs/cupboard.svg) **draft**), then goto recipe. No extra routes. No Code. |
+| Pantry | `/pantry` | Chips (≥3), Diet overrides this run, generate, credits pill. Pending **stays here** (a draft placeholder exists in `pantry.canvas`; the final loading design is still to come), then goto recipe. No extra routes. No Code. |
 | Recipe | `/recipes/[slug]` | Method, `kcal` + `kcal_over`, swaps if `kind: "swap"`, save. Servings scaling is v2. Narrow = same route as sheet. |
 | Saved | `/saved` | List. Empty state. |
 | **Diet** | dialog on `/pantry` | Blocking first-run: name, flags, allergies, optional kcal, servings default 2, optional max time. Not `/kitchen`. Multi-Diet picker is v2. |
@@ -40,7 +40,7 @@ Photo and chat: **slots only**, disabled.
 
 ## Visual
 
-Parchment / olive / paprika / cast iron ([design.md](./design.md) token table). Light = kitchen daylight. Dark = closed cupboard. Display **serif** on wordmark + recipe titles; **sans** on chrome. **System font stack only** (`--font-display` / `--font-sans` / `--font-mono` in design.md). No Fontsource pass. Never Google Fonts CSS. Hairline borders, tape-label chips. No gradient mesh, no glow orbs, no 3D food.
+Parchment / olive / paprika / cast iron (palette still open: four on [`landing.canvas`](../.kombai/canvas/landing.canvas), no colour value in any doc — [theme.md § Colour tokens](./theme.md#colour-tokens-shadcn-style-semantic-names)). Light = kitchen daylight. Dark = closed cupboard. Display **serif** on wordmark + recipe titles; **sans** on chrome. **System font stack only** (`--font-display` / `--font-sans` / `--font-mono` in [theme.md § Fonts](./theme.md#fonts)). No Fontsource pass. Never Google Fonts CSS. Hairline borders, tape-label chips. No gradient mesh, no glow orbs, no 3D food.
 
 ## Motion — CSS only ([emilkowalski/skills](https://github.com/emilkowalski/skills) `emil-design-eng` + `animate`)
 
@@ -53,11 +53,11 @@ No JS animation libraries. No `transition: all`. No `scale(0)`. Enter/exit: `tra
 | Credits exhausted dialog | yes | 200–300ms centered |
 | Diet first-run | yes, rare | short opacity |
 | Popular into view | optional | scroll-driven opacity |
-| Generate pending | cupboard → Recipe-card SVG on `/pantry` (not a URL). **Draft:** [cupboard.svg](./designs/cupboard.svg) — metallic hover chef-bot + wrapping visor + smile; head = [mark.svg](./designs/mark.svg) | CSS `@keyframes` in the SVG, not JS. `prefers-reduced-motion`. No SSE copy v1. No Code now |
+| Generate pending | cupboard → Recipe-card SVG on `/pantry` (not a URL). **Draft:** not drawn yet — metallic hover chef-bot + wrapping visor + smile; head = the brand mark (`.kombai/canvas/brand.canvas`) | CSS `@keyframes` in the SVG, not JS. `prefers-reduced-motion`. No SSE copy v1. No Code now |
 
 ## Theme toggle (inline script in `app.html`)
 
-Radios `#scheme-system` `#scheme-light` `#scheme-dark`. Theme override: see [theme.md § Light and dark](./theme.md#light-and-dark) (localStorage, attribute on `<body>`, no cookie). Do not put radios inside the chip list.
+Radios `#scheme-system` `#scheme-light` `#scheme-dark`. The mechanism — blocking inline script, `localStorage` choice, `data-colorscheme` on `<body>`, **no cookies** — is [theme.md § Light and dark](./theme.md#light-and-dark) and is not restated here. Do not put radios inside the chip list.
 
 ## Copy / stress ([break-ui](https://github.com/emilkowalski/skills/tree/main/skills/break-ui))
 

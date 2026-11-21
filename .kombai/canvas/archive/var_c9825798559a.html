@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html><head>
+  <meta charset="utf-8">
+  <meta name="kombai-design-canvas" content="true">
+  
+  
+  
+  
+  
+  
+  <style>html, body { margin: 0; padding: 0; } #root { display: contents; }</style>
+</head><body>
+  <div id="root"><style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:oklch(0.968 0.026 88);
+  --card:oklch(0.994 0.008 88);
+  --tint:oklch(0.940 0.038 86);
+  --ink:oklch(0.255 0.045 45);
+  --ink-muted:oklch(0.470 0.040 48);
+  --ink-faint:oklch(0.545 0.032 50);
+  --rule:oklch(0.885 0.030 70);
+  --rule-hair:oklch(0.918 0.026 76);
+  --rule-strong:oklch(0.800 0.036 62);
+  --accent:oklch(0.505 0.180 32);
+  --accent-ink:oklch(0.990 0.010 90);
+  --veg:oklch(0.600 0.155 138);
+  --veg-ink:oklch(0.470 0.140 138);
+  --font-ui:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --font-read:Seravek,"Gill Sans Nova",Ubuntu,Calibri,"Noto Sans","DejaVu Sans",source-sans-pro,sans-serif;
+  --font-name:Georgia,"Times New Roman",serif;
+  --font-fig:ui-monospace,"Cascadia Code","Source Code Pro",Menlo,Consolas,"DejaVu Sans Mono",monospace;
+}
+html{color-scheme:light}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-ui);font-size:14px;line-height:1.45}
+.sheet{padding:36px 40px 56px}
+
+.plate{background:var(--card);border:1px solid var(--rule);border-radius:12px;overflow:hidden}
+
+/* app bar */
+.bar{display:flex;align-items:center;gap:26px;height:60px;padding:0 44px;border-bottom:1px solid var(--rule-hair)}
+.wordmark{font-family:var(--font-name);font-size:17.5px;font-weight:700;letter-spacing:-.02em}
+.nav{display:flex;gap:20px;margin-left:6px}
+.nav a{font-family:var(--font-ui);font-size:13px;color:var(--ink-muted);text-decoration:none;padding:4px 0}
+.nav a[aria-current]{color:var(--ink);box-shadow:inset 0 -2px 0 var(--accent)}
+.av{margin-left:auto;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;border:1px solid var(--rule);background:var(--tint);font-size:10.5px;font-weight:600;color:var(--ink-muted)}
+
+.doc{padding:34px 44px 40px}
+
+/* dish name */
+.dish{font-family:var(--font-name);font-weight:400;font-size:44px;line-height:1.04;letter-spacing:-.015em;margin:0;max-width:19ch}
+.note{font-family:var(--font-name);font-style:italic;font-size:16.5px;line-height:1.6;color:var(--ink-muted);margin:16px 0 0;max-width:62ch}
+
+/* meta figures */
+.meta{display:grid;grid-template-columns:repeat(6,minmax(0,auto));justify-content:start;column-gap:44px;margin:26px 0 0;padding:15px 0 16px;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.meta dt{font-family:var(--font-fig);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted);margin:0}
+.meta dd{font-family:var(--font-fig);font-variant-numeric:tabular-nums;font-size:14.5px;margin:5px 0 0}
+
+/* body */
+.body{display:grid;grid-template-columns:294px minmax(0,1fr);column-gap:52px;margin-top:34px}
+h2{font-family:var(--font-ui);font-size:14.5px;font-weight:600;letter-spacing:-.005em;margin:0 0 4px}
+
+.ings{list-style:none;margin:0;padding:0}
+.ing{display:grid;grid-template-columns:62px minmax(0,1fr);column-gap:14px;padding:9px 0 10px;border-bottom:1px solid var(--rule-hair)}
+.ing:first-child{border-top:1px solid var(--rule-hair)}
+.ing__q{font-family:var(--font-fig);font-variant-numeric:tabular-nums;font-size:13.5px;line-height:1.5;color:var(--ink)}
+.ing__i{font-family:var(--font-read);font-size:15.5px;line-height:1.5}
+
+.pantry{margin-top:24px;background:var(--tint);border-radius:6px;padding:13px 14px 15px}
+.pantry__l{font-family:var(--font-fig);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted);margin:0 0 10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.chip{font-family:var(--font-ui);font-size:11.5px;line-height:1;padding:6px 8px;border:1px dashed var(--rule-strong);border-radius:4px;background:var(--paper)}
+
+.method{margin:0;padding:0;list-style:none;counter-reset:step}
+.step{display:grid;grid-template-columns:34px minmax(0,1fr);column-gap:18px;padding:15px 0 16px;border-top:1px solid var(--rule-hair)}
+.step:last-child{border-bottom:1px solid var(--rule-hair)}
+.step__n{font-family:var(--font-fig);font-variant-numeric:tabular-nums;font-size:12px;line-height:1.9;color:var(--ink-muted)}
+.step__t{font-family:var(--font-read);font-size:16.5px;line-height:1.66;max-width:38em}
+
+/* footer */
+.docfoot{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-top:30px;padding-top:20px;border-top:1px solid var(--rule)}
+.gen{font-family:var(--font-fig);font-size:11px;color:var(--ink-muted);margin:0}
+.acts{display:flex;gap:10px}
+.btn{display:inline-flex;align-items:center;height:38px;padding:0 18px;border-radius:6px;border:1px solid transparent;font-family:var(--font-ui);font-size:13.5px;font-weight:600;text-decoration:none;white-space:nowrap}
+.btn--fill{background:var(--accent);color:var(--accent-ink)}
+.btn--ghost{border-color:var(--rule-strong);color:var(--ink)}
+
+/* face key */
+.key{display:flex;flex-wrap:wrap;gap:4px 14px;margin:16px 2px 0;font-family:var(--font-fig);font-size:10px;line-height:1.6;color:var(--ink-muted)}
+.key b{font-weight:400;color:var(--ink)}
+</style>
+<div class="sheet" data-kid="1" data-name="page sheet container">
+<div class="plate" data-kid="1-1" data-name="recipe card plate">
+<header class="bar" data-kid="1-1-1" data-name="app top bar">
+<span class="wordmark" data-kid="1-1-1-1" data-name="brand wordmark text">Chef Llama</span>
+<nav aria-label="Main" class="nav" data-kid="1-1-1-2" data-name="main site navigation">
+<a data-kid="1-1-1-2-1" data-name="nav link to pantry" href="#">Pantry</a>
+<a aria-current="page" data-kid="1-1-1-2-2" data-name="nav link to recipes (current page)" href="#">Recipes</a>
+<a data-kid="1-1-1-2-3" data-name="nav link to saved" href="#">Saved</a>
+<a data-kid="1-1-1-2-4" data-name="nav link to dashboard" href="#">Dashboard</a>
+<a data-kid="1-1-1-2-5" data-name="nav link to billing" href="#">Billing</a>
+</nav>
+<span aria-hidden="true" class="av" data-kid="1-1-1-3" data-name="user avatar initial badge">AR</span>
+</header>
+<main class="doc" data-kid="1-1-2" data-name="recipe document main content">
+<h1 class="dish" data-kid="1-1-2-1" data-name="recipe dish headline">Kūmara, chickpea and silverbeet traybake</h1>
+<p class="note" data-kid="1-1-2-2" data-name="recipe introductory headnote">One tray and a 200 °C oven. The silverbeet goes in at the end, in two goes, so the stems cook through and the leaves only wilt.</p>
+<dl class="meta" data-kid="1-1-2-3" data-name="recipe meta figures grid">
+<div data-kid="1-1-2-3-1" data-name="total time figure container"><dt data-kid="1-1-2-3-1-1" data-name="meta label total">Total</dt><dd data-kid="1-1-2-3-1-2" data-name="meta value total time">40 min</dd></div>
+<div data-kid="1-1-2-3-2" data-name="prep time figure container"><dt data-kid="1-1-2-3-2-1" data-name="meta label prep">Prep</dt><dd data-kid="1-1-2-3-2-2" data-name="meta value prep time">15 min</dd></div>
+<div data-kid="1-1-2-3-3" data-name="per serving figure container"><dt data-kid="1-1-2-3-3-1" data-name="meta label per serving">Per serving</dt><dd data-kid="1-1-2-3-3-2" data-name="meta value calories">620 kcal</dd></div>
+<div data-kid="1-1-2-3-4" data-name="serves figure container"><dt data-kid="1-1-2-3-4-1" data-name="meta label serves">Serves</dt><dd data-kid="1-1-2-3-4-2" data-name="meta value servings count">4</dd></div>
+<div data-kid="1-1-2-3-5" data-name="from pantry figure container"><dt data-kid="1-1-2-3-5-1" data-name="meta label from pantry">From pantry</dt><dd data-kid="1-1-2-3-5-2" data-name="meta value pantry items count">8 items</dd></div>
+<div data-kid="1-1-2-3-6" data-name="cost figure container"><dt data-kid="1-1-2-3-6-1" data-name="meta label cost">Cost</dt><dd data-kid="1-1-2-3-6-2" data-name="meta value cost">1 Credit</dd></div>
+</dl>
+<div class="body" data-kid="1-1-2-4" data-name="recipe two-column body">
+<section aria-labelledby="ings-h" data-kid="1-1-2-4-1" data-name="ingredients section">
+<h2 data-kid="1-1-2-4-1-1" data-name="ingredients heading" id="ings-h">Ingredients</h2>
+<ul class="ings" data-kid="1-1-2-4-1-2" data-name="ingredients list">
+<li class="ing" data-kid="1-1-2-4-1-2-1" data-name="ingredient row kūmara"><span class="ing__q" data-kid="1-1-2-4-1-2-1-1" data-name="ingredient quantity">800 g</span><span class="ing__i" data-kid="1-1-2-4-1-2-1-2" data-name="ingredient name">kūmara, cut into 3 cm chunks</span></li>
+<li class="ing" data-kid="1-1-2-4-1-2-2" data-name="ingredient row chickpeas"><span class="ing__q" data-kid="1-1-2-4-1-2-2-1" data-name="ingredient quantity">400 g</span><span class="ing__i" data-kid="1-1-2-4-1-2-2-2" data-name="ingredient name">chickpeas, drained</span></li>
+<li class="ing" data-kid="1-1-2-4-1-2-3" data-name="ingredient row olive oil"><span class="ing__q" data-kid="1-1-2-4-1-2-3-1" data-name="ingredient quantity">2 tbsp</span><span class="ing__i" data-kid="1-1-2-4-1-2-3-2" data-name="ingredient name">olive oil</span></li>
+<li class="ing" data-kid="1-1-2-4-1-2-4" data-name="ingredient row smoked paprika"><span class="ing__q" data-kid="1-1-2-4-1-2-4-1" data-name="ingredient quantity">1 tsp</span><span class="ing__i" data-kid="1-1-2-4-1-2-4-2" data-name="ingredient name">smoked paprika</span></li>
+<li class="ing" data-kid="1-1-2-4-1-2-5" data-name="ingredient row garlic"><span class="ing__q" data-kid="1-1-2-4-1-2-5-1" data-name="ingredient quantity">3</span><span class="ing__i" data-kid="1-1-2-4-1-2-5-2" data-name="ingredient name">cloves garlic, sliced</span></li>
+<li class="ing" data-kid="1-1-2-4-1-2-6" data-name="ingredient row silverbeet"><span class="ing__q" data-kid="1-1-2-4-1-2-6-1" data-name="ingredient quantity">1 bunch</span><span class="ing__i" data-kid="1-1-2-4-1-2-6-2" data-name="ingredient name">silverbeet, stems sliced, leaves torn</span></li>
+<li class="ing" data-kid="1-1-2-4-1-2-7" data-name="ingredient row lemon"><span class="ing__q" data-kid="1-1-2-4-1-2-7-1" data-name="ingredient quantity">1</span><span class="ing__i" data-kid="1-1-2-4-1-2-7-2" data-name="ingredient name">lemon, zest and juice</span></li>
+<li class="ing" data-kid="1-1-2-4-1-2-8" data-name="ingredient row feta"><span class="ing__q" data-kid="1-1-2-4-1-2-8-1" data-name="ingredient quantity">120 g</span><span class="ing__i" data-kid="1-1-2-4-1-2-8-2" data-name="ingredient name">feta, crumbled</span></li>
+<li class="ing" data-kid="1-1-2-4-1-2-9" data-name="ingredient row flaky salt"><span class="ing__q" data-kid="1-1-2-4-1-2-9-1" data-name="ingredient quantity">1 tsp</span><span class="ing__i" data-kid="1-1-2-4-1-2-9-2" data-name="ingredient name">flaky salt</span></li>
+</ul>
+<div class="pantry" data-kid="1-1-2-4-1-3" data-name="pantry items callout box">
+<p class="pantry__l" data-kid="1-1-2-4-1-3-1" data-name="pantry callout label">From your pantry</p>
+<ul class="chips" data-kid="1-1-2-4-1-3-2" data-name="pantry ingredient chips list">
+<li class="chip" data-kid="1-1-2-4-1-3-2-1" data-name="pantry chip kūmara">kūmara</li>
+<li class="chip" data-kid="1-1-2-4-1-3-2-2" data-name="pantry chip chickpeas">chickpeas</li>
+<li class="chip" data-kid="1-1-2-4-1-3-2-3" data-name="pantry chip silverbeet">silverbeet</li>
+<li class="chip" data-kid="1-1-2-4-1-3-2-4" data-name="pantry chip garlic">garlic</li>
+<li class="chip" data-kid="1-1-2-4-1-3-2-5" data-name="pantry chip lemon">lemon</li>
+<li class="chip" data-kid="1-1-2-4-1-3-2-6" data-name="pantry chip feta">feta</li>
+<li class="chip" data-kid="1-1-2-4-1-3-2-7" data-name="pantry chip olive oil">olive oil</li>
+<li class="chip" data-kid="1-1-2-4-1-3-2-8" data-name="pantry chip smoked paprika">smoked paprika</li>
+</ul>
+</div>
+</section>
+<section aria-labelledby="method-h" data-kid="1-1-2-4-2" data-name="method section">
+<h2 data-kid="1-1-2-4-2-1" data-name="method heading" id="method-h">Method</h2>
+<ol class="method" data-kid="1-1-2-4-2-2" data-name="method steps list">
+<li class="step" data-kid="1-1-2-4-2-2-1" data-name="method step row 1"><span aria-hidden="true" class="step__n" data-kid="1-1-2-4-2-2-1-1" data-name="step number">01</span><span class="step__t" data-kid="1-1-2-4-2-2-1-2" data-name="step instruction text">Heat the oven to 200 °C fan and line a large tray.</span></li>
+<li class="step" data-kid="1-1-2-4-2-2-2" data-name="method step row 2"><span aria-hidden="true" class="step__n" data-kid="1-1-2-4-2-2-2-1" data-name="step number">02</span><span class="step__t" data-kid="1-1-2-4-2-2-2-2" data-name="step instruction text">Toss the kūmara with the olive oil, smoked paprika and salt, spread it in one layer, and roast for 20 minutes until the edges darken.</span></li>
+<li class="step" data-kid="1-1-2-4-2-2-3" data-name="method step row 3"><span aria-hidden="true" class="step__n" data-kid="1-1-2-4-2-2-3-1" data-name="step number">03</span><span class="step__t" data-kid="1-1-2-4-2-2-3-2" data-name="step instruction text">Push the kūmara to one side of the tray, add the chickpeas and garlic to the bare side, and roast for 10 minutes more.</span></li>
+<li class="step" data-kid="1-1-2-4-2-2-4" data-name="method step row 4"><span aria-hidden="true" class="step__n" data-kid="1-1-2-4-2-2-4-1" data-name="step number">04</span><span class="step__t" data-kid="1-1-2-4-2-2-4-2" data-name="step instruction text">Fold the sliced silverbeet stems through and return the tray for 4 minutes; they should give when pressed with the back of a spoon.</span></li>
+<li class="step" data-kid="1-1-2-4-2-2-5" data-name="method step row 5"><span aria-hidden="true" class="step__n" data-kid="1-1-2-4-2-2-5-1" data-name="step number">05</span><span class="step__t" data-kid="1-1-2-4-2-2-5-2" data-name="step instruction text">Take the tray out and fold the torn leaves through in three handfuls. The residual heat wilts them without flattening them.</span></li>
+<li class="step" data-kid="1-1-2-4-2-2-6" data-name="method step row 6"><span aria-hidden="true" class="step__n" data-kid="1-1-2-4-2-2-6-1" data-name="step number">06</span><span class="step__t" data-kid="1-1-2-4-2-2-6-2" data-name="step instruction text">Scatter over the feta, then the lemon zest and juice. Rest 5 minutes and serve from the tray.</span></li>
+</ol>
+</section>
+</div>
+<footer class="docfoot" data-kid="1-1-2-5" data-name="recipe document footer">
+<p class="gen" data-kid="1-1-2-5-1" data-name="generation timestamp text">Generated 17 November 2026, 9:41 am</p>
+<div class="acts" data-kid="1-1-2-5-2" data-name="footer action buttons group">
+<a class="btn btn--ghost" data-kid="1-1-2-5-2-1" data-name="change ingredient button" href="#">Change an ingredient</a>
+<a class="btn btn--fill" data-kid="1-1-2-5-2-2" data-name="save recipe button" href="#">Save recipe</a>
+</div>
+</footer>
+</main>
+</div>
+<p class="key" data-kid="1-2" data-name="typography face key legend">
+<span data-kid="1-2-1" data-name="face key entry dish name">dish name <b data-kid="1-2-1-1" data-name="face key font name">Georgia 400</b></span>
+<span data-kid="1-2-2" data-name="face key entry headnote">headnote <b data-kid="1-2-2-1" data-name="face key font name">Georgia italic</b></span>
+<span data-kid="1-2-3" data-name="face key entry ingredient">ingredient <b data-kid="1-2-3-1" data-name="face key font name">Humanist</b></span>
+<span data-kid="1-2-4" data-name="face key entry quantity">quantity <b data-kid="1-2-4-1" data-name="face key font name">Mono</b></span>
+<span data-kid="1-2-5" data-name="face key entry step number">step number <b data-kid="1-2-5-1" data-name="face key font name">Mono</b></span>
+<span data-kid="1-2-6" data-name="face key entry step text">step text <b data-kid="1-2-6-1" data-name="face key font name">Humanist</b></span>
+<span data-kid="1-2-7" data-name="face key entry meta figures">meta figures <b data-kid="1-2-7-1" data-name="face key font name">Mono</b></span>
+<span data-kid="1-2-8" data-name="face key entry tags">tags <b data-kid="1-2-8-1" data-name="face key font name">System UI</b></span>
+<span data-kid="1-2-9" data-name="face key entry actions">actions <b data-kid="1-2-9-1" data-name="face key font name">System UI 600</b></span>
+</p>
+</div>
+</div>
+</body></html>
