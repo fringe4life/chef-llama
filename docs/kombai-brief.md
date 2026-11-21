@@ -24,7 +24,7 @@ Skip Paper MCP during exploration (**100 calls/week**). Do not Figma MCP. Do not
 
 | Surface | URL today | Design as |
 |---|---|---|
-| Site landing | `/` | Brochure + top 5 Popular **ingredient** combinations (SSR HTML, not an island). Cook CTA = plain HTML form/links to `/pantry?i=`. |
+| Site landing | `/` | Brochure + curated **Try me** starter pantries (breakfast / lunch / dinner / dessert; SSR HTML, not an island). Tap → `/pantry?i=`. Placeholder NZ foods until Coinnich fills them. |
 | Terms / privacy | `/terms` `/privacy` | Long legal. Minimal chrome. |
 | Pantry | `/pantry` | Chips (≥3), Diet switcher + this-run toggles (flags / servings / time / kcal / skill / method / devices; allergies always win), generate, credits pill. Pending **stays here** ([cupboard.svg](./designs/cupboard.svg) **draft**), then goto recipe. No extra routes. No Code. |
 | Recipe | `/recipes/[slug]` | Method, `kcal` + `kcal_over`, swaps if `kind: "swap"` (allergy or flag conflict; highlighted), which Diet it was cooked for, save. Servings scaling is v2. Narrow = same route as sheet. |
@@ -32,8 +32,8 @@ Skip Paper MCP during exploration (**100 calls/week**). Do not Figma MCP. Do not
 | **Diet** | dialog + switcher on `/pantry` | Blocking first-run creates Diet #1: name, flags, allergies, optional kcal, servings default 2, optional max time, skill (three levels), method + optional devices. Not `/kitchen`. **v1 multi-Diet:** switcher sets active Diet before Generate; add / rename / edit / delete reuse the dialog; delete-active falls back to another Diet. |
 | **Sign-in** | `/sign-in` | Google + email OTP only. Last-used badge. Chef Llama chrome around Better Auth. Passkeys later. |
 | **Exhausted / topup** | dialog then Checkout | Pack SKUs **NZD $8 / $16 / $32** → 20 / 50 / 120 Credits. No card fields. Return to `/pantry`. |
-| **404** | `+error.svelte` | Site vs `(app)` chrome. Popular hole uses boundary, not this. |
-| **Popular** | `/` top 5 + `/popular` | Popular **ingredients** (pairs/triples). Cards → `/pantry?i=`. Empty / stale list. v2 `/popular/[type]` later. |
+| **404** | `+error.svelte` | Site vs `(app)` chrome. Try me hole uses boundary, not this. |
+| **Try me** | `/` + `/popular` | Four curated starter pantries (breakfast / lunch / dinner / dessert). Cards → `/pantry?i=`. Static list (placeholder until Coinnich). Counted Popular ingredients / `/popular/[type]` are v2. |
 | Account | popover | Theme radios, credits, sign out. |
 
 Photo and chat: **slots only**, disabled.
@@ -44,7 +44,7 @@ Parchment / olive / paprika / cast iron ([design.md](./design.md) token table). 
 
 ## Motion — CSS only ([emilkowalski/skills](https://github.com/emilkowalski/skills) `emil-design-eng` + `animate`)
 
-No JS animation libraries. No `transition: all`. No `scale(0)`. Enter/exit: `transform` + `opacity`, `--ease-out: cubic-bezier(0.23, 1, 0.32, 1)`. UI under 300ms. Popovers scale from trigger; dialogs stay centered. `@starting-style` on dialog/popover. View transitions pantry ↔ recipe. Landing Popular: scroll-driven or `@property` trigger, not a JS observer. Chip add / Enter: **no** animation (high frequency). `prefers-reduced-motion`: keep opacity, drop translate. Hover scale only under `(hover: hover) and (pointer: fine)`.
+No JS animation libraries. No `transition: all`. No `scale(0)`. Enter/exit: `transform` + `opacity`, `--ease-out: cubic-bezier(0.23, 1, 0.32, 1)`. UI under 300ms. Popovers scale from trigger; dialogs stay centered. `@starting-style` on dialog/popover. View transitions pantry ↔ recipe. Landing Try me: scroll-driven or `@property` trigger, not a JS observer. Chip add / Enter: **no** animation (high frequency). `prefers-reduced-motion`: keep opacity, drop translate. Hover scale only under `(hover: hover) and (pointer: fine)`.
 
 | Moment | Animate? | How |
 |---|---|---|
@@ -52,7 +52,7 @@ No JS animation libraries. No `transition: all`. No `scale(0)`. Enter/exit: `tra
 | Chip popover | yes | 125–200ms `@starting-style`, origin at chip |
 | Credits exhausted dialog | yes | 200–300ms centered |
 | Diet first-run | yes, rare | short opacity |
-| Popular into view | optional | scroll-driven opacity |
+| Try me into view | optional | scroll-driven opacity |
 | Generate pending | cupboard → Recipe-card SVG on `/pantry` (not a URL). **Draft:** [cupboard.svg](./designs/cupboard.svg) — metallic hover chef-bot + wrapping visor + smile; head = [mark.svg](./designs/mark.svg) | CSS `@keyframes` in the SVG, not JS. `prefers-reduced-motion`. No SSE copy v1. No Code now |
 
 ## Theme toggle (inline script in `app.html`)
@@ -61,7 +61,7 @@ Radios `#scheme-system` `#scheme-light` `#scheme-dark`. Theme override: see [the
 
 ## Copy / stress ([break-ui](https://github.com/emilkowalski/skills/tree/main/skills/break-ui))
 
-Long allergy string, one-letter names, 12 chips, 0 Credits, `kcal_over: true`, `need` of 2 Staples, empty Popular, 404 from a shared recipe URL.
+Long allergy string, one-letter names, 12 chips, 0 Credits, `kcal_over: true`, `need` of 2 Staples, placeholder Try me list, 404 from a shared recipe URL.
 
 ## Out of scope this pass
 

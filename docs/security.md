@@ -22,7 +22,7 @@ Better Auth's built-in limiter is **off**: `rateLimit: { enabled: false }`. In B
    | # | Kind | Expression (draft) | Action |
    |---|---|---|---|
    | W1 | Custom, **first** | `POST` + Stripe webhook path + `ip.src` in Stripe's published webhook IPs | **Skip** remaining custom rules, **all rate-limiting rules**, and the products Browser Integrity Check and Security Level |
-   | W2 | Custom | Method not `GET`/`HEAD`/`OPTIONS` on `/`, `/popular`, `/popular/*`, `/recipes/*`, `/about`, `/pricing`, `/how-to`, `/terms`, `/privacy`. `/recipes/*` is **GET-only** now that Save posts to `/saved` (see [caching.md](./caching.md#save-on-the-cached-recipe-page-a-remote-form-that-posts-to-saved)). **Or** any method on `/__internal/*`: the cache-purge route is reached only over the weekly cron's service binding, which never passes through the zone, so every public request to it is blocked (see [caching.md](./caching.md)) | **Block** |
+   | W2 | Custom | Method not `GET`/`HEAD`/`OPTIONS` on `/`, `/popular`, `/popular/*`, `/recipes/*`, `/about`, `/pricing`, `/how-to`, `/terms`, `/privacy`. `/recipes/*` is **GET-only** now that Save posts to `/saved` (see [caching.md](./caching.md#save-on-the-cached-recipe-page-a-remote-form-that-posts-to-saved)). **Or** any method on `/__internal/*`: the cache-purge route is reached only over a service binding (account deletion; a ranking cron only if/when v2 Popular ingredients ships), which never passes through the zone, so every public request to it is blocked (see [caching.md](./caching.md#cache-purge-route)) | **Block** |
    | W3 | Custom | `POST` to the Generate form-action path with a missing or wrong `Origin` (allowed: `https://chefllama.nz` and `https://pr-*.preview.chefllama.nz`), or a `Content-Type` that is not `application/x-www-form-urlencoded` / `multipart/form-data`. Also `POST` to `/saved` or `/_app/remote/*` with a missing or wrong `Origin` (Origin only: enhanced remote calls use SvelteKit's own binary content type) | **Block** |
    | W4 | Custom | `/api/auth*` or `/sign-in*` and `ip.src.asnum` in a hand-maintained hosting/VPN ASN list (never broad cloud ASNs such as AWS 16509, GCP, Azure) | **Managed Challenge** |
    | W5 | Custom | Spare. Production `workers.dev` is disabled in Alchemy, so W5 stays unused | — |
@@ -110,7 +110,7 @@ Still uncertain:
 - Rotation owner, and how bots get Infisical-managed values.
 
 ### Other open items
-- Guest Generate: (a) 1 per day with a signed cookie + Turnstile and no Guest DO, or (c) keep the login gate. The gate stays until this is picked. If (a): hashed IP is burst-only, guest Generates never fill Popular ingredient counts, Save stays login-walled.
+- Guest Generate: (a) 1 per day with a signed cookie + Turnstile and no Guest DO, or (c) keep the login gate. The gate stays until this is picked. If (a): hashed IP is burst-only, Save stays login-walled; guest contribution to **v2** Popular ingredient counts is Open in [v2.md](./v2.md).
 - Unverified burst numbers (binding 30 / 10 s, R1 20 / 10 s): accept, tighten or defer until traffic exists.
 - Public cache-miss GETs: fail open when the binding is down?
 - Generate form-action path (likely under `/pantry`) and the Stripe webhook path.

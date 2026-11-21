@@ -1,4 +1,4 @@
-# Product: job, routes, Diet, Popular, pending, errors
+# Product: job, routes, Diet, Try me, pending, errors
 
 > Topic file (docs-restructure spike, 16 Nov 2026 NZDT). This file is the only place these decisions live. **Decided** is settled; **Open** is not. Vocabulary is in `docs/GLOSSARY.md` (kept as is). Payments are in [payments.md](./payments.md), the cook and prompt in [ai.md](./ai.md), caching in [caching.md](./caching.md).
 
@@ -21,7 +21,7 @@
 | Group | Routes | Notes |
 |---|---|---|
 | `(static)` | `/about` `/pricing` `/how-to` `/terms` `/privacy` `/llms.txt` | prerender, `csr=false` |
-| `(site)` | `/` (top 5 Popular ingredients + HTML form → `/pantry?i=`), `/popular`, `/popular/[type=popularType]` (v2), `/recipes/[slug=slug]`, `/sitemap-popular.xml`, `/sitemap-index.xml` | edge SSR, `csr=false`, Workers Cache; `/` is not prerendered. Popular surfaces list **ingredient combinations**, not Recipes (see [Popular](#popular)). Sitemap / cron / cache behaviour for Popular is **PENDING** (see [seo.md](./seo.md), [caching.md](./caching.md)). |
+| `(site)` | `/` (**Try me** starter pantries + HTML links → `/pantry?i=`), `/popular` (Try me list URL in v1), `/popular/[type=popularType]` (**v2** Popular ingredients), `/recipes/[slug=slug]`, `/sitemap-popular.xml`, `/sitemap-index.xml` | edge SSR, `csr=false`, Workers Cache. v1 brochure lists curated **Try me** sets, not counted Popular ingredients (see [Try me](#try-me)). Counted Popular ingredients, cron, KV snapshot, and typed lists are **v2** (see [v2.md](./v2.md)). Cache / sitemap leftovers from the old Popular plan need Coinnich confirmation before removal (see [caching.md](./caching.md), [seo.md](./seo.md)). |
 | — | `/sign-in`, `/api/auth/[...all]`, `robots.txt` | `/sitemap.xml` is a build-time static asset from svelte-sitemap, not a Kit route (see [seo.md](./seo.md#sitemaps)) |
 | `(app)` | `/pantry` `/saved` `/account` `/account/usage` `/account/packs` | signed in, `csr=true`, `private, no-store` |
 - Folder layout: [folder-organisation.md](./folder-organisation.md).
@@ -49,16 +49,23 @@
 - **Multi-Diet in v1:** `/pantry` has a Diet switcher that sets the active Diet before Generate. Cooks can add, rename, edit, and delete Diets (reuse the first-run dialog). Deleting the active Diet falls back to another remaining Diet. Each Recipe records which Diet it was cooked for.
 - Storage is the per-user Diet DO with `getActive()` (see [data.md](./data.md#diet-lives-in-a-durable-object)).
 
-### Popular
-- Popular is **Popular ingredients**, not Popular recipes. It surfaces common pantry combinations so Cooks can start from what others generate with — not a leaderboard of saved Recipe pages.
-- **Planned ranking (Decided direction):**
-  1. Normalise each pantry Chip to a **canonical ingredient ID**.
-  2. On each Generate, record the **sorted ID set** for that run (see [data.md](./data.md)).
-  3. A weekly job counts the most common **pairs** and **triples** over the last **7 days**, with a **minimum distinct-user** threshold (exact threshold Open).
-- `/` shows the top combinations (still "top 5" slots); `/popular` is the v1 list URL. Cards seed `/pantry?i=` (same shape as the landing form), not `/recipes/[slug]`.
-- Popular is **SSR HTML**, not an island. An unknown `/popular/[type]` is a plain uncached 404.
-- v2 `/popular/[type]`: a closed list; allergy tags fail closed.
-- **PENDING** until the canonical ID set and edge cases are decided: weekly cron rewrite, KV snapshot shape, Workers Cache tags / purge, one-year recipe edge TTL tied to "on Popular", and `sitemap-popular.xml` contents. Do **not** change cron code until those land. See [caching.md](./caching.md#popular-snapshot-cron-not-per-save), [seo.md](./seo.md), [ops.md](./ops.md), [data.md](./data.md).
+### Try me
+- v1 replaces counted **Popular** (recipes or ingredients) with curated **Try me**: hand-picked starter pantries of common NZ foods so a Cook can tap once, land on `/pantry` with chips prefilled, and still **Generate with their own Diet**.
+- **Four sets**, one each for **breakfast**, **lunch**, **dinner**, and **dessert**. Each set is a small fixed chip list (same `/pantry?i=` seed shape as before).
+- **Static committed list** in the repo — no Generate counting, no canonical-ID ranking, no weekly cron, no KV snapshot. Coinnich owns the real NZ foods; until then the committed list is an explicit **placeholder** (do not invent foods in docs or code):
+
+  ```ts
+  // Placeholder — Coinnich fills common NZ foods (do not invent)
+  export const tryMe = {
+    breakfast: ['TODO', 'TODO', 'TODO'],
+    lunch: ['TODO', 'TODO', 'TODO'],
+    dinner: ['TODO', 'TODO', 'TODO'],
+    dessert: ['TODO', 'TODO', 'TODO'],
+  } as const
+  ```
+
+- Surfaces: `/` shows the Try me section; `/popular` remains the list URL in v1 (content is Try me, not a live ranking). Cards are **SSR HTML**, not an island. Unknown `/popular/[type]` stays an uncached 404 (typed lists are v2).
+- Counted **Popular ingredients** (canonical IDs, pairs/triples, cron, cache, sitemap) is **v2** — see [v2.md](./v2.md).
 
 ### Generate pending
 - Stay on `/pantry` while Generate runs, until the Valibot decode succeeds and the row has an id, then `goto('/recipes/{slug}')`. A Recipe URL is always a finished row; never land a live job there.
@@ -84,7 +91,9 @@
 ## Open
 - Generate do's and don'ts (proposed): a **collapsed** disclosure under the chip list, above the Generate button, titled "How to get the most out of Chef Llama" (not a dialog, not on `/`). Keep: Diet first; leftover chips; free cooks then Credits; one Recipe per Generate; ≥3 chips / max 16; Staples assumed; allergies always win (conflicting pantry Chips are swapped and highlighted); this-run toggles may change flags / servings / time / kcal / skill / method / devices but never drop an allergy; an AI-untested disclaimer; Save if you like it; metric and NZ names. Still to pick: always visible vs collapsed; whether a failed Generate refunds; a lawyer pass on the allergy wording.
 - **Skill level labels:** the three closed levels (proposed: beginner | intermediate | advanced — not locked).
-- **Popular ingredients:** canonical ingredient ID set; distinct-user threshold; pairs vs triples mix and caps; how Staples and `cooked: true` chips count; whether guest Generates contribute; edge cases for sets larger than three. Cron, cache, and sitemap stay **PENDING** until these are decided (see [caching.md](./caching.md#other-open-items)).
+- **Try me NZ foods:** Coinnich fills the placeholder chip lists (breakfast / lunch / dinner / dessert). Exact chip counts per set and whether dessert is required on `/` are not locked.
+- **Try me URL:** keep `/popular` as the v1 list path (content = Try me), or rename later — needs Coinnich confirmation before any route rename.
+- **v1 leftovers from old Popular (needs Coinnich confirmation — natural to remove, not decided here):** one-year "on Popular" recipe edge TTL; weekly Popular purge / recipe robots flip; `sitemap-popular.xml` recipe listings and weekly `<lastmod>`; whether `/` can prerender again now that Try me is static. See [caching.md](./caching.md#open), [seo.md](./seo.md#open), [ops.md](./ops.md#open).
 - Account page scope and usage bars (see [auth.md](./auth.md#open)).
 - Pending art and the robot design (draft).
 - Exact `/about` `/pricing` `/how-to` paths.

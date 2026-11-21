@@ -11,7 +11,7 @@ Users enter a list of ingredients (later: photo → ingredient list). A non-fron
 - SvelteKit **v3** app on **Cloudflare Workers**
 - **Alchemy v2** for infra/bindings (pin latest v2 exactly when coding starts)
 - **Effect v4** for errors (and payments flow)
-- Cloudflare: Workers AI, RAG/KV for similar recipes after a recipe is created, cache for Popular ingredient pages, Queues, Durable Objects for user credits
+- Cloudflare: Workers AI, RAG/KV for similar recipes after a recipe is created, cache for public brochure pages (Try me), Queues, Durable Objects for user credits
 - Auth: **Better Auth** on D1 (Workers + Drizzle). Payments stay Stripe Checkout, not Clerk Billing.
 - Styling: **StyleX**; custom components using native browser APIs (Popover, Dialog; no CSS anchor positioning) where possible
 - Design: **Kombai** to produce UI; **paper.design** (HTML/CSS, npm package, MCP) preferred over Figma (limited MCP). Do as much design work locally. shadcn-compatible theming + light/dark
@@ -50,7 +50,7 @@ Recorded in topic files under `docs/`. Do not reopen without new evidence.
 - **Errors:** Effect **v4** (`Data.TaggedError` + `tryPromise`) wraps AI, Stripe, and binding calls on the server.
 - **AI:** Workers AI `@cf/ibm-granite/granite-4.0-h-micro`. Backup model: Open (see [ai.md](./ai.md)). Embeddings `@cf/baai/bge-base-en-v1.5`.
 - **Similar recipes:** Vectorize (primary) + D1 canonical rows. Not KV. R2 later for photos only.
-- **Popular cache:** KV cron snapshot (`popular:all`) of **Popular ingredients** (pairs/triples of canonical IDs) — not Popular recipes. Cron/cache/sitemap rewrite **PENDING** until the ID set is decided (see [product.md](./product.md#popular), [caching.md](./caching.md)). Not Cache API. Workers Cache **on** with default-deny `private, no-store`; only `publicCache` may opt in.
+- **Try me (v1) / Popular ingredients (v2):** v1 brochure seeding is curated **Try me** (static committed lists; see [product.md](./product.md#try-me)). Counted Popular ingredients + KV cron snapshot are **v2** ([v2.md](./v2.md)). Not Cache API. Workers Cache **on** with default-deny `private, no-store`; only `publicCache` may opt in.
 - **Jobs:** one Queue (`generate_recipe`, `index_recipe`, later `ocr_photo`) consumed by a separate Jobs Worker.
 - **Credits:** SQLite Durable Object per Better Auth `userId`; **hold, then settle or release**; Stripe webhook credits with idempotent ledger ids. DO class lives on the Jobs Worker.
 - **Auth:** Better Auth on Workers via first-party SvelteKit (`svelteKitHandler`, Drizzle on **AUTH_DB**). Opaque D1 sessions. Not Clerk. Not OpenAuth as the session SDK. See [auth.md](./auth.md).

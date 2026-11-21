@@ -84,9 +84,13 @@ _Avoid_: Subscription, Clerk plan, Neuron top-up, USD pack, intl storefront
 On a Recipe detail page, change the person count without a new Generate. Servings and kcal total convert; minutes and steps stay; have/need names do not multiply.
 _Avoid_: second Generate, spice-law in the model, scaling cook time
 
-**Popular**:
-**Popular ingredients** on `/` (top combinations) and `/popular`: common pantry **pairs** and **triples** from Generates over a rolling 7 days, with a minimum distinct-user threshold — not a leaderboard of saved Recipes, not anonymous views. Each Generate records a sorted set of canonical ingredient IDs; the weekly job ranks combinations. Cron, cache, and sitemap updates are **PENDING** until the ID set and edge cases are decided.
-_Avoid_: Popular recipes, HN gravity, view-count or save-count recipe ranking, ogygia island, per-save rebuild, ranking private documents
+**Try me**:
+Curated starter pantries on `/` and `/popular` in v1: one hand-picked chip set each for breakfast, lunch, dinner, and dessert (common NZ foods). Tap prefills `/pantry?i=`; the Cook still Generates with their Diet. Static committed list — no counting, no cron.
+_Avoid_: Popular recipes, live ingredient ranking in v1, inventing NZ foods before Coinnich fills the placeholder
+
+**Popular** / **Popular ingredients** (v2):
+Counted pantry **pairs** and **triples** from Generates over a rolling 7 days (canonical ingredient IDs, distinct-user threshold, weekly cron, KV snapshot, cache/sitemap). Parked for v2; v1 uses **Try me** instead (see [v2.md](./v2.md), [product.md](./product.md#try-me)).
+_Avoid_: treating counted Popular as a v1 surface, HN gravity, view-count or save-count recipe ranking, ogygia island, per-save rebuild, ranking private documents
 
 **Tool**:
 A page tool that calls the same command as a Pantry control (`add_ingredients`, `remove_ingredients`, `make_recipe`, `topup`).
