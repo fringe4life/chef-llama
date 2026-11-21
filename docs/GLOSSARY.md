@@ -33,12 +33,12 @@ A closed list the Recipe may add if forgotten: water, salt, pepper, oil, butter.
 _Avoid_: Optional extra, shopping item, garnish, milk (when dairy is excluded)
 
 **Diet**:
-One named set of saved defaults: name, diet flags (vegan / vegetarian / gluten_free), allergies, optional kcal, servings (default 2), optional max minutes. A Cook has one active Diet for Generate; later, many Diets. First login creates Diet #1 before the first Generate. This-run Chips override it.
-_Avoid_: Kitchen, Profile, Pantry prefs, account settings, Better Auth user metadata
+One named set of saved defaults: name, diet flags (vegan / vegetarian / gluten_free), allergies, optional kcal, servings (default 2), optional max minutes. A Cook may have many Diets in v1; one is **active** for Generate (Diet switcher on `/pantry`). First login creates Diet #1 before the first Generate. This-run toggles may change flags, servings, time, and kcal for one cook; **allergies always win** and cannot be removed or ignored. Each Recipe records which Diet it was cooked for.
+_Avoid_: Kitchen, Profile, Pantry prefs, account settings, Better Auth user metadata, "chips override Diet"
 
 **Swap**:
-A Chip Llama replaces because it conflicts with the active Diet (or this-run) hard constraints. Recorded only on Recipes with `kind: "swap"` as `{ from, to }[]`.
-_Avoid_: Ignore, tell, required empty swaps array, BaseRecipe vs DietRecipe types
+A Chip Llama replaces because it conflicts with an **allergy** (always) or with remaining diet-flag hard constraints after this-run toggles. Swapped Chips are highlighted and never used as-is. Recorded only on Recipes with `kind: "swap"` as `{ from, to }[]`.
+_Avoid_: Ignore, tell, required empty swaps array, BaseRecipe vs DietRecipe types, treating allergy conflicts as optional
 
 **kind**:
 Discriminant on the Recipe: `"plain"` or `"swap"`. Diet is not a kind. kcal miss is not a kind.
