@@ -50,17 +50,60 @@
 - Storage is the per-user Diet DO with `getActive()` (see [data.md](./data.md#diet-lives-in-a-durable-object)).
 
 ### Try me
-- v1 replaces counted **Popular** (recipes or ingredients) with curated **Try me**: hand-picked starter pantries of common NZ foods so a Cook can tap once, land on `/pantry` with chips prefilled, and still **Generate with their own Diet**.
-- **Four sets**, one each for **breakfast**, **lunch**, **dinner**, and **dessert**. Each set is a small fixed chip list (same `/pantry?i=` seed shape as before).
-- **Static committed list** in the repo — no Generate counting, no canonical-ID ranking, no weekly cron, no KV snapshot. Coinnich owns the real NZ foods; until then the committed list is an explicit **placeholder** (do not invent foods in docs or code):
+- v1 replaces counted **Popular** (recipes or ingredients) with curated **Try me**: hand-picked starter pantries of NZ foods so a Cook can tap once, land on `/pantry` with chips prefilled, and still **Generate with their own Diet**.
+- **Four meals**, one each for **breakfast**, **lunch**, **dinner**, and **dessert**. Each meal has **three tiered chip sets** — **common**, **moderately common**, and **uncommon** — each 3–5 chips (same `/pantry?i=` seed shape as before). Min chips on Generate stays **3**.
+- **Static committed list** in the repo — no Generate counting, no canonical-ID ranking, no weekly cron, no KV snapshot. Chip strings below are display labels; allergen / diet tags come from **canonical ingredient IDs** when wired. Diet allergies still **swap conflicting pantry chips** as usual (see [Diet](#diet)).
+- **Common** (Coinnich-approved; default brochure seed):
+
+  | Meal | Dish | Chips | Source |
+  |---|---|---|---|
+  | Breakfast | scrambled eggs | eggs, bacon, mushrooms, tomatoes | [NZ Eggs — Kiwis in a scramble over eggs](https://eggs.org.nz/kiwis-in-a-scramble-over-eggs/) (scrambled #1 breakfast) |
+  | Lunch | mince & cheese pie | beef mince, cheese, puff pastry, onion | [Z Energy pie data via Supermarket News](https://supermarketnews.co.nz/c-store/z-energy-weighs-in-on-mince-vs-steak-pie-debate/) (mince & cheese / steak & cheese lead) |
+  | Dinner | roast lamb | lamb, kumara, potatoes, broccoli | [Retail Meat NZ Christmas survey 2025](https://www.rmnz.co.nz/news/2025/12/8/lamb-takes-out-ham-this-christmas) (lamb hero; potatoes / kumara / broccoli among top sides) |
+  | Dessert | pavlova | eggs, cream, kiwifruit, strawberries | NZ Eggs dessert #1 pavlova; classic topping fruit ([eggs.org.nz pavlova](https://eggs.org.nz/recipes/pavlova/); RMNZ survey: pavlova 71% favourite dessert) |
+
+- **Moderately common** (everyday NZ supermarket ingredients; 3–5 chips; avoid heavy chip reuse across sets):
+
+  | Meal | Dish | Chips | Source |
+  |---|---|---|---|
+  | Breakfast | porridge | oats, milk, apple, yoghurt | [Diabetes NZ breakfast guidance](https://www.diabetes.org.nz/blog/2018/5/30/whats-for-breakfast-p644a); [KidsHealth NZ](https://www.kidshealth.org.nz/healthy-eating/healthy-snack-meal-ideas-for-children-young-people) (porridge + milk + fruit) |
+  | Lunch | ham sandwich | ham, bread, lettuce, mayonnaise | Everyday NZ deli / supermarket lunch (e.g. FreshChoice ham / salad sandwich listings) |
+  | Dinner | roast chicken | chicken, carrots, peas, pumpkin | [newzealand.com favourite foods](https://www.newzealand.com/nz/feature/favourite-new-zealand-foods/) (chicken in hāngī / BBQ); RMNZ sides include carrots and peas; pumpkin a hāngī staple |
+  | Dessert | banana cake | banana, flour, butter, sugar | [Edmonds Cooking — banana cake](https://edmondscooking.co.nz/recipes/cakes/banana-cake) (classic Kiwi cookery-book cake) |
+
+- **Uncommon** (still recognisably Kiwi / NZ-available, less everyday; pick ingredients sources support — pāua, feijoa, whitebait, kawakawa, horopito):
+
+  | Meal | Dish | Chips | Source |
+  |---|---|---|---|
+  | Breakfast | whitebait fritters | whitebait, flour, egg | [Edmonds — whitebait fritters](https://edmondscooking.co.nz/recipes/fritters/whitebait-fritters); [newzealand.com — īnanga / whitebait](https://www.newzealand.com/nz/feature/traditional-maori-foods/) |
+  | Lunch | pāua fritters | paua, flour, spring onion, parsley | [NZ Woman's Weekly Food — pāua fritters](https://www.nzwomansweeklyfood.co.nz/recipe/lunch/paua-fritters-2085/); [Te Pā Tū — kai moana](https://te-pa-tu.com/our-stories/traditional-foods-used-in-maori-culture/) |
+  | Dinner | pan-fried fish with native herbs | tarakihi, kawakawa, horopito, lemon | Fish & chips fish (tarakihi) is common takeaway; **kawakawa** / **horopito** as seasoning ([Te Pā Tū herbs](https://te-pa-tu.com/our-stories/traditional-foods-used-in-maori-culture/); [newzealand.com kawakawa](https://www.newzealand.com/nz/feature/traditional-maori-foods/)) |
+  | Dessert | feijoa & passionfruit | feijoa, passionfruit, yoghurt | [NZ Feijoa Growers recipes](https://www.feijoa.org.nz/feijoa-recipes); passionfruit a classic NZ pav / summer fruit pairing |
+
+- Shape sketch (tiers explicit; strings are labels until canonical IDs land):
 
   ```ts
-  // Placeholder — Coinnich fills common NZ foods (do not invent)
   export const tryMe = {
-    breakfast: ['TODO', 'TODO', 'TODO'],
-    lunch: ['TODO', 'TODO', 'TODO'],
-    dinner: ['TODO', 'TODO', 'TODO'],
-    dessert: ['TODO', 'TODO', 'TODO'],
+    breakfast: {
+      common: ['eggs', 'bacon', 'mushrooms', 'tomatoes'], // scrambled eggs
+      moderatelyCommon: ['oats', 'milk', 'apple', 'yoghurt'], // porridge
+      uncommon: ['whitebait', 'flour', 'egg'], // whitebait fritters
+    },
+    lunch: {
+      common: ['beef mince', 'cheese', 'puff pastry', 'onion'], // mince & cheese pie
+      moderatelyCommon: ['ham', 'bread', 'lettuce', 'mayonnaise'], // ham sandwich
+      uncommon: ['paua', 'flour', 'spring onion', 'parsley'], // pāua fritters
+    },
+    dinner: {
+      common: ['lamb', 'kumara', 'potatoes', 'broccoli'], // roast lamb
+      moderatelyCommon: ['chicken', 'carrots', 'peas', 'pumpkin'], // roast chicken
+      uncommon: ['tarakihi', 'kawakawa', 'horopito', 'lemon'], // fish + native herbs
+    },
+    dessert: {
+      common: ['eggs', 'cream', 'kiwifruit', 'strawberries'], // pavlova
+      moderatelyCommon: ['banana', 'flour', 'butter', 'sugar'], // banana cake
+      uncommon: ['feijoa', 'passionfruit', 'yoghurt'], // feijoa & passionfruit
+    },
   } as const
   ```
 
@@ -91,7 +134,7 @@
 ## Open
 - Generate do's and don'ts (proposed): a **collapsed** disclosure under the chip list, above the Generate button, titled "How to get the most out of Chef Llama" (not a dialog, not on `/`). Keep: Diet first; leftover chips; free cooks then Credits; one Recipe per Generate; ≥3 chips / max 16; Staples assumed; allergies always win (conflicting pantry Chips are swapped and highlighted); this-run toggles may change flags / servings / time / kcal / skill / method / devices but never drop an allergy; an AI-untested disclaimer; Save if you like it; metric and NZ names. Still to pick: always visible vs collapsed; whether a failed Generate refunds; a lawyer pass on the allergy wording.
 - **Skill level labels:** the three closed levels (proposed: beginner | intermediate | advanced — not locked).
-- **Try me NZ foods:** Coinnich fills the placeholder chip lists (breakfast / lunch / dinner / dessert). Exact chip counts per set and whether dessert is required on `/` are not locked.
+- **Try me surfaces:** which tier(s) show on `/` by default (common only vs all three); whether dessert is required on `/`; brochure card copy for moderately common / uncommon.
 - **Try me URL:** keep `/popular` as the v1 list path (content = Try me), or rename later — needs Coinnich confirmation before any route rename.
 - **v1 leftovers from old Popular (needs Coinnich confirmation — natural to remove, not decided here):** one-year "on Popular" recipe edge TTL; weekly Popular purge / recipe robots flip; `sitemap-popular.xml` recipe listings and weekly `<lastmod>`; whether `/` can prerender again now that Try me is static. See [caching.md](./caching.md#open), [seo.md](./seo.md#open), [ops.md](./ops.md#open).
 - Account page scope and usage bars (see [auth.md](./auth.md#open)).

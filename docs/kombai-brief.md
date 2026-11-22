@@ -24,7 +24,7 @@ Skip Paper MCP during exploration (**100 calls/week**). Do not Figma MCP. Do not
 
 | Surface | URL today | Design as |
 |---|---|---|
-| Site landing | `/` | Brochure + curated **Try me** starter pantries (breakfast / lunch / dinner / dessert; SSR HTML, not an island). Tap → `/pantry?i=`. Placeholder NZ foods until Coinnich fills them. |
+| Site landing | `/` | Brochure + curated **Try me** starter pantries (breakfast / lunch / dinner / dessert; each meal has common / moderately common / uncommon tiers; SSR HTML, not an island). Tap → `/pantry?i=`. NZ chip lists in [product.md § Try me](./product.md#try-me). |
 | Terms / privacy | `/terms` `/privacy` | Long legal. Minimal chrome. |
 | Pantry | `/pantry` | Chips (≥3), Diet switcher + this-run toggles (flags / servings / time / kcal / skill / method / devices; allergies always win), generate, credits pill. Pending **stays here** ([cupboard.svg](./designs/cupboard.svg) **draft**), then goto recipe. No extra routes. No Code. |
 | Recipe | `/recipes/[slug]` | Method, `kcal` + `kcal_over`, swaps if `kind: "swap"` (allergy or flag conflict; highlighted), which Diet it was cooked for, save. Servings scaling is v2. Narrow = same route as sheet. |
@@ -33,7 +33,7 @@ Skip Paper MCP during exploration (**100 calls/week**). Do not Figma MCP. Do not
 | **Sign-in** | `/sign-in` | Google + email OTP only. Last-used badge. Chef Llama chrome around Better Auth. Passkeys later. |
 | **Exhausted / topup** | dialog then Checkout | Pack SKUs **NZD $8 / $16 / $32** → 20 / 50 / 120 Credits. No card fields. Return to `/pantry`. |
 | **404** | `+error.svelte` | Site vs `(app)` chrome. Try me hole uses boundary, not this. |
-| **Try me** | `/` + `/popular` | Four curated starter pantries (breakfast / lunch / dinner / dessert). Cards → `/pantry?i=`. Static list (placeholder until Coinnich). Counted Popular ingredients / `/popular/[type]` are v2. |
+| **Try me** | `/` + `/popular` | Four meals × three tiers (common / moderately common / uncommon). Cards → `/pantry?i=`. Static committed NZ lists in product.md. Counted Popular ingredients / `/popular/[type]` are v2. |
 | Account | popover | Theme radios, credits, sign out. |
 
 Photo and chat: **slots only**, disabled.
@@ -61,7 +61,7 @@ Radios `#scheme-system` `#scheme-light` `#scheme-dark`. Theme override: see [the
 
 ## Copy / stress ([break-ui](https://github.com/emilkowalski/skills/tree/main/skills/break-ui))
 
-Long allergy string, one-letter names, 12 chips, 0 Credits, `kcal_over: true`, `need` of 2 Staples, placeholder Try me list, 404 from a shared recipe URL.
+Long allergy string, one-letter names, 12 chips, 0 Credits, `kcal_over: true`, `need` of 2 Staples, Try me uncommon tier (e.g. whitebait / pāua), 404 from a shared recipe URL.
 
 ## Out of scope this pass
 

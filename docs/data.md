@@ -52,7 +52,7 @@
 - The Fallow module is `src/features/diet/`. (Multi-Diet was parked as v2; **superseded 21 Nov 2026** — see [product.md](./product.md#diet); the old park note remains in [v2.md](./v2.md).)
 
 ### Try me (v1) vs Popular ingredient sets (v2)
-- **v1:** brochure seeding is curated **Try me** — a static committed module of starter chip lists (breakfast / lunch / dinner / dessert). No per-Generate ingredient-set persistence for ranking, no KV snapshot, no weekly aggregate. See [product.md](./product.md#try-me).
+- **v1:** brochure seeding is curated **Try me** — a static committed module of starter chip lists (breakfast / lunch / dinner / dessert × common / moderately common / uncommon). No per-Generate ingredient-set persistence for ranking, no KV snapshot, no weekly aggregate. See [product.md](./product.md#try-me).
 - **v2:** counted **Popular ingredients** — canonical IDs, sorted ID set per Generate, pairs/triples over 7 days, KV `POPULAR`, cron, cache, sitemap. See [v2.md](./v2.md).
 
 ### Write path (v1)

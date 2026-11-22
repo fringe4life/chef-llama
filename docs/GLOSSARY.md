@@ -85,8 +85,8 @@ On a Recipe detail page, change the person count without a new Generate. Serving
 _Avoid_: second Generate, spice-law in the model, scaling cook time
 
 **Try me**:
-Curated starter pantries on `/` and `/popular` in v1: one hand-picked chip set each for breakfast, lunch, dinner, and dessert (common NZ foods). Tap prefills `/pantry?i=`; the Cook still Generates with their Diet. Static committed list — no counting, no cron.
-_Avoid_: Popular recipes, live ingredient ranking in v1, inventing NZ foods before Coinnich fills the placeholder
+Curated starter pantries on `/` and `/popular` in v1: breakfast, lunch, dinner, and dessert, each with three tiered chip sets (**common**, **moderately common**, **uncommon**; 3–5 NZ-food chips). Tap prefills `/pantry?i=`; the Cook still Generates with their Diet. Allergen / diet tags come from canonical ingredient IDs; Diet allergies swap chips as usual. Static committed list — no counting, no cron. Full lists: [product.md § Try me](./product.md#try-me).
+_Avoid_: Popular recipes, live ingredient ranking in v1, inventing stats or unsupported NZ foods
 
 **Popular** / **Popular ingredients** (v2):
 Counted pantry **pairs** and **triples** from Generates over a rolling 7 days (canonical ingredient IDs, distinct-user threshold, weekly cron, KV snapshot, cache/sitemap). Parked for v2; v1 uses **Try me** instead (see [v2.md](./v2.md), [product.md](./product.md#try-me)).
