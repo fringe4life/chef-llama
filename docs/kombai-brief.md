@@ -25,15 +25,17 @@ Skip Paper MCP during exploration (**100 calls/week**). Do not Figma MCP. Do not
 | Surface | URL today | Design as |
 |---|---|---|
 | Site landing | `/` | Brochure + curated **Try me** starter pantries (breakfast / lunch / dinner / dessert; each meal has common / moderately common / uncommon tiers; SSR HTML, not an island). Tap → `/pantry?i=`. NZ chip lists in [product.md § Try me](./product.md#try-me). |
+| **Recent** | `/recent` | Date-sorted published recipes (SSR HTML). Short cache; no cron; no ranking. Free-tier publish by default. Privacy: recipe only — no profile / Diet / allergies. |
 | Terms / privacy | `/terms` `/privacy` | Long legal. Minimal chrome. |
 | Pantry | `/pantry` | Chips (≥3), Diet switcher + this-run toggles (flags / servings / time / kcal / skill / method / devices; allergies always win), generate, credits pill. Pending **stays here** ([cupboard.svg](./designs/cupboard.svg) **draft**), then goto recipe. No extra routes. No Code. |
 | Recipe | `/recipes/[slug]` | Method, `kcal` + `kcal_over`, swaps if `kind: "swap"` (allergy or flag conflict; highlighted), which Diet it was cooked for, save. Servings scaling is v2. Narrow = same route as sheet. |
 | Saved | `/saved` | List. Empty state. |
-| **Diet** | dialog + switcher on `/pantry` | Blocking first-run creates Diet #1: name, flags, allergies, optional kcal, servings default 2, optional max time, skill (three levels), method + optional devices. Not `/kitchen`. **v1 multi-Diet:** switcher sets active Diet before Generate; add / rename / edit / delete reuse the dialog; delete-active falls back to another Diet. |
+| **Onboarding** | `/onboarding` route | First-run Diet #1, devices owned (time / feasibility), staples customise, explain free-tier → Recent publish. Replaces blocking Diet dialog. |
+| **Diet** | switcher on `/pantry` (+ edit UI) | Name, flags, allergies, optional kcal, servings default 2, optional max time, skill (three levels), method + optional devices. Not `/kitchen`. **v1 multi-Diet:** switcher sets active Diet before Generate; add / rename / edit / delete; delete-active falls back to another Diet. |
 | **Sign-in** | `/sign-in` | Google + email OTP only. Last-used badge. Chef Llama chrome around Better Auth. Passkeys later. |
 | **Exhausted / topup** | dialog then Checkout | Pack SKUs **NZD $8 / $16 / $32** → 20 / 50 / 120 Credits. No card fields. Return to `/pantry`. |
 | **404** | `+error.svelte` | Site vs `(app)` chrome. Try me hole uses boundary, not this. |
-| **Try me** | `/` + `/popular` | Four meals × three tiers (common / moderately common / uncommon). Cards → `/pantry?i=`. Static committed NZ lists in product.md. Counted Popular ingredients / `/popular/[type]` are v2. |
+| **Try me** | `/` | Four meals × three tiers (common / moderately common / uncommon). Cards → `/pantry?i=`. Static committed NZ lists in product.md. Counted Popular ingredients / `/popular/[type]` are v2 (no `/popular` in v1). |
 | Account | popover | Theme radios, credits, sign out. |
 
 Photo and chat: **slots only**, disabled.
@@ -44,7 +46,7 @@ Parchment / olive / paprika / cast iron ([design.md](./design.md) token table). 
 
 ## Motion — CSS only ([emilkowalski/skills](https://github.com/emilkowalski/skills) `emil-design-eng` + `animate`)
 
-No JS animation libraries. No `transition: all`. No `scale(0)`. Enter/exit: `transform` + `opacity`, `--ease-out: cubic-bezier(0.23, 1, 0.32, 1)`. UI under 300ms. Popovers scale from trigger; dialogs stay centered. `@starting-style` on dialog/popover. View transitions pantry ↔ recipe. Landing Try me: scroll-driven or `@property` trigger, not a JS observer. Chip add / Enter: **no** animation (high frequency). `prefers-reduced-motion`: keep opacity, drop translate. Hover scale only under `(hover: hover) and (pointer: fine)`.
+No JS animation libraries. No `transition: all`. No `scale(0)`. Enter/exit: `transform` + `opacity`, `--ease-out: cubic-bezier(0.23, 1, 0.32, 1)`. UI under 300ms. Popovers scale from trigger; dialogs stay centered. `@starting-style` on dialog/popover. View transitions pantry ↔ recipe. Landing Try me / Recent: scroll-driven or `@property` trigger, not a JS observer. Chip add / Enter: **no** animation (high frequency). `prefers-reduced-motion`: keep opacity, drop translate. Hover scale only under `(hover: hover) and (pointer: fine)`.
 
 | Moment | Animate? | How |
 |---|---|---|

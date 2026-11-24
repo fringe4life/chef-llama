@@ -44,9 +44,9 @@ Workstreams **#3–#14**. Later issues through **#92**. Round 31 filed **#79** c
 | 82 | Per-user Credit, Diet, Saved DOs; `RECIPES_DB` for public Recipes (`AUTH_DB` extra) | `research`, `infra`, `docs` | — | https://github.com/fringe4life/chef-llama/issues/82 |
 | 83 | Query layer: Effect SQL, not Drizzle; Reylo parked | `research`, `infra`, `docs` | **superseded** by [data.md](./data.md) | https://github.com/fringe4life/chef-llama/issues/83 |
 | 84 | Session-gated /account spend + packs (issue title still Clerk-gated) | `research`, `feature`, `docs` | — | https://github.com/fringe4life/chef-llama/issues/84 |
-| 88 | v1 every Generate is public-by-URL; private Recipe store is v2 | `research`, `feature`, `docs` | — | https://github.com/fringe4life/chef-llama/issues/88 |
+| 88 | v1 every Generate is public-by-URL; private Recipe store is v2 | `research`, `feature`, `docs` | **superseded in part (25 Nov 2026):** free-tier → Recent by default; paid may opt out — [product.md](./product.md#publish-and-privacy) | https://github.com/fringe4life/chef-llama/issues/88 |
 | 89 | Proposal: Starter pack (once-only NZD trial SKU) | `proposal`, `docs`, `research`, `feature` | — | https://github.com/fringe4life/chef-llama/issues/89 |
-| 90 | Proposal: Popular cap, cache-hit index, quiet-week all-time | `proposal`, `docs`, `research` | **superseded** for v1: brochure is curated **Try me**; counted Popular ingredients are **v2** — see [product.md](./product.md#try-me), [v2.md](./v2.md) | https://github.com/fringe4life/chef-llama/issues/90 |
+| 90 | Proposal: Popular cap, cache-hit index, quiet-week all-time | `proposal`, `docs`, `research` | **superseded** for v1: public list is **Recent**; brochure seeds are **Try me**; counted Popular ingredients are **v2** — see [product.md](./product.md#recent), [v2.md](./v2.md) | https://github.com/fringe4life/chef-llama/issues/90 |
 | 91 | Proposal: Generate do’s and don’ts near Generate | `proposal`, `docs`, `design` | — | https://github.com/fringe4life/chef-llama/issues/91 |
 | 92 | Proposal: Reconsider guest Generate | `proposal`, `docs`, `research`, `feature` | — | https://github.com/fringe4life/chef-llama/issues/92 |
 

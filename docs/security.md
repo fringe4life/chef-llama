@@ -22,7 +22,7 @@ Better Auth's built-in limiter is **off**: `rateLimit: { enabled: false }`. In B
    | # | Kind | Expression (draft) | Action |
    |---|---|---|---|
    | W1 | Custom, **first** | `POST` + Stripe webhook path + `ip.src` in Stripe's published webhook IPs | **Skip** remaining custom rules, **all rate-limiting rules**, and the products Browser Integrity Check and Security Level |
-   | W2 | Custom | Method not `GET`/`HEAD`/`OPTIONS` on `/`, `/popular`, `/popular/*`, `/recipes/*`, `/about`, `/pricing`, `/how-to`, `/terms`, `/privacy`. `/recipes/*` is **GET-only** now that Save posts to `/saved` (see [caching.md](./caching.md#save-on-the-cached-recipe-page-a-remote-form-that-posts-to-saved)). **Or** any method on `/__internal/*`: the cache-purge route is reached only over a service binding (account deletion; a ranking cron only if/when v2 Popular ingredients ships), which never passes through the zone, so every public request to it is blocked (see [caching.md](./caching.md#cache-purge-route)) | **Block** |
+   | W2 | Custom | Method not `GET`/`HEAD`/`OPTIONS` on `/`, `/recent`, `/recipes/*`, `/about`, `/pricing`, `/how-to`, `/terms`, `/privacy`. `/recipes/*` is **GET-only** now that Save posts to `/saved` (see [caching.md](./caching.md#save-on-the-cached-recipe-page-a-remote-form-that-posts-to-saved)). **Or** any method on `/__internal/*`: the cache-purge route is reached only over a service binding (account deletion; publish / report-hide; a ranking cron only if/when v2 Popular ingredients ships), which never passes through the zone, so every public request to it is blocked (see [caching.md](./caching.md#cache-purge-route)) | **Block** |
    | W3 | Custom | `POST` to the Generate form-action path with a missing or wrong `Origin` (allowed: `https://chefllama.nz` and `https://pr-*.preview.chefllama.nz`), or a `Content-Type` that is not `application/x-www-form-urlencoded` / `multipart/form-data`. Also `POST` to `/saved` or `/_app/remote/*` with a missing or wrong `Origin` (Origin only: enhanced remote calls use SvelteKit's own binary content type) | **Block** |
    | W4 | Custom | `/api/auth*` or `/sign-in*` and `ip.src.asnum` in a hand-maintained hosting/VPN ASN list (never broad cloud ASNs such as AWS 16509, GCP, Azure) | **Managed Challenge** |
    | W5 | Custom | Spare. Production `workers.dev` is disabled in Alchemy, so W5 stays unused | — |
@@ -46,12 +46,14 @@ Better Auth's built-in limiter is **off**: `rateLimit: { enabled: false }`. In B
 
   | Route | Layer | Key | Starting point |
   |---|---|---|---|
-  | Cache hits on `/`, `/popular(/[type])`, `/recipes/[slug]` | No Worker runs, so only WAF W2 | — | none |
-  | `/`, `/popular(/[type])` miss | Binding | HMAC(IP) | 60 / 10 s |
+  | Cache hits on `/`, `/recent`, `/recipes/[slug]` | No Worker runs, so only WAF W2 | — | none |
+  | `/`, `/recent` miss | Binding | HMAC(IP) | 60 / 10 s |
   | `/recipes/[slug]` miss, 301, 404 | Binding | HMAC(IP) | 30 / 10 s |
+  | `/onboarding` GET/POST | Binding | `userId` | 20 / 10 s |
   | `/pantry` GET | Binding | `userId` | 30 / 10 s |
   | Generate POST, free | Pool DO + binding + WAF W3 | `userId`; HMAC(IP) for burst | 3 / day signed-in; burst 5 / 10 s |
   | Generate POST, paid (Credits) | Binding + Credit DO hold; no daily cap | `userId` | 10 / 10 s |
+  | Generate / publish, **new accounts** (stricter) | Binding + DO | `userId` | tighter than paid burst (exact numbers Open; moderation approach in [product.md](./product.md#moderation-approach)) |
   | Save / unsave (`POST /saved?/remote=…` without JS, `/_app/remote/…` with JS; the limit runs inside the remote function) | Binding + WAF W3 (Origin) | `userId` | 20 / 10 s |
   | Checkout session create (Jobs Worker) | Binding + Credit DO starter flag | `userId` | 5 / 60 s |
   | Account deletion | Binding | `userId` | 3 / 60 s |

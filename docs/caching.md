@@ -20,14 +20,15 @@
 - **So cache growth is not a cost risk.** Storage is free and self-limiting (LRU plus a fresh cache on every deploy). What costs money is request volume, which caching doesn't change, and misses (CPU plus a D1 read), which a longer TTL reduces.
 
 ### Edge TTL for recipes
-- **v1 baseline for every recipe:** **browser 300, edge 2592000 (30 days), no `swr`**, tag `recipe-{ulid}`.
-- The old split (**Popular recipes: edge one year (31536000)** vs not-on-Popular 30 days) and join/leave `recipe-{ulid}` purge assumed a Popular *recipe* list. v1 has **Try me** (static) and no recipe Popular list; counted Popular ingredients are **v2**. **Natural to drop the one-year tier for v1** — **needs Coinnich's confirmation** before deleting any remaining cron/docs assumptions about it.
+- **v1 baseline for every public recipe:** **browser 300, edge 2592000 (30 days), no `swr`**, tag `recipe-{ulid}`.
+- The old split (**Popular recipes: edge one year (31536000)** vs not-on-Popular 30 days) is **dropped**. v1 has **Recent** (date-sorted published list, short cache) and no Popular *recipe* ranking; counted Popular ingredients are **v2**.
 - Not needed for cost (see above): the 30-day edge TTL is an explicit upper bound that still holds if deploys become rare or cross-version caching is ever turned on. A miss after 30 days costs one Worker run and one D1 read.
 - Size estimate behind it: a measured stub recipe page was 1,426 B raw (610 B brotli); a full recipe is likely 5–10 KB raw. Even 1,000 new recipes a day for a year is about 365,000 pages × 10 KB ≈ 3.7 GB, at no storage cost.
+- **Private / unpublished** recipes are never `publicCache`d (owner-only or 404 — see [product.md](./product.md#publish-and-privacy)).
 
 ### `publicCache(event, { browser, edge, swr?, tags })` is the only way to cache
 - Lives in `#lib/server/cache`. Throws unless the route is under `(static)` or `(site)` and the method is GET/HEAD.
-- Integers only: `browser ≤ 3600`, `edge ≤ 31536000`, `swr ≤ 604800`, `browser ≤ edge`. 1–10 tags matching `^(popular|popular-top|popular-[a-z0-9-]+|recipe-[0-9a-hjkmnp-tv-z]{26})$` (the `CacheTag` template-literal type).
+- Integers only: `browser ≤ 3600`, `edge ≤ 31536000`, `swr ≤ 604800`, `browser ≤ edge`. 1–10 tags matching `^(recent|try-me|popular|popular-top|popular-[a-z0-9-]+|recipe-[0-9a-hjkmnp-tv-z]{26})$` (the `CacheTag` template-literal type). `popular*` tags remain for **v2** Popular ingredients only.
 - Emits `Cache-Control: public, max-age=B`, `Cloudflare-CDN-Cache-Control: max-age=E[, stale-while-revalidate=S]` and `Cache-Tag`. **Never** `s-maxage` (it disables stale serving with SWR).
 
 ### Headers by route
@@ -36,31 +37,31 @@
 |---|---|
 | Prerendered `(static)` HTML | Static Assets default `public, max-age=0, must-revalidate` + ETag |
 | Hashed assets | immutable, 1 year |
-| `/recipes/[slug=slug]` canonical 200 | browser 300, edge 2592000 (30 days), no `swr`, tag `recipe-{ulid}` (one-year "on Popular" tier natural to drop for v1 — confirmation in [Edge TTL for recipes](#edge-ttl-for-recipes)) |
+| `/recipes/[slug=slug]` canonical 200 (published) | browser 300, edge 2592000 (30 days), no `swr`, tag `recipe-{ulid}` |
 | `/recipes/...` 301 (wrong or missing title) and unknown-suffix 404 | `private, no-store`, never `publicCache` (otherwise the heuristic caches every typo path for 1200 s / 180 s) |
-| Deleted recipe | 410, no-store |
-| `/popular`, `/popular/[type]` | browser 60, edge 3600, swr 86400, tags `popular` / `popular-{type}` (`/popular/[type]` is v2 content; unknown type 404 stays no-store) |
-| `/` | same TTLs as `/popular`, tag `popular-top` (Try me content; tag name kept for now) |
-| `/sitemap-index.xml`, `/sitemap-popular.xml` | same TTLs, tag `popular` while the popular sitemap route exists (see [seo.md](./seo.md#sitemaps); drop vs skeleton needs Coinnich confirmation) |
+| Deleted or unpublished / private recipe | 410 or owner-only / 404, no-store (see [product.md](./product.md#open)) |
+| `/recent` | **short cache:** browser 60, edge 300, swr 3600, tag `recent` (date-sorted D1 query; no cron snapshot) |
+| `/` (Try me) | browser 60, edge 3600, swr 86400, tag `try-me` (static committed list; long edge OK) |
+| `/sitemap-index.xml` | browser 60, edge 3600, swr 86400, tag `recent` (or static if only build-time sitemaps — see [seo.md](./seo.md#sitemaps)) |
 | `/sitemap.xml`, `/llms.txt` | Static assets written at build (see [seo.md](./seo.md#sitemaps)) |
-| Unknown `/popular/[type]` 404 | `private, no-store` (hook) |
-| Everything else (`(app)`, remotes, `/sign-in`) | `private, no-store` |
+| Everything else (`(app)`, remotes, `/sign-in`, `/onboarding`) | `private, no-store` |
 
 ### Public pages are 0-JS SvelteKit (ogygia dropped)
 - `(static)`: `/about` `/pricing` `/how-to` `/terms` `/privacy`. Prerendered, `csr = false`, 0 `<script>`, 0 `modulepreload`. The only script is the blocking theme script in `app.html` (see [theme.md](./theme.md#light-and-dark)).
-- `(site)`: `/` `/popular` `/popular/[type]` `/recipes/[slug=slug]`. Edge SSR, `csr = false`, Workers Cache.
-- **`/` and Try me:** v1 Try me is a **static committed list**, so there is no weekly KV miss to hide. Keeping `/` in `(site)` with Workers Cache still works; **prerendering `/` again is natural** now that the list does not change between deploys — **needs Coinnich's confirmation**. Tag `popular-top` may stay or be renamed with that confirmation.
+- `(site)`: `/` `/recent` `/recipes/[slug=slug]`. Edge SSR, `csr = false`, Workers Cache. **No `/popular` in v1.**
+- **`/` and Try me:** static committed list. Keeping `/` in `(site)` with Workers Cache still works; **prerendering `/` again is natural** — Open if Coinnich wants prerender vs edge SSR.
+- **Recent** must stay edge SSR (D1 date query). Short TTL keeps new publishes visible without a purge cron; optional purge of tag `recent` on publish is Open.
 - Public layouts never import auth, and `getSession` never runs on public routes. The shared `Nav.svelte` has a plain Sign in link.
 - Do not add ogygia or `OGYGIA_SECRET`. Measured: the ogygia runtime is about 22 KB brotli, against about 0.5–0.8 KB HTML + about 0.6 KB CSS for a 0-JS page.
-- Public bodies are byte-identical with and without a session cookie.
+- Public bodies are byte-identical with and without a session cookie. Published recipe HTML never includes Diet / allergy / profile fields ([product.md](./product.md#publish-and-privacy)).
 
 ### Cache purge route
 - **Why a service binding:** Workers Cache belongs to the Worker that filled it. Only code running in the **Site Worker's** default entrypoint can purge it; another Worker can't, and a zone purge (dashboard or API) doesn't touch it. The Site Worker runs `cache.purge({ tags })` (imported from `cloudflare:workers`) when called over a service binding. The cache is shared across every way the Worker is invoked, so a purge run inside a binding request clears what public requests cached.
 - **Guard on the purge route** (`POST /__internal/cache-purge` in the Site Worker):
-  - It is meant to be reached **only through the service binding** (from account deletion, and from a cron Worker when one exists). No custom domain, route or `workers.dev` hostname exists for it, and it is not linked or listed anywhere.
+  - It is meant to be reached **only through the service binding** (from account deletion, publish/unpublish, report-hide, and from a cron Worker when one exists for **v2** Popular ingredients). No custom domain, route or `workers.dev` hostname exists for it, and it is not linked or listed anywhere.
   - The Site Worker's public hostname still serves every path, so the route also rejects anything that didn't come through the binding: a WAF condition blocks `/__internal/*` at the zone (binding calls don't pass through the zone; it is folded into the existing W2 block rule so W5 stays spare, see [security.md](./security.md#rate-limiting)), the handler requires a shared secret header (from Infisical, see [security.md](./security.md#secrets-and-environment-variables)), accepts only POST with a JSON list of tags matching the `CacheTag` pattern, and answers anything else with a plain 404. It never sets cache headers (the default-deny hook makes it `private, no-store`).
-- Account deletion uses this route for `recipe-{ulid}` tags.
-- **Weekly Popular snapshot cron:** not part of v1. v1 brochure content is **Try me** (static). Counted Popular ingredients (canonical IDs, pairs/triples, KV `POPULAR`, weekly rebuild, tag purge list, `sitemap-popular.xml` refresh) are **v2** — see [v2.md](./v2.md). **Natural to leave the weekly Popular cron unshipped in v1** — **needs Coinnich's confirmation** that ops/WAF copy may stop assuming a weekly Popular job. No cron ping of `/` to keep it warm. Query strings on `/popular/*` redirect to the clean URL.
+- Account deletion uses this route for `recipe-{ulid}` tags (and `recent` if that Cook’s publishes were listed).
+- **No weekly Popular snapshot cron in v1.** Recent is a live (short-cached) query. Counted Popular ingredients (KV `POPULAR`, weekly rebuild, `sitemap-popular.xml`) are **v2** — see [v2.md](./v2.md). No cron ping of `/` to keep it warm. Query strings on `/recent` redirect to the clean URL.
 
 ### Kit 3.2 param matchers
 - A single `src/params.ts` using `defineParams` from `@sveltejs/kit/params`, with Valibot schemas from `#lib/schemas/*` and the brands `RecipeSlug` and `Ulid`. Matchers run on the server **and** in the browser, so they never import `#lib/server/*`. A matcher miss is a 404 before load (no-store via the hook). No `src/id-patterns.ts`.
@@ -74,7 +75,7 @@
 3. `routes.manifest.ts` + the Playwright route-contract test against the PR preview deploy (see [tests.md](./tests.md#playwright)).
 4. Local ESLint rules `chef/no-raw-cache-headers`, `chef/public-route-purity`, `chef/public-csr-false` (see [lint.md](./lint.md)).
 5. Synthetic check `scripts/synthetic-check.mjs`: in CI in v1; post-deploy and on a schedule in v1.1 (see [tests.md](./tests.md)).
-- bundlewatch: public pages 0 JS; `/pantry` about 43 KB brotli; CSS budget set by measurement.
+- bundlewatch: public pages 0 JS; `/pantry` about 43 KB brotli; CSS budget set by measurement. Third-party ads on public routes are **not** decided — see [ads.md](./ads.md).
 
 ### Save on the cached recipe page: a remote `form()` that posts to `/saved`
 - **Save is a SvelteKit remote function `form()`** (`saveRecipe` in `src/lib/saves.remote.ts`), not a plain form action. Remote functions are still behind `experimental.remoteFunctions: true` on the `sveltekit()` Vite plugin in Kit 3.2, so pin Kit exactly (see [ci.md](./ci.md#dependencies)).
@@ -106,13 +107,15 @@
 ### Edge cases
 - 301/404/410 are never cached (typo-path heuristic).
 - Rate-limit 429s: `Cache-Control: private, no-store`, never `publicCache` (see [security.md](./security.md#rate-limiting)).
-- Account deletion purges the `recipe-{ulid}` tags. There is no v1 Popular ingredient-set source data to scrub; old Popular *recipe* KV / sitemap cleanup is obsolete for v1 ranking (see [seo.md](./seo.md#open) for drop vs skeleton).
+- Account deletion purges the `recipe-{ulid}` tags and `recent` as needed. There is no v1 Popular ingredient-set source data to scrub.
 
 ## Open
 
 ### Other open items
-- **v1 Popular leftovers (needs Coinnich confirmation):** drop one-year recipe edge TTL; leave weekly Popular cron unshipped; prerender `/` again vs keep edge SSR; keep or rename `popular` / `popular-top` cache tags for Try me; drop vs skeleton `sitemap-popular.xml`. See [product.md](./product.md#open), [seo.md](./seo.md#open).
+- Purge tag `recent` on every publish / unpublish / report-hide vs rely on short TTL only.
+- Prerender `/` again vs keep edge SSR for Try me.
 - Exact `/about` `/pricing` `/how-to` paths.
 - **Purge route checks on the first preview:** that the WAF rule blocks `/__internal/*` publicly while binding calls still arrive, and that a binding-triggered purge clears a page cached by a public request.
 - Post-deploy assert of `CF-Cache-Status: HIT`; a Fallow zone for public routes. Later, not v1.
-- Storage (v2 option): a nightly near-duplicate merge with 301 + tag purge. See [v2.md](./v2.md).
+- Storage (v2 option): a nightly near-duplicate merge with 301 + tag purge. See [v2.md](./v2.md) and [product.md](./product.md#quality-publish-gates).
+- Ads on cached public pages: [ads.md](./ads.md) (recommendation: none yet).

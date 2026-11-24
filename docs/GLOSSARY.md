@@ -29,12 +29,12 @@ A Chip flag for food that is already cooked (leftover rice, cooked chicken). Lef
 _Avoid_: Staple, Swap, leftover as a Recipe kind, a `cooked` boolean on uncooked Chips
 
 **Staple**:
-A closed list the Recipe may add if forgotten: water, salt, pepper, oil, butter. At most two. The list is in the prompt.
-_Avoid_: Optional extra, shopping item, garnish, milk (when dairy is excluded)
+Defaults the Recipe may add if forgotten: water, salt, pepper, oil, butter. At most two per cook. Cooks can **customise staples** on onboarding / Diet settings. The active list is in the prompt.
+_Avoid_: Optional extra, shopping item, garnish, milk (when dairy is excluded), treating customise as an unbounded shopping list
 
 **Diet**:
-One named set of saved defaults: name, diet flags (vegan / vegetarian / gluten_free), allergies, optional kcal, servings (default 2), optional max minutes, **skill** (three levels), **method** (primary cooking method) and optional **devices**. A Cook may have many Diets in v1; one is **active** for Generate (Diet switcher on `/pantry`). First login creates Diet #1 before the first Generate. This-run toggles may change flags, servings, time, kcal, skill, method, and devices for one cook; **allergies always win** and cannot be removed or ignored. Each Recipe records which Diet it was cooked for.
-_Avoid_: Kitchen, Profile, Pantry prefs, account settings, Better Auth user metadata, "chips override Diet"
+One named set of saved defaults: name, diet flags (vegan / vegetarian / gluten_free), allergies, optional kcal, servings (default 2), optional max minutes, **skill** (three levels), **method** (primary cooking method) and optional **devices** (from devices the Cook owns). A Cook may have many Diets in v1; one is **active** for Generate (Diet switcher on `/pantry`). First login completes **`/onboarding`** (creates Diet #1) before the first Generate. This-run toggles may change flags, servings, time, kcal, skill, method, and devices for one cook; **allergies always win** and cannot be removed or ignored. Each Recipe records which Diet it was cooked for (internal; never shown on public recipe pages).
+_Avoid_: Kitchen, Profile, Pantry prefs, account settings, Better Auth user metadata, "chips override Diet", first-run Diet dialog on `/pantry`
 
 **Skill**:
 A v1 Diet field with three levels, plus a this-run toggle. It steers technique choice, step detail, parallel steps, and time estimates in Generate.
@@ -57,12 +57,12 @@ True when estimated kcal per serving exceeds the active Diet or this-run kcal ca
 _Avoid_: `over`, over budget, over tokens, over time
 
 **Recipe**:
-One cookable dish for tonight that fits the Pantry (and constraints on that run). v1 Recipes are public-by-URL; a private Recipe store is later.
-_Avoid_: Meal plan, candidate set, post, feed item, markdown blob, private document in v1
+One cookable dish for tonight that fits the Pantry (and constraints on that run). Free-tier recipes **publish to Recent by default**; paid Cooks may opt out (private). Public pages show the recipe only — never profile, Diet, allergies, or medical diets.
+_Avoid_: Meal plan, candidate set, post, feed item, markdown blob, “every Generate is always public with no opt-out”
 
 **Saved**:
-The Cook’s private list of Recipe ids they kept (per-user Saved DO). Not a copy of the Recipe, not a private Recipe store, not a visibility picker, not a D1 saves list.
-_Avoid_: bookmark blob, dual-write of the list, private recipe store, D1 saves table
+The Cook’s private list of Recipe ids they kept (per-user Saved DO). Not a copy of the Recipe, not Recent, not a D1 saves list.
+_Avoid_: bookmark blob, dual-write of the list, D1 saves table, conflating Saved with publish/opt-out
 
 **Site**:
 Public marketing pages. Brochure, not the cooking loop.
@@ -84,12 +84,20 @@ _Avoid_: Subscription, Clerk plan, Neuron top-up, USD pack, intl storefront
 On a Recipe detail page, change the person count without a new Generate. Servings and kcal total convert; minutes and steps stay; have/need names do not multiply.
 _Avoid_: second Generate, spice-law in the model, scaling cook time
 
+**Onboarding**:
+Signed-in `(app)` route **`/onboarding`**. First-run Diet #1, devices owned (time / feasibility), staples customise, and clear copy that free-tier recipes publish to **Recent** by default. Replaces a blocking Diet dialog on `/pantry`.
+_Avoid_: onboarding dialog, welcome modal as the only first-run path
+
+**Recent**:
+Public `(site)` route **`/recent`**: date-sorted list of **published** recipes (newest first). Short cache, no cron, no ranking. Replaces Popular *recipe* ranking in v1. See [product.md § Recent](./product.md#recent).
+_Avoid_: Popular, HN gravity, view/save ranking, weekly snapshot cron, listing private or unpublished recipes
+
 **Try me**:
-Curated starter pantries on `/` and `/popular` in v1: breakfast, lunch, dinner, and dessert, each with three tiered chip sets (**common**, **moderately common**, **uncommon**; 3–5 NZ-food chips). Tap prefills `/pantry?i=`; the Cook still Generates with their Diet. Allergen / diet tags come from canonical ingredient IDs; Diet allergies swap chips as usual. Static committed list — no counting, no cron. Full lists: [product.md § Try me](./product.md#try-me).
-_Avoid_: Popular recipes, live ingredient ranking in v1, inventing stats or unsupported NZ foods
+Curated starter pantries on **`/`** in v1: breakfast, lunch, dinner, and dessert, each with three tiered chip sets (**common**, **moderately common**, **uncommon**; 3–5 NZ-food chips). Tap prefills `/pantry?i=`; the Cook still Generates with their Diet. Static committed list — no counting, no cron. Full lists: [product.md § Try me](./product.md#try-me).
+_Avoid_: treating Try me as Recent, Popular recipes, live ingredient ranking in v1, inventing stats or unsupported NZ foods
 
 **Popular** / **Popular ingredients** (v2):
-Counted pantry **pairs** and **triples** from Generates over a rolling 7 days (canonical ingredient IDs, distinct-user threshold, weekly cron, KV snapshot, cache/sitemap). Parked for v2; v1 uses **Try me** instead (see [v2.md](./v2.md), [product.md](./product.md#try-me)).
+Counted pantry **pairs** and **triples** from Generates over a rolling 7 days (canonical ingredient IDs, distinct-user threshold, weekly cron, KV snapshot, cache/sitemap). Parked for v2. v1 public list is **Recent**; brochure pantry seeds are **Try me** (see [v2.md](./v2.md), [product.md](./product.md#recent)).
 _Avoid_: treating counted Popular as a v1 surface, HN gravity, view-count or save-count recipe ranking, ogygia island, per-save rebuild, ranking private documents
 
 **Tool**:

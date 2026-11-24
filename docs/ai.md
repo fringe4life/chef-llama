@@ -16,19 +16,21 @@
 - `max_tokens` truncates; it does not make steps short. Conciseness comes from the prompt and the schema: 6–8 one-clause steps of about 80 characters at most, with 768 as the safety net. Measured: a compact minified 8-step swap Recipe is about 120–160 tokens, a "fat" pretty one about 270–360 tokens, so 512 would truncate and 768 is the default.
 - Chips with `cooked: true` are sent as cooked. The cook method reheats or assembles them (added late) and never prepares them from raw. Highlight them in have/steps.
 - **Skill** (Diet field + this-run toggle) goes into the prompt: it steers **technique choice**, **step detail**, whether steps may run **in parallel**, and **time estimates**.
-- **Method / devices** (Diet fields + this-run toggles) constrain the cook gear. Valibot (same as [product.md](./product.md#diet) / [data.md](./data.md)):
+- **Method / devices** (Diet fields + this-run toggles; devices owned from `/onboarding`) constrain the cook gear and feasibility. Valibot (same as [product.md](./product.md#diet) / [data.md](./data.md)):
 
   ```ts
   method: v.picklist(['fry-pan','saucepan','oven','air-fryer','slow-cooker','pressure-cooker','grill','no-cook'])
   devices: v.optional(v.pipe(v.array(methodEnum), v.maxLength(3)))
   ```
 
-  Primary `method`, plus optionally a second device (schema allows up to three in `devices`).
+  Primary `method`, plus optionally a second device (schema allows up to three in `devices`). Steps and `minutes` must fit those devices and the Cook’s time target (publish quality gate in [product.md](./product.md#quality-publish-gates)).
+- **Staples** in the prompt come from the Cook’s active staples list (defaults water / salt / pepper / oil / butter; customisable — see [product.md](./product.md#onboarding)).
 
 ### Recipe JSON
 - JSON + Valibot. A decode failure → tagged error, no Recipe row, and the Credit hold is **released**. Do not import `effect/Schema` on Generate.
 - `kind: "plain" | "swap"` (a tagged union, not optional-key soup).
 - Fields: `title` ≤80, `minutes`, `servings`, `kcal`, `kcal_over` (boolean: over the Diet or this run's kcal cap; it is **not** token overflow), `have` ≤16, `need` ≤2 (Staples only), `steps` 6–8, `flags` (≤8, omitted when empty).
+- **Publish gates** (moderation / quality) run after a valid decode before a row is listed on Recent — see [product.md](./product.md#moderation-approach). Public HTML never includes Diet / allergy / profile fields.
 - `swaps: { from, to }[]` is a sibling of `steps`, present **only** on `kind: "swap"`, where it must be non-empty. `kind: "plain"` has **no** `swaps` key (never an empty array). The prompt includes swaps only when a swap happened.
 - `have` lists the replacement (`to`), never the forbidden chip. The UI lists swaps above the method and highlights them.
 - **Allergies always win:** a pantry Chip that conflicts with an allergy must become a Swap; this-run toggles never drop or ignore allergies. Remaining diet-flag conflicts after this-run toggles also Swap. See [product.md](./product.md#diet).
