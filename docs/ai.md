@@ -39,6 +39,7 @@
 
 ### Chips
 - In-process string canonicalizer in `src/shared/`: split, NFKC + lowercase, strip quantities, units and prep adjectives, a tiny closed NZ synonym map, dedupe, max 16 chips. Leftovers become `{ "name": "rice", "cooked": true }`. Sentence-like paste is rejected.
+- Synonym map target: the committed NZ pantry seed (`data/ingredients/nz-pantry.json` — slugs, aliases, allergens, v1 diet flags). Wiring the seed into the canonicalizer is still Open in [data.md](./data.md#open); until then the tiny map stands.
 - No model rewrite, no embedding and no CRF parser for chips in v1. Clairic for sentence-like paste is v2/v3 (see [v2.md](./v2.md)).
 
 ### Cancel and pending

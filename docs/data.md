@@ -57,6 +57,12 @@
 - **v1 Try me:** curated static starter chip lists on `/` (breakfast / lunch / dinner / dessert × tiers). See [product.md](./product.md#try-me).
 - **v2:** counted **Popular ingredients** — canonical IDs, sorted ID set per Generate, pairs/triples over 7 days, KV `POPULAR`, cron, cache, sitemap. See [v2.md](./v2.md).
 
+### Canonical NZ pantry ingredients (seed)
+- Committed seed: `data/ingredients/nz-pantry.json` (~300–500 everyday NZ items). Sources, licences, NZFCD decision, and regenerate steps: [`data/ingredients/SOURCES.md`](../data/ingredients/SOURCES.md). Manual review queue: [`data/ingredients/MANUAL_REVIEW.md`](../data/ingredients/MANUAL_REVIEW.md).
+- **Shape (planned `RECIPES_DB` ingredients table + chip map):** stable `slug` (UNIQUE, kebab-case); ULID `id` minted on D1 load; `name`; `aliases[]`; `category`; `allergens[]` (OFF-aligned closed codes); `allergen_uncertain[]` (`{ code, note }` — never guess); deterministic `diets` covering **all v1 Diet flags** only: `vegan` | `vegetarian` | `gluten_free` (multi-Diet UI is v1; keto/halal/paleo stay out). Valibot field sketch lives in [`SOURCES.md`](../data/ingredients/SOURCES.md) (to land under `#lib/schemas/*` with app code). Validate: `node scripts/validate-nz-pantry.mjs`. Regenerate: `node scripts/generate-nz-pantry.mjs`.
+- **Vectorize:** later embed `name` + `aliases` with metadata `slug` (and ULID after D1 load). Distinct from the `recipes` index.
+- Feeds the in-process chip synonym map ([ai.md](./ai.md#chips)) and Try me label → canonical ID wiring when that lands. Publish gates already require canonical ingredient IDs ([product.md](./product.md#moderation-approach)).
+
 ### Write path (v1)
 - Session → Diet DO `getActive()` → Credit DO **`hold(n, idempotencyKey)`** (coalesced SQL, no `await` between writes, no AI inside the DO) → Workers AI granite → Valibot → moderation / quality gates → D1 `batch()` insert of the Recipe (including `diet_id`, publish/visibility) → **`settle`**. **`release`** if AI or Valibot fails, or on cancel. Then Queue `index_recipe` (bge embed + Vectorize upsert + Analytics Engine) for rows that may appear publicly. Credits are always held first, then settled or released; never a one-shot debit before AI. (Persisting a sorted canonical ingredient ID set for Popular ranking is **v2**.)
 - D1 stays the store: Generate is one INSERT. Turso/libSQL, Postgres + Hyperdrive (v2) and Basin Pipelines (v3) are parked.
@@ -81,3 +87,6 @@
 - Near-duplicate canonical pantry skip window for Recent (see [product.md](./product.md#quality-publish-gates)).
 - Storage (v2 option): nightly near-duplicate merge + 301, and embed only saved recipes.
 - Popular ingredients open detail (canonical IDs, thresholds, guest Generates, …) lives under [v2.md](./v2.md).
+- **Ingredients D1 load:** exact Drizzle column names / migration; when to mint ULIDs; whether allergen_uncertain blocks publish-gate matching or only UI warnings.
+- **Manual review** of `data/ingredients/MANUAL_REVIEW.md` (uncertain allergens, ambiguous diet/identity rows) before treating the seed as production-canonical.
+- Chip canonicalizer: replace the tiny hard-coded synonym map with the seed’s `slug` + `aliases` (and whether unmatched free text stays “held for review” only).

@@ -21,7 +21,7 @@ The Cook’s current list of on-hand Chips for one Generate. Generate requires t
 _Avoid_: Fridge, cupboard, inventory, shopping list
 
 **Chip**:
-One canonical pantry ingredient. May carry `cooked: true` when already cooked; uncooked Chips omit the flag.
+One canonical pantry ingredient. May carry `cooked: true` when already cooked; uncooked Chips omit the flag. Canonical IDs / NZ names / aliases / allergen and v1 diet flags live in the pantry seed (`data/ingredients/`).
 _Avoid_: token, tag, leftover as the Chip’s name
 
 **Already-cooked**:

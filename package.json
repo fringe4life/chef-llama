@@ -3,7 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run",
+    "ingredients:generate": "node scripts/generate-nz-pantry.mjs",
+    "ingredients:validate": "node scripts/validate-nz-pantry.mjs"
   },
   "devDependencies": {
     "vitest": "4.0.8"

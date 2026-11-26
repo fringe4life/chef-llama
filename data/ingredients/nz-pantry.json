@@ -1,0 +1,8476 @@
+{
+  "version": 1,
+  "locale": "en-NZ",
+  "description": "Canonical NZ pantry ingredients for Chef Llama chip canonicalizer, planned D1 ingredients table, and future Vectorize embeddings.",
+  "id_policy": {
+    "slug": "Stable external key (kebab-case). Unique. Used by chip canonicalizer and Try me wiring.",
+    "d1_id": "On load into RECIPES_DB, each row also gets a ULID primary key (see docs/data.md). Slug stays UNIQUE.",
+    "vectorize": "Embed name + aliases; metadata includes slug (and ULID after D1 load)."
+  },
+  "diet_flags": [
+    "vegan",
+    "vegetarian",
+    "gluten_free"
+  ],
+  "diet_flags_note": "v1 closed Diet flags only (product.md). Multi-Diet UI moved from v2 into v1; the flag list did not expand (no keto/halal/paleo).",
+  "allergen_codes": [
+    "gluten",
+    "crustaceans",
+    "eggs",
+    "fish",
+    "peanuts",
+    "soybeans",
+    "milk",
+    "nuts",
+    "celery",
+    "mustard",
+    "sesame",
+    "sulphites",
+    "lupin",
+    "molluscs"
+  ],
+  "allergen_codes_note": "Aligned with Open Food Facts allergen taxonomy tags (en:*). Easy to hand-check. Uncertain cases use allergen_uncertain — never guess.",
+  "categories": [
+    "staple",
+    "vegetable",
+    "fruit",
+    "meat",
+    "seafood",
+    "dairy",
+    "egg",
+    "grain",
+    "legume",
+    "nut_seed",
+    "herb_spice",
+    "condiment",
+    "oil_fat",
+    "bakery",
+    "beverage",
+    "other"
+  ],
+  "ingredients": [
+    {
+      "slug": "bagel",
+      "name": "bagel",
+      "aliases": [],
+      "category": "bakery",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "sesame",
+          "note": "often topped with sesame"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "biscuit",
+      "name": "biscuit",
+      "aliases": [
+        "cookie",
+        "cookies"
+      ],
+      "category": "bakery",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "eggs",
+          "note": "often"
+        },
+        {
+          "code": "milk",
+          "note": "often"
+        },
+        {
+          "code": "nuts",
+          "note": "variants"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "corn-tortilla",
+      "name": "corn tortilla",
+      "aliases": [],
+      "category": "bakery",
+      "allergens": [],
+      "allergen_uncertain": [
+        {
+          "code": "gluten",
+          "note": "usually GF corn; confirm brand"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "croissant",
+      "name": "croissant",
+      "aliases": [],
+      "category": "bakery",
+      "allergens": [
+        "gluten",
+        "milk"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "eggs",
+          "note": "may contain egg"
+        }
+      ],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "filo",
+      "name": "filo pastry",
+      "aliases": [
+        "phyllo"
+      ],
+      "category": "bakery",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "flour-tortilla",
+      "name": "flour tortilla",
+      "aliases": [],
+      "category": "bakery",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "muffin",
+      "name": "muffin",
+      "aliases": [],
+      "category": "bakery",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "eggs",
+          "note": "usually contains egg"
+        },
+        {
+          "code": "milk",
+          "note": "usually contains milk"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "pizza-base",
+      "name": "pizza base",
+      "aliases": [
+        "pizza base ready-made"
+      ],
+      "category": "bakery",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "puff-pastry",
+      "name": "puff pastry",
+      "aliases": [
+        "flaky pastry"
+      ],
+      "category": "bakery",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "milk",
+          "note": "butter pastry contains milk; margarine versions may not"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "shortcrust",
+      "name": "shortcrust pastry",
+      "aliases": [
+        "pie pastry"
+      ],
+      "category": "bakery",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "milk",
+          "note": "often contains butter"
+        },
+        {
+          "code": "eggs",
+          "note": "some recipes include egg"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "apple-juice",
+      "name": "apple juice",
+      "aliases": [],
+      "category": "beverage",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated"
+      ]
+    },
+    {
+      "slug": "beef-stock",
+      "name": "beef stock",
+      "aliases": [
+        "beef broth"
+      ],
+      "category": "beverage",
+      "allergens": [],
+      "allergen_uncertain": [
+        {
+          "code": "celery",
+          "note": "commercial usually contains celery"
+        },
+        {
+          "code": "gluten",
+          "note": "check label"
+        }
+      ],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "beer",
+      "name": "beer",
+      "aliases": [
+        "ale",
+        "lager"
+      ],
+      "category": "beverage",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "chicken-stock",
+      "name": "chicken stock",
+      "aliases": [
+        "chicken broth"
+      ],
+      "category": "beverage",
+      "allergens": [],
+      "allergen_uncertain": [
+        {
+          "code": "celery",
+          "note": "commercial usually contains celery"
+        },
+        {
+          "code": "gluten",
+          "note": "check label"
+        }
+      ],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "coconut-water",
+      "name": "coconut water",
+      "aliases": [],
+      "category": "beverage",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "coffee",
+      "name": "coffee",
+      "aliases": [
+        "espresso",
+        "instant coffee"
+      ],
+      "category": "beverage",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "green-tea",
+      "name": "green tea",
+      "aliases": [],
+      "category": "beverage",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "matcha",
+      "name": "matcha",
+      "aliases": [
+        "matcha powder"
+      ],
+      "category": "beverage",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "orange-juice",
+      "name": "orange juice",
+      "aliases": [],
+      "category": "beverage",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated"
+      ]
+    },
+    {
+      "slug": "soda-water",
+      "name": "soda water",
+      "aliases": [
+        "club soda",
+        "sparkling water"
+      ],
+      "category": "beverage",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated"
+      ]
+    },
+    {
+      "slug": "stock",
+      "name": "stock",
+      "aliases": [
+        "broth"
+      ],
+      "category": "beverage",
+      "allergens": [],
+      "allergen_uncertain": [
+        {
+          "code": "celery",
+          "note": "commercial stock usually contains celery"
+        },
+        {
+          "code": "gluten",
+          "note": "check label"
+        },
+        {
+          "code": "fish",
+          "note": "fish stock variant"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "tea",
+      "name": "tea",
+      "aliases": [
+        "black tea",
+        "english breakfast"
+      ],
+      "category": "beverage",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "tomato-juice",
+      "name": "tomato juice",
+      "aliases": [],
+      "category": "beverage",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated"
+      ]
+    },
+    {
+      "slug": "vegetable-stock",
+      "name": "vegetable stock",
+      "aliases": [
+        "veg stock",
+        "vegetable broth"
+      ],
+      "category": "beverage",
+      "allergens": [],
+      "allergen_uncertain": [
+        {
+          "code": "celery",
+          "note": "commercial usually contains celery"
+        },
+        {
+          "code": "gluten",
+          "note": "check label"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "wine",
+      "name": "wine",
+      "aliases": [
+        "cooking wine",
+        "red wine",
+        "white wine"
+      ],
+      "category": "beverage",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "agar",
+      "name": "agar",
+      "aliases": [
+        "agar agar"
+      ],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "apple-cider-vinegar",
+      "name": "apple cider vinegar",
+      "aliases": [
+        "acv",
+        "cider vinegar"
+      ],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "baking-powder",
+      "name": "baking powder",
+      "aliases": [],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [
+        {
+          "code": "gluten",
+          "note": "most NZ baking powder is GF; rare wheat starch — check if coeliac"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "baking-soda",
+      "name": "baking soda",
+      "aliases": [
+        "bicarb",
+        "bicarbonate of soda"
+      ],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "balsamic",
+      "name": "balsamic vinegar",
+      "aliases": [
+        "balsamic"
+      ],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "brown-sugar",
+      "name": "brown sugar",
+      "aliases": [
+        "soft brown sugar"
+      ],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "capers",
+      "name": "capers",
+      "aliases": [
+        "caper"
+      ],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "chocolate",
+      "name": "chocolate",
+      "aliases": [
+        "dark chocolate"
+      ],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [
+        {
+          "code": "milk",
+          "note": "milk chocolate contains milk; dark may have traces"
+        },
+        {
+          "code": "soybeans",
+          "note": "lecithin often soy"
+        },
+        {
+          "code": "nuts",
+          "note": "may contain nuts"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "chutney",
+      "name": "chutney",
+      "aliases": [
+        "mango chutney"
+      ],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "cocoa",
+      "name": "cocoa",
+      "aliases": [
+        "cacao",
+        "cocoa powder"
+      ],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "coconut-sugar",
+      "name": "coconut sugar",
+      "aliases": [],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "cream-of-tartar",
+      "name": "cream of tartar",
+      "aliases": [],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "usda"
+      ]
+    },
+    {
+      "slug": "gelatine",
+      "name": "gelatine",
+      "aliases": [
+        "gelatin",
+        "gelatine leaves"
+      ],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "golden-syrup",
+      "name": "golden syrup",
+      "aliases": [],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "harissa",
+      "name": "harissa",
+      "aliases": [],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [
+        {
+          "code": "gluten",
+          "note": "check brand"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "hoisin",
+      "name": "hoisin sauce",
+      "aliases": [],
+      "category": "condiment",
+      "allergens": [
+        "soybeans"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "gluten",
+          "note": "often contains wheat"
+        },
+        {
+          "code": "sesame",
+          "note": "some brands contain sesame"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "honey",
+      "name": "honey",
+      "aliases": [
+        "manuka honey",
+        "mānuka honey"
+      ],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "hot-sauce",
+      "name": "hot sauce",
+      "aliases": [
+        "chilli sauce",
+        "tabasco"
+      ],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "icing-sugar",
+      "name": "icing sugar",
+      "aliases": [
+        "confectioners sugar",
+        "powdered sugar"
+      ],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "jam",
+      "name": "jam",
+      "aliases": [
+        "conserve",
+        "jelly",
+        "marmalade"
+      ],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "malt-vinegar",
+      "name": "malt vinegar",
+      "aliases": [],
+      "category": "condiment",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "maple-syrup",
+      "name": "maple syrup",
+      "aliases": [
+        "maple"
+      ],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "mayonnaise",
+      "name": "mayonnaise",
+      "aliases": [
+        "aioli",
+        "mayo"
+      ],
+      "category": "condiment",
+      "allergens": [
+        "eggs"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "mustard",
+          "note": "many mayo recipes include mustard"
+        }
+      ],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "milk-chocolate",
+      "name": "milk chocolate",
+      "aliases": [],
+      "category": "condiment",
+      "allergens": [
+        "milk"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "soybeans",
+          "note": "lecithin often soy"
+        },
+        {
+          "code": "nuts",
+          "note": "may contain nuts"
+        }
+      ],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "mirin",
+      "name": "mirin",
+      "aliases": [
+        "sweet rice wine"
+      ],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [
+        {
+          "code": "gluten",
+          "note": "hon-mirin usually GF; mirin-style seasoning may contain gluten"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "miso",
+      "name": "miso",
+      "aliases": [
+        "miso paste"
+      ],
+      "category": "condiment",
+      "allergens": [
+        "soybeans"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "gluten",
+          "note": "some miso uses barley/wheat; rice/soy miso may be GF"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "mustard",
+      "name": "mustard",
+      "aliases": [
+        "dijon",
+        "wholegrain mustard",
+        "yellow mustard"
+      ],
+      "category": "condiment",
+      "allergens": [
+        "mustard"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "nutritional-yeast",
+      "name": "nutritional yeast",
+      "aliases": [
+        "nooch"
+      ],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "oyster-sauce",
+      "name": "oyster sauce",
+      "aliases": [],
+      "category": "condiment",
+      "allergens": [
+        "molluscs"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "gluten",
+          "note": "often contains wheat"
+        },
+        {
+          "code": "soybeans",
+          "note": "often contains soy"
+        }
+      ],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "peanut-sauce",
+      "name": "peanut sauce",
+      "aliases": [
+        "satay sauce"
+      ],
+      "category": "condiment",
+      "allergens": [
+        "peanuts"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "soybeans",
+          "note": "often contains soy"
+        },
+        {
+          "code": "gluten",
+          "note": "may contain wheat"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "pesto",
+      "name": "pesto",
+      "aliases": [],
+      "category": "condiment",
+      "allergens": [
+        "milk",
+        "nuts"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "nuts",
+          "note": "classic basil pesto uses pine nuts"
+        },
+        {
+          "code": "milk",
+          "note": "classic includes parmesan"
+        }
+      ],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "pickled-ginger",
+      "name": "pickled ginger",
+      "aliases": [
+        "gari"
+      ],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [
+        {
+          "code": "sulphites",
+          "note": "may contain sulphites"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "relish",
+      "name": "relish",
+      "aliases": [
+        "tomato relish"
+      ],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "sambal",
+      "name": "sambal",
+      "aliases": [
+        "sambal oelek"
+      ],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "shaoxing",
+      "name": "shaoxing wine",
+      "aliases": [
+        "chinese cooking wine"
+      ],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [
+        {
+          "code": "gluten",
+          "note": "some brands contain wheat"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "soy-sauce",
+      "name": "soy sauce",
+      "aliases": [
+        "dark soy",
+        "light soy",
+        "soy",
+        "soya sauce"
+      ],
+      "category": "condiment",
+      "allergens": [
+        "gluten",
+        "soybeans"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "gluten",
+          "note": "tamari is often GF; standard soy sauce is wheat-based — fail closed gluten"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "sugar",
+      "name": "sugar",
+      "aliases": [
+        "caster sugar",
+        "raw sugar",
+        "white sugar"
+      ],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "sweet-chilli",
+      "name": "sweet chilli sauce",
+      "aliases": [
+        "sweet chili sauce"
+      ],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "tamari",
+      "name": "tamari",
+      "aliases": [
+        "gluten free soy sauce"
+      ],
+      "category": "condiment",
+      "allergens": [
+        "soybeans"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "gluten",
+          "note": "most tamari is GF; confirm label"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "teriyaki",
+      "name": "teriyaki sauce",
+      "aliases": [],
+      "category": "condiment",
+      "allergens": [
+        "gluten",
+        "soybeans"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "tomato-sauce",
+      "name": "tomato sauce",
+      "aliases": [
+        "ketchup",
+        "tomato ketchup"
+      ],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "treacle",
+      "name": "treacle",
+      "aliases": [
+        "molasses"
+      ],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "vinegar",
+      "name": "vinegar",
+      "aliases": [
+        "white vinegar"
+      ],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "wasabi",
+      "name": "wasabi",
+      "aliases": [],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [
+        {
+          "code": "mustard",
+          "note": "imitation wasabi often horseradish; may include mustard — check"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "white-chocolate",
+      "name": "white chocolate",
+      "aliases": [],
+      "category": "condiment",
+      "allergens": [
+        "milk"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "soybeans",
+          "note": "lecithin often soy"
+        }
+      ],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "wine-vinegar",
+      "name": "wine vinegar",
+      "aliases": [
+        "red wine vinegar",
+        "white wine vinegar"
+      ],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "worcestershire",
+      "name": "worcestershire sauce",
+      "aliases": [
+        "worcester sauce",
+        "worcestershire"
+      ],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [
+        {
+          "code": "fish",
+          "note": "classic recipe includes anchovy"
+        },
+        {
+          "code": "gluten",
+          "note": "some brands contain gluten"
+        },
+        {
+          "code": "soybeans",
+          "note": "some brands contain soy"
+        }
+      ],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "yeast",
+      "name": "yeast",
+      "aliases": [
+        "active yeast",
+        "dried yeast",
+        "instant yeast"
+      ],
+      "category": "condiment",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "blue-cheese",
+      "name": "blue cheese",
+      "aliases": [
+        "blue vein"
+      ],
+      "category": "dairy",
+      "allergens": [
+        "milk"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "brie",
+      "name": "brie",
+      "aliases": [
+        "camembert"
+      ],
+      "category": "dairy",
+      "allergens": [
+        "milk"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "buttermilk",
+      "name": "buttermilk",
+      "aliases": [
+        "butter milk"
+      ],
+      "category": "dairy",
+      "allergens": [
+        "milk"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "cheese",
+      "name": "cheese",
+      "aliases": [
+        "cheddar",
+        "colby",
+        "tasty cheese"
+      ],
+      "category": "dairy",
+      "allergens": [
+        "milk"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "condensed-milk",
+      "name": "condensed milk",
+      "aliases": [
+        "sweetened condensed milk"
+      ],
+      "category": "dairy",
+      "allergens": [
+        "milk"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "cottage-cheese",
+      "name": "cottage cheese",
+      "aliases": [],
+      "category": "dairy",
+      "allergens": [
+        "milk"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "cream",
+      "name": "cream",
+      "aliases": [
+        "pouring cream",
+        "thickened cream",
+        "whipping cream"
+      ],
+      "category": "dairy",
+      "allergens": [
+        "milk"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "cream-cheese",
+      "name": "cream cheese",
+      "aliases": [
+        "philadelphia"
+      ],
+      "category": "dairy",
+      "allergens": [
+        "milk"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "custard",
+      "name": "custard",
+      "aliases": [],
+      "category": "dairy",
+      "allergens": [
+        "milk"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "eggs",
+          "note": "egg custard contains eggs; instant custard may not"
+        }
+      ],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "evaporated-milk",
+      "name": "evaporated milk",
+      "aliases": [],
+      "category": "dairy",
+      "allergens": [
+        "milk"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "feta",
+      "name": "feta",
+      "aliases": [
+        "fetta"
+      ],
+      "category": "dairy",
+      "allergens": [
+        "milk"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "halloumi",
+      "name": "halloumi",
+      "aliases": [
+        "haloumi"
+      ],
+      "category": "dairy",
+      "allergens": [
+        "milk"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "ice-cream",
+      "name": "ice cream",
+      "aliases": [
+        "icecream"
+      ],
+      "category": "dairy",
+      "allergens": [
+        "milk"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "eggs",
+          "note": "some ice cream contains egg"
+        },
+        {
+          "code": "nuts",
+          "note": "flavour variants may contain nuts"
+        }
+      ],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "mascarpone",
+      "name": "mascarpone",
+      "aliases": [],
+      "category": "dairy",
+      "allergens": [
+        "milk"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "milk",
+      "name": "milk",
+      "aliases": [
+        "dairy milk",
+        "full cream milk",
+        "homogenised milk",
+        "trim milk"
+      ],
+      "category": "dairy",
+      "allergens": [
+        "milk"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "mozzarella",
+      "name": "mozzarella",
+      "aliases": [
+        "mozarella",
+        "pizza cheese"
+      ],
+      "category": "dairy",
+      "allergens": [
+        "milk"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "parmesan",
+      "name": "parmesan",
+      "aliases": [
+        "grana padano",
+        "parmigiano",
+        "parmigiano-reggiano"
+      ],
+      "category": "dairy",
+      "allergens": [
+        "milk"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "ricotta",
+      "name": "ricotta",
+      "aliases": [],
+      "category": "dairy",
+      "allergens": [
+        "milk"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "sour-cream",
+      "name": "sour cream",
+      "aliases": [
+        "soured cream"
+      ],
+      "category": "dairy",
+      "allergens": [
+        "milk"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "yoghurt",
+      "name": "yoghurt",
+      "aliases": [
+        "greek yoghurt",
+        "natural yoghurt",
+        "yogurt"
+      ],
+      "category": "dairy",
+      "allergens": [
+        "milk"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "egg",
+      "name": "egg",
+      "aliases": [
+        "eggs",
+        "free range egg",
+        "whole egg"
+      ],
+      "category": "egg",
+      "allergens": [
+        "eggs"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "egg-white",
+      "name": "egg white",
+      "aliases": [
+        "albumen",
+        "egg whites"
+      ],
+      "category": "egg",
+      "allergens": [
+        "eggs"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "egg-yolk",
+      "name": "egg yolk",
+      "aliases": [
+        "egg yolks"
+      ],
+      "category": "egg",
+      "allergens": [
+        "eggs"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "apple",
+      "name": "apple",
+      "aliases": [
+        "apples",
+        "braeburn",
+        "granny smith",
+        "royal gala"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "apricot",
+      "name": "apricot",
+      "aliases": [
+        "apricots"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [
+        {
+          "code": "sulphites",
+          "note": "dried apricots often sulphured; fresh usually fine"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "banana",
+      "name": "banana",
+      "aliases": [
+        "bananas"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "blackberry",
+      "name": "blackberry",
+      "aliases": [
+        "blackberries"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "blackcurrant",
+      "name": "blackcurrant",
+      "aliases": [
+        "black currant"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "blueberry",
+      "name": "blueberry",
+      "aliases": [
+        "blueberries"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "boysenberry",
+      "name": "boysenberry",
+      "aliases": [
+        "boysenberries"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "cherry",
+      "name": "cherry",
+      "aliases": [
+        "cherries"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "coconut",
+      "name": "coconut",
+      "aliases": [
+        "coconut flesh",
+        "fresh coconut"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "coconut-cream",
+      "name": "coconut cream",
+      "aliases": [
+        "tinned coconut cream"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "coconut-milk",
+      "name": "coconut milk",
+      "aliases": [],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "cranberry",
+      "name": "cranberry",
+      "aliases": [
+        "cranberries",
+        "dried cranberries"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "dates",
+      "name": "dates",
+      "aliases": [
+        "medjool dates"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "dragonfruit",
+      "name": "dragon fruit",
+      "aliases": [
+        "dragonfruit",
+        "pitaya"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "dried-apricot",
+      "name": "dried apricot",
+      "aliases": [
+        "dried apricots"
+      ],
+      "category": "fruit",
+      "allergens": [
+        "sulphites"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "feijoa",
+      "name": "feijoa",
+      "aliases": [
+        "pineapple guava"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "foodon"
+      ]
+    },
+    {
+      "slug": "fig",
+      "name": "fig",
+      "aliases": [
+        "dried figs",
+        "figs"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "goji",
+      "name": "goji berry",
+      "aliases": [
+        "goji berries",
+        "wolfberry"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "gooseberry",
+      "name": "gooseberry",
+      "aliases": [],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "grape",
+      "name": "grape",
+      "aliases": [
+        "grapes"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "grapefruit",
+      "name": "grapefruit",
+      "aliases": [],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "guava",
+      "name": "guava",
+      "aliases": [],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "honeydew",
+      "name": "honeydew",
+      "aliases": [
+        "honeydew melon"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "jackfruit",
+      "name": "jackfruit",
+      "aliases": [
+        "young jackfruit"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "kiwifruit",
+      "name": "kiwifruit",
+      "aliases": [
+        "gold kiwifruit",
+        "green kiwifruit",
+        "kiwi",
+        "kiwi fruit"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off",
+        "usda"
+      ]
+    },
+    {
+      "slug": "lemon",
+      "name": "lemon",
+      "aliases": [
+        "lemons"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "lemon-juice",
+      "name": "lemon juice",
+      "aliases": [],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated"
+      ]
+    },
+    {
+      "slug": "lime",
+      "name": "lime",
+      "aliases": [
+        "limes"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "lime-juice",
+      "name": "lime juice",
+      "aliases": [],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated"
+      ]
+    },
+    {
+      "slug": "lychee",
+      "name": "lychee",
+      "aliases": [
+        "litchi"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "mandarin",
+      "name": "mandarin",
+      "aliases": [
+        "clementine",
+        "tangerine"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "mango",
+      "name": "mango",
+      "aliases": [],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "nectarine",
+      "name": "nectarine",
+      "aliases": [
+        "nectarines"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "orange",
+      "name": "orange",
+      "aliases": [
+        "navel orange",
+        "oranges"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "papaya",
+      "name": "papaya",
+      "aliases": [
+        "pawpaw"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "passionfruit",
+      "name": "passionfruit",
+      "aliases": [
+        "passion fruit"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "peach",
+      "name": "peach",
+      "aliases": [
+        "peaches"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "pear",
+      "name": "pear",
+      "aliases": [
+        "nashi",
+        "pears"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "persimmon",
+      "name": "persimmon",
+      "aliases": [
+        "fuyu"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "pineapple",
+      "name": "pineapple",
+      "aliases": [],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "plantain",
+      "name": "plantain",
+      "aliases": [],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "plum",
+      "name": "plum",
+      "aliases": [
+        "plums"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "pomegranate",
+      "name": "pomegranate",
+      "aliases": [],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "quince",
+      "name": "quince",
+      "aliases": [],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "raisins",
+      "name": "raisins",
+      "aliases": [
+        "dried grapes",
+        "sultanas"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [
+        {
+          "code": "sulphites",
+          "note": "may be sulphured"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "raspberry",
+      "name": "raspberry",
+      "aliases": [
+        "raspberries"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "redcurrant",
+      "name": "redcurrant",
+      "aliases": [
+        "red currant"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "rhubarb",
+      "name": "rhubarb",
+      "aliases": [],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "rockmelon",
+      "name": "rockmelon",
+      "aliases": [
+        "cantaloupe",
+        "muskmelon"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "starfruit",
+      "name": "starfruit",
+      "aliases": [
+        "carambola"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "strawberry",
+      "name": "strawberry",
+      "aliases": [
+        "strawberries"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "tamarillo",
+      "name": "tamarillo",
+      "aliases": [
+        "tree tomato"
+      ],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated"
+      ]
+    },
+    {
+      "slug": "watermelon",
+      "name": "watermelon",
+      "aliases": [],
+      "category": "fruit",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "barley",
+      "name": "barley",
+      "aliases": [
+        "pearl barley"
+      ],
+      "category": "grain",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "bread",
+      "name": "bread",
+      "aliases": [
+        "loaf",
+        "sliced bread",
+        "white bread",
+        "wholemeal bread"
+      ],
+      "category": "grain",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "breadcrumbs",
+      "name": "breadcrumbs",
+      "aliases": [
+        "panko"
+      ],
+      "category": "grain",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "brown-rice",
+      "name": "brown rice",
+      "aliases": [],
+      "category": "grain",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "bulgur",
+      "name": "bulgur",
+      "aliases": [
+        "bulgur wheat",
+        "cracked wheat"
+      ],
+      "category": "grain",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "cereal",
+      "name": "cereal",
+      "aliases": [
+        "breakfast cereal"
+      ],
+      "category": "grain",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "gluten",
+          "note": "many cereals contain wheat; some corn/rice are GF"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "cornflour",
+      "name": "cornflour",
+      "aliases": [
+        "cornstarch",
+        "maize flour"
+      ],
+      "category": "grain",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "couscous",
+      "name": "couscous",
+      "aliases": [],
+      "category": "grain",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "cracker",
+      "name": "cracker",
+      "aliases": [
+        "crackers",
+        "water cracker"
+      ],
+      "category": "grain",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "flour",
+      "name": "flour",
+      "aliases": [
+        "all-purpose flour",
+        "plain flour",
+        "wheat flour"
+      ],
+      "category": "grain",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "lasagna-sheet",
+      "name": "lasagna sheet",
+      "aliases": [
+        "lasagne sheet"
+      ],
+      "category": "grain",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "eggs",
+          "note": "egg pasta variants"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "noodles",
+      "name": "noodles",
+      "aliases": [
+        "egg noodles",
+        "wheat noodles"
+      ],
+      "category": "grain",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "eggs",
+          "note": "egg noodles contain eggs; rice noodles do not — prefer rice-noodles slug"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "oats",
+      "name": "oats",
+      "aliases": [
+        "oatmeal",
+        "porridge oats",
+        "rolled oats"
+      ],
+      "category": "grain",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "gluten",
+          "note": "botanically GF but NZ coeliac advice: only certified GF oats; standard oats fail closed"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "pasta",
+      "name": "pasta",
+      "aliases": [
+        "fettuccine",
+        "penne",
+        "spaghetti"
+      ],
+      "category": "grain",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "polenta",
+      "name": "polenta",
+      "aliases": [
+        "cornmeal"
+      ],
+      "category": "grain",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "quinoa",
+      "name": "quinoa",
+      "aliases": [],
+      "category": "grain",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "ramen-noodles",
+      "name": "ramen noodles",
+      "aliases": [
+        "2-minute noodles",
+        "instant noodles"
+      ],
+      "category": "grain",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "soybeans",
+          "note": "seasoning packs often soy"
+        },
+        {
+          "code": "sesame",
+          "note": "some flavour packs"
+        },
+        {
+          "code": "crustaceans",
+          "note": "seafood flavours"
+        },
+        {
+          "code": "milk",
+          "note": "some flavour packs"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "rice",
+      "name": "rice",
+      "aliases": [
+        "basmati",
+        "jasmine rice",
+        "long grain rice",
+        "white rice"
+      ],
+      "category": "grain",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "rice-noodles",
+      "name": "rice noodles",
+      "aliases": [
+        "pad thai noodles",
+        "vermicelli rice"
+      ],
+      "category": "grain",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "rice-paper",
+      "name": "rice paper",
+      "aliases": [
+        "rice paper wrapper"
+      ],
+      "category": "grain",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "risotto-rice",
+      "name": "risotto rice",
+      "aliases": [
+        "arborio"
+      ],
+      "category": "grain",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "rye",
+      "name": "rye",
+      "aliases": [
+        "rye bread",
+        "rye flour"
+      ],
+      "category": "grain",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "self-raising-flour",
+      "name": "self-raising flour",
+      "aliases": [
+        "self raising flour",
+        "self-rising flour"
+      ],
+      "category": "grain",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "semolina",
+      "name": "semolina",
+      "aliases": [],
+      "category": "grain",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "soba",
+      "name": "soba",
+      "aliases": [
+        "buckwheat noodles",
+        "soba noodles"
+      ],
+      "category": "grain",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "gluten",
+          "note": "100% buckwheat soba can be GF; most soba is wheat+buckwheat — fail closed gluten"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "sourdough",
+      "name": "sourdough",
+      "aliases": [
+        "sourdough bread"
+      ],
+      "category": "grain",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "spelt",
+      "name": "spelt",
+      "aliases": [
+        "spelt flour"
+      ],
+      "category": "grain",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "sushi-rice",
+      "name": "sushi rice",
+      "aliases": [],
+      "category": "grain",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "udon",
+      "name": "udon",
+      "aliases": [
+        "udon noodles"
+      ],
+      "category": "grain",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "vermicelli",
+      "name": "vermicelli",
+      "aliases": [
+        "bean thread noodles",
+        "glass noodles"
+      ],
+      "category": "grain",
+      "allergens": [],
+      "allergen_uncertain": [
+        {
+          "code": "gluten",
+          "note": "rice/mung vermicelli usually GF; wheat vermicelli is not — ambiguous name"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "weet-bix",
+      "name": "weet-bix",
+      "aliases": [
+        "weetbix",
+        "wheat biscuits"
+      ],
+      "category": "grain",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated"
+      ]
+    },
+    {
+      "slug": "wonton-wrapper",
+      "name": "wonton wrapper",
+      "aliases": [
+        "dumpling wrapper"
+      ],
+      "category": "grain",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "eggs",
+          "note": "often contain egg"
+        }
+      ],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "wrap",
+      "name": "wrap",
+      "aliases": [
+        "flatbread",
+        "pita",
+        "tortilla"
+      ],
+      "category": "grain",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "gluten",
+          "note": "corn tortillas are usually GF; flour wraps are not — prefer corn-tortilla slug"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "allspice",
+      "name": "allspice",
+      "aliases": [
+        "pimento"
+      ],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "basil",
+      "name": "basil",
+      "aliases": [
+        "fresh basil",
+        "sweet basil"
+      ],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "bay-leaf",
+      "name": "bay leaf",
+      "aliases": [
+        "bay leaves"
+      ],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "cardamom",
+      "name": "cardamom",
+      "aliases": [
+        "cardamon"
+      ],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "cayenne",
+      "name": "cayenne",
+      "aliases": [
+        "cayenne pepper"
+      ],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "chilli-flakes",
+      "name": "chilli flakes",
+      "aliases": [
+        "chili flakes",
+        "crushed chilli",
+        "red pepper flakes"
+      ],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "chinese-five-spice",
+      "name": "chinese five spice",
+      "aliases": [
+        "five spice"
+      ],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "chives",
+      "name": "chives",
+      "aliases": [],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "cinnamon",
+      "name": "cinnamon",
+      "aliases": [
+        "cassia"
+      ],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "clove",
+      "name": "clove",
+      "aliases": [
+        "cloves"
+      ],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "coriander",
+      "name": "coriander",
+      "aliases": [
+        "chinese parsley",
+        "cilantro",
+        "coriander leaf",
+        "fresh coriander"
+      ],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off",
+        "usda"
+      ]
+    },
+    {
+      "slug": "coriander-seed",
+      "name": "coriander seed",
+      "aliases": [
+        "coriander seeds",
+        "ground coriander"
+      ],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "cumin",
+      "name": "cumin",
+      "aliases": [
+        "cumin seed",
+        "ground cumin"
+      ],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "curry-powder",
+      "name": "curry powder",
+      "aliases": [],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [
+        {
+          "code": "mustard",
+          "note": "many blends include mustard seed"
+        },
+        {
+          "code": "gluten",
+          "note": "rare fillers; check label"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "dill",
+      "name": "dill",
+      "aliases": [
+        "dill weed"
+      ],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "dukkah",
+      "name": "dukkah",
+      "aliases": [
+        "duqqa"
+      ],
+      "category": "herb_spice",
+      "allergens": [
+        "nuts",
+        "sesame"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "gluten",
+          "note": "some blends include wheat"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "elderflower",
+      "name": "elderflower",
+      "aliases": [
+        "elderflower cordial"
+      ],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "fennel-seed",
+      "name": "fennel seed",
+      "aliases": [
+        "fennel seeds"
+      ],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "galangal",
+      "name": "galangal",
+      "aliases": [],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "garam-masala",
+      "name": "garam masala",
+      "aliases": [],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "garlic-powder",
+      "name": "garlic powder",
+      "aliases": [
+        "garlic granules"
+      ],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "horopito",
+      "name": "horopito",
+      "aliases": [
+        "pepperwood"
+      ],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated"
+      ]
+    },
+    {
+      "slug": "italian-herbs",
+      "name": "italian herbs",
+      "aliases": [
+        "italian seasoning",
+        "mixed herbs"
+      ],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "kaffir-lime",
+      "name": "kaffir lime leaf",
+      "aliases": [
+        "kaffir lime",
+        "makrut lime leaf"
+      ],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "kawakawa",
+      "name": "kawakawa",
+      "aliases": [],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "foodon"
+      ]
+    },
+    {
+      "slug": "lavender",
+      "name": "lavender",
+      "aliases": [],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "lemongrass",
+      "name": "lemongrass",
+      "aliases": [
+        "lemon grass"
+      ],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "mint",
+      "name": "mint",
+      "aliases": [
+        "fresh mint",
+        "spearmint"
+      ],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "mixed-spice",
+      "name": "mixed spice",
+      "aliases": [
+        "pudding spice"
+      ],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "mustard-seed",
+      "name": "mustard seed",
+      "aliases": [
+        "mustard seeds",
+        "yellow mustard seed"
+      ],
+      "category": "herb_spice",
+      "allergens": [
+        "mustard"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "nutmeg",
+      "name": "nutmeg",
+      "aliases": [],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "onion-powder",
+      "name": "onion powder",
+      "aliases": [],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "oregano",
+      "name": "oregano",
+      "aliases": [],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "pandan",
+      "name": "pandan",
+      "aliases": [
+        "pandan leaf"
+      ],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "paprika",
+      "name": "paprika",
+      "aliases": [
+        "smoked paprika",
+        "sweet paprika"
+      ],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "parsley",
+      "name": "parsley",
+      "aliases": [
+        "curly parsley",
+        "flat leaf parsley",
+        "italian parsley"
+      ],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "rosemary",
+      "name": "rosemary",
+      "aliases": [],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "sage",
+      "name": "sage",
+      "aliases": [],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "star-anise",
+      "name": "star anise",
+      "aliases": [],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "stock-powder",
+      "name": "stock powder",
+      "aliases": [
+        "bouillon",
+        "oxo",
+        "stock cube"
+      ],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [
+        {
+          "code": "celery",
+          "note": "very common in stock powders"
+        },
+        {
+          "code": "gluten",
+          "note": "some cubes contain wheat"
+        },
+        {
+          "code": "milk",
+          "note": "some contain dairy"
+        },
+        {
+          "code": "soybeans",
+          "note": "some contain soy"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "sumac",
+      "name": "sumac",
+      "aliases": [],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "tarragon",
+      "name": "tarragon",
+      "aliases": [],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "thyme",
+      "name": "thyme",
+      "aliases": [],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "turmeric",
+      "name": "turmeric",
+      "aliases": [
+        "ground turmeric"
+      ],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "vanilla",
+      "name": "vanilla",
+      "aliases": [
+        "vanilla bean",
+        "vanilla essence",
+        "vanilla extract"
+      ],
+      "category": "herb_spice",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "zaatar",
+      "name": "za'atar",
+      "aliases": [
+        "zaatar"
+      ],
+      "category": "herb_spice",
+      "allergens": [
+        "sesame"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "sesame",
+          "note": "sesame-free blends exist; classic includes sesame"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "baked-beans",
+      "name": "baked beans",
+      "aliases": [
+        "beans in tomato sauce"
+      ],
+      "category": "legume",
+      "allergens": [],
+      "allergen_uncertain": [
+        {
+          "code": "gluten",
+          "note": "some sauces thicken with wheat; check label"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "black-bean",
+      "name": "black bean",
+      "aliases": [
+        "black beans"
+      ],
+      "category": "legume",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "butter-bean",
+      "name": "butter bean",
+      "aliases": [
+        "lima bean"
+      ],
+      "category": "legume",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "cannellini",
+      "name": "cannellini",
+      "aliases": [
+        "navy bean",
+        "white bean",
+        "white beans"
+      ],
+      "category": "legume",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "chickpea",
+      "name": "chickpea",
+      "aliases": [
+        "channa",
+        "chickpeas",
+        "garbanzo"
+      ],
+      "category": "legume",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "edamame",
+      "name": "edamame",
+      "aliases": [
+        "soy beans",
+        "soya beans"
+      ],
+      "category": "legume",
+      "allergens": [
+        "soybeans"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "hummus",
+      "name": "hummus",
+      "aliases": [
+        "houmous"
+      ],
+      "category": "legume",
+      "allergens": [
+        "sesame"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "sesame",
+          "note": "sesame-free hummus exists; default assumes tahini"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "kidney-bean",
+      "name": "kidney bean",
+      "aliases": [
+        "kidney beans",
+        "red kidney bean"
+      ],
+      "category": "legume",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "lentil",
+      "name": "lentil",
+      "aliases": [
+        "brown lentil",
+        "green lentil",
+        "lentils",
+        "red lentil"
+      ],
+      "category": "legume",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "mung-bean",
+      "name": "mung bean",
+      "aliases": [
+        "moong"
+      ],
+      "category": "legume",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "split-pea",
+      "name": "split pea",
+      "aliases": [
+        "green split pea",
+        "yellow split pea"
+      ],
+      "category": "legume",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "tempeh",
+      "name": "tempeh",
+      "aliases": [],
+      "category": "legume",
+      "allergens": [
+        "soybeans"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "tofu",
+      "name": "tofu",
+      "aliases": [
+        "bean curd",
+        "firm tofu",
+        "silken tofu"
+      ],
+      "category": "legume",
+      "allergens": [
+        "soybeans"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "bacon",
+      "name": "bacon",
+      "aliases": [
+        "middle bacon",
+        "rashers",
+        "streaky bacon"
+      ],
+      "category": "meat",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "beef",
+      "name": "beef",
+      "aliases": [
+        "beef steak",
+        "steak"
+      ],
+      "category": "meat",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "beef-mince",
+      "name": "beef mince",
+      "aliases": [
+        "ground beef",
+        "hamburger mince",
+        "mince",
+        "minced beef"
+      ],
+      "category": "meat",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off",
+        "usda"
+      ]
+    },
+    {
+      "slug": "beef-schnitzel",
+      "name": "beef schnitzel",
+      "aliases": [
+        "schnitzel"
+      ],
+      "category": "meat",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "eggs",
+          "note": "crumb binding usually includes egg"
+        }
+      ],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "chicken",
+      "name": "chicken",
+      "aliases": [
+        "chicken breast",
+        "chicken thigh",
+        "whole chicken"
+      ],
+      "category": "meat",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "chicken-liver",
+      "name": "chicken liver",
+      "aliases": [
+        "liver"
+      ],
+      "category": "meat",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "chicken-mince",
+      "name": "chicken mince",
+      "aliases": [
+        "ground chicken",
+        "minced chicken"
+      ],
+      "category": "meat",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "chicken-schnitzel",
+      "name": "chicken schnitzel",
+      "aliases": [],
+      "category": "meat",
+      "allergens": [
+        "gluten"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "eggs",
+          "note": "crumb binding usually includes egg"
+        }
+      ],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": false
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "chorizo",
+      "name": "chorizo",
+      "aliases": [],
+      "category": "meat",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "duck",
+      "name": "duck",
+      "aliases": [],
+      "category": "meat",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "frankfurter",
+      "name": "frankfurter",
+      "aliases": [
+        "hot dog",
+        "saveloy"
+      ],
+      "category": "meat",
+      "allergens": [],
+      "allergen_uncertain": [
+        {
+          "code": "gluten",
+          "note": "check casing and fillers"
+        },
+        {
+          "code": "milk",
+          "note": "may contain dairy"
+        }
+      ],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "ham",
+      "name": "ham",
+      "aliases": [
+        "leg ham",
+        "shaved ham"
+      ],
+      "category": "meat",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "lamb",
+      "name": "lamb",
+      "aliases": [
+        "hogget",
+        "lamb chops",
+        "lamb roast",
+        "mutton"
+      ],
+      "category": "meat",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "lamb-mince",
+      "name": "lamb mince",
+      "aliases": [
+        "ground lamb",
+        "minced lamb"
+      ],
+      "category": "meat",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "lamb-shank",
+      "name": "lamb shank",
+      "aliases": [],
+      "category": "meat",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated"
+      ]
+    },
+    {
+      "slug": "meatballs",
+      "name": "meatballs",
+      "aliases": [],
+      "category": "meat",
+      "allergens": [],
+      "allergen_uncertain": [
+        {
+          "code": "gluten",
+          "note": "often contain breadcrumbs"
+        },
+        {
+          "code": "eggs",
+          "note": "often bound with egg"
+        }
+      ],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "pastrami",
+      "name": "pastrami",
+      "aliases": [],
+      "category": "meat",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "pork",
+      "name": "pork",
+      "aliases": [
+        "pork chop",
+        "pork roast"
+      ],
+      "category": "meat",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "pork-mince",
+      "name": "pork mince",
+      "aliases": [
+        "ground pork",
+        "minced pork"
+      ],
+      "category": "meat",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "prosciutto",
+      "name": "prosciutto",
+      "aliases": [
+        "parma ham"
+      ],
+      "category": "meat",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "salami",
+      "name": "salami",
+      "aliases": [],
+      "category": "meat",
+      "allergens": [],
+      "allergen_uncertain": [
+        {
+          "code": "milk",
+          "note": "some salami uses milk powder"
+        },
+        {
+          "code": "sulphites",
+          "note": "may contain sulphites"
+        }
+      ],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "sausage",
+      "name": "sausage",
+      "aliases": [
+        "bangers",
+        "sausages"
+      ],
+      "category": "meat",
+      "allergens": [],
+      "allergen_uncertain": [
+        {
+          "code": "gluten",
+          "note": "some NZ sausages contain breadcrumbs; check label"
+        },
+        {
+          "code": "sulphites",
+          "note": "common preservative in sausages"
+        }
+      ],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "turkey",
+      "name": "turkey",
+      "aliases": [],
+      "category": "meat",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "venison",
+      "name": "venison",
+      "aliases": [
+        "deer meat"
+      ],
+      "category": "meat",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "almond",
+      "name": "almond",
+      "aliases": [
+        "almonds"
+      ],
+      "category": "nut_seed",
+      "allergens": [
+        "nuts"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "brazil-nut",
+      "name": "brazil nut",
+      "aliases": [
+        "brazil nuts"
+      ],
+      "category": "nut_seed",
+      "allergens": [
+        "nuts"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "cashew",
+      "name": "cashew",
+      "aliases": [
+        "cashews"
+      ],
+      "category": "nut_seed",
+      "allergens": [
+        "nuts"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "chia",
+      "name": "chia",
+      "aliases": [
+        "chia seed",
+        "chia seeds"
+      ],
+      "category": "nut_seed",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "hazelnut",
+      "name": "hazelnut",
+      "aliases": [
+        "filbert",
+        "hazelnuts"
+      ],
+      "category": "nut_seed",
+      "allergens": [
+        "nuts"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "hemp-seed",
+      "name": "hemp seed",
+      "aliases": [
+        "hemp hearts"
+      ],
+      "category": "nut_seed",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "linseed",
+      "name": "linseed",
+      "aliases": [
+        "flax seed",
+        "flaxseed"
+      ],
+      "category": "nut_seed",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "macadamia",
+      "name": "macadamia",
+      "aliases": [
+        "macadamias"
+      ],
+      "category": "nut_seed",
+      "allergens": [
+        "nuts"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "mixed-nuts",
+      "name": "mixed nuts",
+      "aliases": [],
+      "category": "nut_seed",
+      "allergens": [
+        "nuts"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "peanuts",
+          "note": "mixes sometimes include peanuts"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "peanut",
+      "name": "peanut",
+      "aliases": [
+        "groundnut",
+        "peanuts"
+      ],
+      "category": "nut_seed",
+      "allergens": [
+        "peanuts"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "peanut-butter",
+      "name": "peanut butter",
+      "aliases": [
+        "PB"
+      ],
+      "category": "nut_seed",
+      "allergens": [
+        "peanuts"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "pecan",
+      "name": "pecan",
+      "aliases": [
+        "pecans"
+      ],
+      "category": "nut_seed",
+      "allergens": [
+        "nuts"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "pine-nut",
+      "name": "pine nut",
+      "aliases": [
+        "pignoli",
+        "pine nuts"
+      ],
+      "category": "nut_seed",
+      "allergens": [
+        "nuts"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "pistachio",
+      "name": "pistachio",
+      "aliases": [
+        "pistachios"
+      ],
+      "category": "nut_seed",
+      "allergens": [
+        "nuts"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "poppy-seed",
+      "name": "poppy seed",
+      "aliases": [
+        "poppy seeds"
+      ],
+      "category": "nut_seed",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "pumpkin-seed",
+      "name": "pumpkin seed",
+      "aliases": [
+        "pepita",
+        "pumpkin seeds"
+      ],
+      "category": "nut_seed",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "sesame",
+      "name": "sesame",
+      "aliases": [
+        "sesame seed",
+        "sesame seeds"
+      ],
+      "category": "nut_seed",
+      "allergens": [
+        "sesame"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "sunflower-seed",
+      "name": "sunflower seed",
+      "aliases": [
+        "sunflower seeds"
+      ],
+      "category": "nut_seed",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "tahini",
+      "name": "tahini",
+      "aliases": [
+        "sesame paste"
+      ],
+      "category": "nut_seed",
+      "allergens": [
+        "sesame"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "walnut",
+      "name": "walnut",
+      "aliases": [
+        "walnuts"
+      ],
+      "category": "nut_seed",
+      "allergens": [
+        "nuts"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "avocado-oil",
+      "name": "avocado oil",
+      "aliases": [],
+      "category": "oil_fat",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "coconut-oil",
+      "name": "coconut oil",
+      "aliases": [],
+      "category": "oil_fat",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "dripping",
+      "name": "dripping",
+      "aliases": [
+        "beef dripping"
+      ],
+      "category": "oil_fat",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "ghee",
+      "name": "ghee",
+      "aliases": [
+        "clarified butter"
+      ],
+      "category": "oil_fat",
+      "allergens": [
+        "milk"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "lard",
+      "name": "lard",
+      "aliases": [
+        "pork fat"
+      ],
+      "category": "oil_fat",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "margarine",
+      "name": "margarine",
+      "aliases": [
+        "spread"
+      ],
+      "category": "oil_fat",
+      "allergens": [],
+      "allergen_uncertain": [
+        {
+          "code": "milk",
+          "note": "some spreads contain milk"
+        },
+        {
+          "code": "soybeans",
+          "note": "often contains soy"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "olive-oil",
+      "name": "olive oil",
+      "aliases": [
+        "evoo",
+        "extra virgin olive oil",
+        "light olive oil"
+      ],
+      "category": "oil_fat",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "peanut-oil",
+      "name": "peanut oil",
+      "aliases": [
+        "groundnut oil"
+      ],
+      "category": "oil_fat",
+      "allergens": [
+        "peanuts"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "rice-bran-oil",
+      "name": "rice bran oil",
+      "aliases": [],
+      "category": "oil_fat",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "sesame-oil",
+      "name": "sesame oil",
+      "aliases": [
+        "toasted sesame oil"
+      ],
+      "category": "oil_fat",
+      "allergens": [
+        "sesame"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "vegetable-oil",
+      "name": "vegetable oil",
+      "aliases": [
+        "canola oil",
+        "rapeseed oil",
+        "sunflower oil"
+      ],
+      "category": "oil_fat",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "cacao-nibs",
+      "name": "cacao nibs",
+      "aliases": [],
+      "category": "other",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "usda"
+      ]
+    },
+    {
+      "slug": "corn-chips",
+      "name": "corn chips",
+      "aliases": [
+        "tortilla chips"
+      ],
+      "category": "other",
+      "allergens": [],
+      "allergen_uncertain": [
+        {
+          "code": "gluten",
+          "note": "usually corn-based; check seasoning"
+        },
+        {
+          "code": "milk",
+          "note": "cheese flavours contain milk"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "nori",
+      "name": "nori",
+      "aliases": [
+        "seaweed sheet",
+        "sushi seaweed"
+      ],
+      "category": "other",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "popcorn",
+      "name": "popcorn",
+      "aliases": [],
+      "category": "other",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "seaweed",
+      "name": "seaweed",
+      "aliases": [
+        "kelp",
+        "kombu",
+        "wakame"
+      ],
+      "category": "other",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "anchovy",
+      "name": "anchovy",
+      "aliases": [
+        "anchovies"
+      ],
+      "category": "seafood",
+      "allergens": [
+        "fish"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "clam",
+      "name": "clam",
+      "aliases": [
+        "clams",
+        "toheroa",
+        "tuatua"
+      ],
+      "category": "seafood",
+      "allergens": [
+        "molluscs"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated"
+      ]
+    },
+    {
+      "slug": "cod",
+      "name": "cod",
+      "aliases": [
+        "blue cod"
+      ],
+      "category": "seafood",
+      "allergens": [
+        "fish"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "crab",
+      "name": "crab",
+      "aliases": [],
+      "category": "seafood",
+      "allergens": [
+        "crustaceans"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "crayfish",
+      "name": "crayfish",
+      "aliases": [
+        "koura",
+        "lobster",
+        "rock lobster"
+      ],
+      "category": "seafood",
+      "allergens": [
+        "crustaceans"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated"
+      ]
+    },
+    {
+      "slug": "fish-fillet",
+      "name": "fish fillet",
+      "aliases": [
+        "fish",
+        "white fish"
+      ],
+      "category": "seafood",
+      "allergens": [
+        "fish"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "fish-sauce",
+      "name": "fish sauce",
+      "aliases": [
+        "nam pla"
+      ],
+      "category": "seafood",
+      "allergens": [
+        "fish"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "fish-stock",
+      "name": "fish stock",
+      "aliases": [
+        "fish broth"
+      ],
+      "category": "seafood",
+      "allergens": [
+        "fish"
+      ],
+      "allergen_uncertain": [
+        {
+          "code": "celery",
+          "note": "commercial stocks often contain celery"
+        }
+      ],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "gurnard",
+      "name": "gurnard",
+      "aliases": [],
+      "category": "seafood",
+      "allergens": [
+        "fish"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated"
+      ]
+    },
+    {
+      "slug": "hoki",
+      "name": "hoki",
+      "aliases": [],
+      "category": "seafood",
+      "allergens": [
+        "fish"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated"
+      ]
+    },
+    {
+      "slug": "kahawai",
+      "name": "kahawai",
+      "aliases": [],
+      "category": "seafood",
+      "allergens": [
+        "fish"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated"
+      ]
+    },
+    {
+      "slug": "mackerel",
+      "name": "mackerel",
+      "aliases": [],
+      "category": "seafood",
+      "allergens": [
+        "fish"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "mussel",
+      "name": "mussel",
+      "aliases": [
+        "green-lipped mussel",
+        "greenshell mussel",
+        "mussels"
+      ],
+      "category": "seafood",
+      "allergens": [
+        "molluscs"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "octopus",
+      "name": "octopus",
+      "aliases": [],
+      "category": "seafood",
+      "allergens": [
+        "molluscs"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "oyster",
+      "name": "oyster",
+      "aliases": [
+        "bluff oyster",
+        "oysters"
+      ],
+      "category": "seafood",
+      "allergens": [
+        "molluscs"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "paua",
+      "name": "pāua",
+      "aliases": [
+        "abalone",
+        "paua"
+      ],
+      "category": "seafood",
+      "allergens": [
+        "molluscs"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "foodon"
+      ]
+    },
+    {
+      "slug": "prawn",
+      "name": "prawn",
+      "aliases": [
+        "prawns",
+        "shrimp",
+        "shrimps"
+      ],
+      "category": "seafood",
+      "allergens": [
+        "crustaceans"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "salmon",
+      "name": "salmon",
+      "aliases": [
+        "atlantic salmon",
+        "king salmon"
+      ],
+      "category": "seafood",
+      "allergens": [
+        "fish"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "sardine",
+      "name": "sardine",
+      "aliases": [
+        "pilchard",
+        "sardines"
+      ],
+      "category": "seafood",
+      "allergens": [
+        "fish"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "scallop",
+      "name": "scallop",
+      "aliases": [
+        "scallops"
+      ],
+      "category": "seafood",
+      "allergens": [
+        "molluscs"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "snapper",
+      "name": "snapper",
+      "aliases": [
+        "schnapper"
+      ],
+      "category": "seafood",
+      "allergens": [
+        "fish"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "squid",
+      "name": "squid",
+      "aliases": [
+        "calamari"
+      ],
+      "category": "seafood",
+      "allergens": [
+        "molluscs"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "tarakihi",
+      "name": "tarakihi",
+      "aliases": [
+        "terakihi"
+      ],
+      "category": "seafood",
+      "allergens": [
+        "fish"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "foodon"
+      ]
+    },
+    {
+      "slug": "tuna",
+      "name": "tuna",
+      "aliases": [
+        "canned tuna",
+        "tinned tuna"
+      ],
+      "category": "seafood",
+      "allergens": [
+        "fish"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "warehou",
+      "name": "warehou",
+      "aliases": [],
+      "category": "seafood",
+      "allergens": [
+        "fish"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated"
+      ]
+    },
+    {
+      "slug": "whitebait",
+      "name": "whitebait",
+      "aliases": [
+        "inanga",
+        "īnanga"
+      ],
+      "category": "seafood",
+      "allergens": [
+        "fish"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": false,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "foodon"
+      ]
+    },
+    {
+      "slug": "butter",
+      "name": "butter",
+      "aliases": [
+        "salted butter",
+        "unsalted butter"
+      ],
+      "category": "staple",
+      "allergens": [
+        "milk"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": false,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "oil",
+      "name": "oil",
+      "aliases": [
+        "cooking oil"
+      ],
+      "category": "staple",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "pepper",
+      "name": "pepper",
+      "aliases": [
+        "black pepper",
+        "peppercorns"
+      ],
+      "category": "staple",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "salt",
+      "name": "salt",
+      "aliases": [
+        "sea salt",
+        "table salt"
+      ],
+      "category": "staple",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "water",
+      "name": "water",
+      "aliases": [
+        "tap water"
+      ],
+      "category": "staple",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated"
+      ]
+    },
+    {
+      "slug": "alfalfa",
+      "name": "alfalfa",
+      "aliases": [
+        "alfalfa sprouts"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "artichoke",
+      "name": "artichoke",
+      "aliases": [
+        "globe artichoke"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "asparagus",
+      "name": "asparagus",
+      "aliases": [],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "aubergine",
+      "name": "aubergine",
+      "aliases": [
+        "brinjal",
+        "eggplant"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off",
+        "usda"
+      ]
+    },
+    {
+      "slug": "avocado",
+      "name": "avocado",
+      "aliases": [
+        "hass avocado"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "bean-sprouts",
+      "name": "bean sprouts",
+      "aliases": [
+        "mung bean sprouts",
+        "sprouts"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "beetroot",
+      "name": "beetroot",
+      "aliases": [
+        "beet",
+        "beets"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "bok-choy",
+      "name": "bok choy",
+      "aliases": [
+        "bok choi",
+        "pak choi"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "broad-beans",
+      "name": "broad beans",
+      "aliases": [
+        "fava beans"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "broccoli",
+      "name": "broccoli",
+      "aliases": [
+        "broccoli florets"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "brussels-sprouts",
+      "name": "brussels sprouts",
+      "aliases": [
+        "brussel sprouts"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "butternut",
+      "name": "butternut",
+      "aliases": [
+        "butternut pumpkin",
+        "butternut squash"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "cabbage",
+      "name": "cabbage",
+      "aliases": [
+        "green cabbage",
+        "white cabbage"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "capsicum",
+      "name": "capsicum",
+      "aliases": [
+        "bell pepper",
+        "green capsicum",
+        "red capsicum",
+        "sweet pepper",
+        "yellow capsicum"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off",
+        "usda"
+      ]
+    },
+    {
+      "slug": "carrot",
+      "name": "carrot",
+      "aliases": [
+        "carrots"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "cassava",
+      "name": "cassava",
+      "aliases": [
+        "manioc",
+        "yuca"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "cauliflower",
+      "name": "cauliflower",
+      "aliases": [],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "celery",
+      "name": "celery",
+      "aliases": [
+        "celery stalk",
+        "celery sticks"
+      ],
+      "category": "vegetable",
+      "allergens": [
+        "celery"
+      ],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "chilli",
+      "name": "chilli",
+      "aliases": [
+        "chili",
+        "chilli pepper",
+        "fresh chilli",
+        "red chilli"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "choy-sum",
+      "name": "choy sum",
+      "aliases": [
+        "choi sum"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "corn",
+      "name": "corn",
+      "aliases": [
+        "corn on the cob",
+        "maize",
+        "sweetcorn"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "cos-lettuce",
+      "name": "cos lettuce",
+      "aliases": [
+        "romaine lettuce"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "courgette",
+      "name": "courgette",
+      "aliases": [
+        "baby marrow",
+        "zucchini"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off",
+        "usda"
+      ]
+    },
+    {
+      "slug": "cucumber",
+      "name": "cucumber",
+      "aliases": [
+        "lebanese cucumber",
+        "telegraph cucumber"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "daikon",
+      "name": "daikon",
+      "aliases": [
+        "mooli",
+        "white radish"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "fennel",
+      "name": "fennel",
+      "aliases": [
+        "fennel bulb",
+        "florence fennel"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "gai-lan",
+      "name": "gai lan",
+      "aliases": [
+        "chinese broccoli"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "garlic",
+      "name": "garlic",
+      "aliases": [
+        "fresh garlic",
+        "garlic clove"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "gherkin",
+      "name": "gherkin",
+      "aliases": [
+        "dill pickle",
+        "pickle",
+        "pickles"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "ginger",
+      "name": "ginger",
+      "aliases": [
+        "fresh ginger",
+        "ginger root"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "green-beans",
+      "name": "green beans",
+      "aliases": [
+        "french beans",
+        "string beans"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "iceberg",
+      "name": "iceberg lettuce",
+      "aliases": [],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "jalapeno",
+      "name": "jalapeño",
+      "aliases": [
+        "jalapeno"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "jerusalem-artichoke",
+      "name": "jerusalem artichoke",
+      "aliases": [
+        "sunchoke"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "kale",
+      "name": "kale",
+      "aliases": [
+        "cavolo nero",
+        "tuscan kale"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "kimchi",
+      "name": "kimchi",
+      "aliases": [],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [
+        {
+          "code": "fish",
+          "note": "many commercial kimchi use fish sauce; check label"
+        },
+        {
+          "code": "crustaceans",
+          "note": "some recipes use shrimp paste"
+        }
+      ],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "kumara",
+      "name": "kumara",
+      "aliases": [
+        "kūmara",
+        "sweet potato"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off",
+        "usda"
+      ]
+    },
+    {
+      "slug": "leek",
+      "name": "leek",
+      "aliases": [
+        "leeks"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "lettuce",
+      "name": "lettuce",
+      "aliases": [
+        "garden lettuce"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "mesclun",
+      "name": "mesclun",
+      "aliases": [
+        "mixed leaves",
+        "salad mix"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "mushroom",
+      "name": "mushroom",
+      "aliases": [
+        "button mushroom",
+        "mushrooms",
+        "swiss brown"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "okra",
+      "name": "okra",
+      "aliases": [],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "olive",
+      "name": "olive",
+      "aliases": [
+        "black olive",
+        "green olive",
+        "kalamata",
+        "olives"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "onion",
+      "name": "onion",
+      "aliases": [
+        "brown onion",
+        "white onion",
+        "yellow onion"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "parsnip",
+      "name": "parsnip",
+      "aliases": [],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "passata",
+      "name": "passata",
+      "aliases": [
+        "sieved tomato",
+        "tomato passata"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "peas",
+      "name": "peas",
+      "aliases": [
+        "frozen peas",
+        "garden peas",
+        "green peas"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "pickled-onion",
+      "name": "pickled onion",
+      "aliases": [],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "portobello",
+      "name": "portobello",
+      "aliases": [
+        "flat mushroom",
+        "portabella"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "potato",
+      "name": "potato",
+      "aliases": [
+        "agria",
+        "jersey benne",
+        "potatoes"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "pumpkin",
+      "name": "pumpkin",
+      "aliases": [
+        "buttercup pumpkin",
+        "crown pumpkin",
+        "squash"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "radish",
+      "name": "radish",
+      "aliases": [
+        "radishes"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "red-cabbage",
+      "name": "red cabbage",
+      "aliases": [
+        "purple cabbage"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "red-onion",
+      "name": "red onion",
+      "aliases": [
+        "purple onion"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "rocket",
+      "name": "rocket",
+      "aliases": [
+        "arugula",
+        "roquette"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "sauerkraut",
+      "name": "sauerkraut",
+      "aliases": [],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "shallot",
+      "name": "shallot",
+      "aliases": [
+        "eschalot"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "shiitake",
+      "name": "shiitake",
+      "aliases": [],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "silverbeet",
+      "name": "silverbeet",
+      "aliases": [
+        "chard",
+        "rainbow chard",
+        "swiss chard"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off",
+        "usda"
+      ]
+    },
+    {
+      "slug": "snow-peas",
+      "name": "snow peas",
+      "aliases": [
+        "mangetout"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "spinach",
+      "name": "spinach",
+      "aliases": [
+        "baby spinach",
+        "english spinach"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "spring-onion",
+      "name": "spring onion",
+      "aliases": [
+        "green onion",
+        "salad onion",
+        "scallion"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off",
+        "usda"
+      ]
+    },
+    {
+      "slug": "sugar-snap-peas",
+      "name": "sugar snap peas",
+      "aliases": [
+        "snap peas"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "sun-dried-tomato",
+      "name": "sun-dried tomato",
+      "aliases": [
+        "sundried tomato"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "swede",
+      "name": "swede",
+      "aliases": [
+        "rutabaga"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "taro",
+      "name": "taro",
+      "aliases": [],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "foodon",
+        "usda"
+      ]
+    },
+    {
+      "slug": "tinned-tomato",
+      "name": "tinned tomato",
+      "aliases": [
+        "canned tomato",
+        "chopped tomato",
+        "crushed tomato",
+        "diced tomato"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "tomato",
+      "name": "tomato",
+      "aliases": [
+        "cherry tomato",
+        "roma tomato",
+        "tomatoes"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "tomato-paste",
+      "name": "tomato paste",
+      "aliases": [
+        "tomato concentrate"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "turnip",
+      "name": "turnip",
+      "aliases": [],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "watercress",
+      "name": "watercress",
+      "aliases": [],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "witloof",
+      "name": "witloof",
+      "aliases": [
+        "belgian endive",
+        "chicory",
+        "endive"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "wombok",
+      "name": "wombok",
+      "aliases": [
+        "chinese cabbage",
+        "napa cabbage"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ]
+    },
+    {
+      "slug": "yams",
+      "name": "yams",
+      "aliases": [
+        "nz yams",
+        "oca"
+      ],
+      "category": "vegetable",
+      "allergens": [],
+      "allergen_uncertain": [],
+      "diets": {
+        "vegan": true,
+        "vegetarian": true,
+        "gluten_free": true
+      },
+      "sources": [
+        "curated",
+        "foodon"
+      ]
+    }
+  ]
+}
