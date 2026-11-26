@@ -19,6 +19,7 @@
 ### Query layer and validation
 - **Drizzle** on D1 (`Drizzle.D1`) and on SQLite DOs (`Drizzle.DurableObject`), copying dollar-holler's Worker stub pattern. **Valibot** (Standard Schema) for remote-function args, Recipe JSON, Diet fields and `drizzle-orm/valibot`.
 - **Not** Effect SQL or `effect/Schema`. Effect is used for typed errors (see [lint.md](./lint.md#effect)). Reylo is parked.
+- **Superforms is not used.** Forms go through Kit **remote functions** with Valibot schemas in `#lib/schemas/*` (see also [ai.md](./ai.md#decided)).
 - Diet cooking gear (shared with [product.md](./product.md#diet) / [ai.md](./ai.md)):
 
   ```ts
