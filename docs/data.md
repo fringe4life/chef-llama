@@ -59,7 +59,7 @@
 
 ### Canonical NZ pantry ingredients (seed)
 - Committed seed: `data/ingredients/nz-pantry.json` (~300–500 everyday NZ items). Sources, licences, NZFCD decision, and regenerate steps: [`data/ingredients/SOURCES.md`](../data/ingredients/SOURCES.md). Manual review queue: [`data/ingredients/MANUAL_REVIEW.md`](../data/ingredients/MANUAL_REVIEW.md).
-- **Shape (planned `RECIPES_DB` ingredients table + chip map):** stable `slug` (UNIQUE, kebab-case); ULID `id` minted on D1 load; `name`; `aliases[]`; `category`; `allergens[]` (OFF-aligned closed codes); `allergen_uncertain[]` (`{ code, note }` — never guess); deterministic `diets` covering **all v1 Diet flags** only: `vegan` | `vegetarian` | `gluten_free` (multi-Diet UI is v1; keto/halal/paleo stay out). Valibot field sketch lives in [`SOURCES.md`](../data/ingredients/SOURCES.md) (to land under `#lib/schemas/*` with app code). Validate: `node scripts/validate-nz-pantry.mjs`. Regenerate: `node scripts/generate-nz-pantry.mjs`.
+- **Shape (planned `RECIPES_DB` ingredients table + chip map):** stable `slug` (UNIQUE, kebab-case); ULID `id` minted on D1 load; `name`; `aliases[]`; `category`; `allergens[]` (OFF-aligned closed codes); `allergen_uncertain[]` (`{ code, note }` — never guess); deterministic `diets` covering **all v1 Diet flags**: `vegan` | `vegetarian` | `gluten_free` | `keto` | `halal` | `paleo`; `diet_uncertain[]` (`{ flag, note }` — never guess). Valibot field sketch lives in [`SOURCES.md`](../data/ingredients/SOURCES.md) (to land under `#lib/schemas/*` with app code). Validate: `node scripts/validate-nz-pantry.mjs`. Regenerate: `node scripts/generate-nz-pantry.mjs`.
 - **Vectorize:** later embed `name` + `aliases` with metadata `slug` (and ULID after D1 load). Distinct from the `recipes` index.
 - Feeds the in-process chip synonym map ([ai.md](./ai.md#chips)) and Try me label → canonical ID wiring when that lands. Publish gates already require canonical ingredient IDs ([product.md](./product.md#moderation-approach)).
 
@@ -88,5 +88,5 @@
 - Storage (v2 option): nightly near-duplicate merge + 301, and embed only saved recipes.
 - Popular ingredients open detail (canonical IDs, thresholds, guest Generates, …) lives under [v2.md](./v2.md).
 - **Ingredients D1 load:** exact Drizzle column names / migration; when to mint ULIDs; whether allergen_uncertain blocks publish-gate matching or only UI warnings.
-- **Manual review** of `data/ingredients/MANUAL_REVIEW.md` (uncertain allergens, ambiguous diet/identity rows) before treating the seed as production-canonical.
+- **Manual review** of `data/ingredients/MANUAL_REVIEW.md` (uncertain allergens, `diet_uncertain` for keto/halal/paleo edges, ambiguous diet/identity rows) before treating the seed as production-canonical.
 - Chip canonicalizer: replace the tiny hard-coded synonym map with the seed’s `slug` + `aliases` (and whether unmatched free text stays “held for review” only).

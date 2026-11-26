@@ -6,9 +6,51 @@ Short note for the canonical list in `nz-pantry.json`. Method and regeneration: 
 
 1. Curate ~300–500 **everyday NZ pantry** items (supermarket + common kai), not a bulk taxonomy dump.
 2. Prefer **NZ display names** and aliases (capsicum, kumara, courgette, coriander, mince, spring onion, silverbeet, kiwifruit, feijoa, pāua, tarakihi, …).
-3. Attach **deterministic v1 Diet flags** only: `vegan` | `vegetarian` | `gluten_free` (see product Diet closed list). Multi-Diet UI is v1; those three flags did **not** expand.
+3. Attach **deterministic v1 Diet flags** for the closed list: `vegan` | `vegetarian` | `gluten_free` | `keto` | `halal` | `paleo` (see product Diet). Unclear flags → `diet_uncertain[]` and the manual review list — **never guess**.
 4. Attach allergen codes aligned with Open Food Facts `en:*` tags. Definite contains → `allergens[]`. `may contain` / source disagreement / brand variance → `allergen_uncertain[]` with a note. **Never guess.**
 5. Hand-review list: `MANUAL_REVIEW.json` (+ summary in `MANUAL_REVIEW.md`).
+6. **Allergies always win** over diet flags (product precedence).
+
+## Diet flag rules (ingredient heuristics)
+
+These are **chip-level** compatibility flags for Swap / Diet matching — not certified claims, not per-recipe macros.
+
+### vegan
+
+- `false` for meat, seafood, dairy, egg, and known animal condiments (honey, gelatine, worcestershire with anchovy, oyster sauce, butter, ghee, lard, dripping, …).
+- `true` otherwise (plants, oils that are not animal fat, staples water/salt/pepper/oil).
+
+### vegetarian
+
+- `false` for meat and seafood (and gelatine).
+- `true` for dairy, egg, honey, and plants.
+- Vegan implies vegetarian.
+
+### gluten_free
+
+- `false` when `gluten` is in `allergens[]` (fail closed; e.g. standard soy sauce, oats treated as gluten for NZ coeliac practice).
+- `true` otherwise. Brand-level exceptions stay in `allergen_uncertain`.
+
+### keto
+
+- Ingredient heuristic (not grams of carb per serving).
+- **`false`**: grains, bakery, flours, rice/pasta/noodles, most legumes, starchy veg (potato, kumara, corn, …), sugars/syrups/honey, most fruit juices, beer, high-sugar dried fruit / tropical fruit listed in the generator’s `KETO_FALSE` set.
+- **`true`**: meat, seafood, egg, oils/fats, herbs/spices, non-starchy veg default, most cheese/butter, nut_seed default, water/salt/pepper.
+- **Uncertain** (`diet_uncertain.keto`, flag stored `false` until review): milk, yoghurt, berries, tomato/onion/carrot and similar borderline veg, some nuts, chocolate, wine, cream — portion / brand dependent.
+
+### halal
+
+- Ingredient heuristic — **not** a halal certificate.
+- **`false`**: pork and pork products (bacon, ham, lard, prosciutto, …); intoxicants (wine, beer, mirin, shaoxing, wine vinegar).
+- **`true`**: plants; seafood (most schools: no land-animal slaughter issue).
+- **Uncertain** (`diet_uncertain.halal`, flag stored `false` until review): non-pork meat (slaughter / certification unknown); gelatine; cheeses that may use animal rennet; stocks / stock powder; worcestershire; vanilla (alcohol carrier); balsamic / generic vinegar; butter/ghee/margarine when enzyme or wine-derived processing is unclear.
+
+### paleo
+
+- Ingredient heuristic across common paleo schools (they disagree at the edges).
+- **`false`**: grains, legumes (incl. peanut/soy), dairy, bakery, refined sugars/syrups, many seed oils / margarine, soy sauces / tofu family.
+- **`true`**: meat, seafood, egg, vegetables, fruit, tree nuts/seeds (non-peanut), herbs/spices, honey (commonly allowed), olive/avocado/coconut oils.
+- **Uncertain** (`diet_uncertain.paleo`, flag stored `false` until review): butter/ghee, potato/kumara/corn/peas, processed meats (sausage, bacon, …), chocolate, wine, some vinegars, iodised salt additives.
 
 ## Sources used
 
@@ -48,7 +90,8 @@ Valibot field sketch (to land under `#lib/schemas/*` with app code):
 ingredient: {
   slug, name, aliases[], category,
   allergens[], allergen_uncertain: { code, note }[],
-  diets: { vegan, vegetarian, gluten_free },
+  diets: { vegan, vegetarian, gluten_free, keto, halal, paleo },
+  diet_uncertain: { flag, note }[],
   sources[]
 }
 ```

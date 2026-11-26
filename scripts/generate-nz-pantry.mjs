@@ -53,7 +53,280 @@ const CATEGORIES = [
 	'other',
 ]
 
+/** Closed v1 Diet flags (product.md): original three + former parked keto/halal/paleo. */
+const DIET_FLAGS = ['vegan', 'vegetarian', 'gluten_free', 'keto', 'halal', 'paleo']
+
+/** @param {string} a @param {string} b */
+const cmpStr = (a, b) => String(a).localeCompare(String(b))
+
+/** High-carb / starch / sugar — keto fail-closed false (ingredient heuristic, not macros). */
+const KETO_FALSE = new Set([
+	'potato',
+	'kumara',
+	'yams',
+	'taro',
+	'cassava',
+	'corn',
+	'peas',
+	'sugar-snap-peas',
+	'snow-peas',
+	'flour',
+	'self-raising-flour',
+	'bread',
+	'sourdough',
+	'wrap',
+	'flour-tortilla',
+	'pasta',
+	'lasagna-sheet',
+	'noodles',
+	'udon',
+	'soba',
+	'ramen-noodles',
+	'couscous',
+	'bulgur',
+	'barley',
+	'oats',
+	'rice',
+	'brown-rice',
+	'risotto-rice',
+	'sushi-rice',
+	'rice-noodles',
+	'vermicelli',
+	'rice-paper',
+	'wonton-wrapper',
+	'polenta',
+	'cornflour',
+	'breadcrumbs',
+	'cracker',
+	'weet-bix',
+	'cereal',
+	'semolina',
+	'rye',
+	'spelt',
+	'chickpea',
+	'lentil',
+	'black-bean',
+	'kidney-bean',
+	'cannellini',
+	'butter-bean',
+	'baked-beans',
+	'split-pea',
+	'mung-bean',
+	'hummus',
+	'quinoa',
+	'sugar',
+	'brown-sugar',
+	'icing-sugar',
+	'coconut-sugar',
+	'honey',
+	'maple-syrup',
+	'golden-syrup',
+	'treacle',
+	'jam',
+	'corn-syrup',
+	'beer',
+	'orange-juice',
+	'apple-juice',
+	'tomato-juice',
+	'puff-pastry',
+	'shortcrust',
+	'filo',
+	'pizza-base',
+	'bagel',
+	'croissant',
+	'muffin',
+	'biscuit',
+	'corn-chips',
+	'popcorn',
+	'dates',
+	'raisins',
+	'dried-apricot',
+	'banana',
+	'mango',
+	'pineapple',
+	'grape',
+	'apple',
+	'pear',
+	'orange',
+	'mandarin',
+	'watermelon',
+	'rockmelon',
+	'honeydew',
+])
+
+/** Borderline keto — never guess; diet_uncertain.keto. */
+const KETO_UNCERTAIN = new Set([
+	'milk',
+	'yoghurt',
+	'buttermilk',
+	'cottage-cheese',
+	'ricotta',
+	'carrot',
+	'onion',
+	'red-onion',
+	'shallot',
+	'tomato',
+	'tinned-tomato',
+	'passata',
+	'tomato-paste',
+	'beetroot',
+	'parsnip',
+	'swede',
+	'pumpkin',
+	'butternut',
+	'peas',
+	'strawberry',
+	'blueberry',
+	'raspberry',
+	'blackberry',
+	'boysenberry',
+	'kiwifruit',
+	'lemon',
+	'lime',
+	'avocado', // fat-ok but fruit sugars debated at volume
+	'peanut',
+	'peanut-butter',
+	'cashew',
+	'chocolate',
+	'milk-chocolate',
+	'white-chocolate',
+	'wine',
+	'cream',
+	'sour-cream',
+	'ice-cream',
+	'custard',
+	'condensed-milk',
+	'evaporated-milk',
+])
+
+/** Clearly haram at ingredient level (pork or intoxicant). */
+const HALAL_FALSE = new Set([
+	'pork',
+	'pork-mince',
+	'bacon',
+	'ham',
+	'lard',
+	'prosciutto',
+	'wine',
+	'beer',
+	'mirin',
+	'shaoxing',
+	'wine-vinegar',
+])
+
+/**
+ * Halal unclear without certification / slaughter / enzyme source.
+ * Meat (non-pork), gelatine, rennet cheeses, stocks, alcohol-adjacent.
+ */
+const HALAL_UNCERTAIN = new Set([
+	'beef',
+	'beef-mince',
+	'lamb',
+	'lamb-mince',
+	'lamb-shank',
+	'chicken',
+	'chicken-mince',
+	'chicken-liver',
+	'turkey',
+	'duck',
+	'venison',
+	'sausage',
+	'salami',
+	'chorizo',
+	'pastrami',
+	'meatballs',
+	'frankfurter',
+	'beef-schnitzel',
+	'chicken-schnitzel',
+	'gelatine',
+	'cheese',
+	'parmesan',
+	'mozzarella',
+	'feta',
+	'brie',
+	'blue-cheese',
+	'halloumi',
+	'mascarpone',
+	'cream-cheese',
+	'cottage-cheese',
+	'ricotta',
+	'stock',
+	'chicken-stock',
+	'beef-stock',
+	'stock-powder',
+	'worcestershire',
+	'vanilla',
+	'balsamic',
+	'malt-vinegar',
+	'vinegar',
+	'dripping',
+	'ghee',
+	'butter',
+	'margarine',
+])
+
+/** Paleo fail-closed false: grains, legumes, dairy, bakery, refined sugar. */
+const PALEO_FALSE_CATEGORIES = new Set(['grain', 'legume', 'dairy', 'bakery'])
+const PALEO_FALSE = new Set([
+	'sugar',
+	'brown-sugar',
+	'icing-sugar',
+	'coconut-sugar',
+	'maple-syrup',
+	'golden-syrup',
+	'treacle',
+	'jam',
+	'corn-syrup',
+	'beer',
+	'soy-sauce',
+	'tamari',
+	'teriyaki',
+	'hoisin',
+	'miso',
+	'tofu',
+	'tempeh',
+	'edamame',
+	'peanut',
+	'peanut-butter',
+	'peanut-oil',
+	'peanut-sauce',
+	'margarine',
+	'vegetable-oil',
+	'corn-chips',
+	'popcorn',
+	'ice-cream',
+	'custard',
+])
+
+/** Paleo borderline. */
+const PALEO_UNCERTAIN = new Set([
+	'butter',
+	'ghee',
+	'potato',
+	'kumara',
+	'corn',
+	'peas',
+	'sausage',
+	'bacon',
+	'ham',
+	'salami',
+	'chorizo',
+	'frankfurter',
+	'meatballs',
+	'vanilla',
+	'chocolate',
+	'milk-chocolate',
+	'white-chocolate',
+	'wine',
+	'salt', // iodised / additives vary
+	'vinegar',
+	'balsamic',
+	'wine-vinegar',
+	'malt-vinegar',
+])
+
 /** @typedef {{ code: string, note: string }} Uncertain */
+/** @typedef {{ flag: string, note: string }} DietUncertain */
 /** @typedef {{
  *   slug: string,
  *   name: string,
@@ -61,9 +334,13 @@ const CATEGORIES = [
  *   category: string,
  *   allergens?: string[],
  *   allergen_uncertain?: Uncertain[],
+ *   diet_uncertain?: DietUncertain[],
  *   vegan?: boolean,
  *   vegetarian?: boolean,
  *   gluten_free?: boolean,
+ *   keto?: boolean,
+ *  halal?: boolean,
+ *   paleo?: boolean,
  *   sources?: string[],
  * }} Spec */
 
@@ -78,10 +355,14 @@ function item(spec) {
 		category,
 		allergens = [],
 		allergen_uncertain = [],
+		diet_uncertain: dietUncertainIn = [],
 		sources = ['off', 'curated'],
 	} = spec
 
-	let { vegan, vegetarian, gluten_free } = spec
+	let { vegan, vegetarian, gluten_free, keto, halal, paleo } = spec
+	// diets closed list: vegan | vegetarian | gluten_free | keto | halal | paleo
+	/** @type {DietUncertain[]} */
+	const diet_uncertain = [...dietUncertainIn]
 
 	if (category === 'meat' || category === 'seafood') {
 		vegan = false
@@ -100,15 +381,137 @@ function item(spec) {
 	}
 	if (allergens.includes('gluten')) gluten_free = false
 
+	// --- keto (ingredient heuristic; see SOURCES.md) ---
+	if (keto === undefined) {
+		if (KETO_FALSE.has(slug) || category === 'grain' || category === 'bakery') {
+			keto = false
+		} else if (KETO_UNCERTAIN.has(slug)) {
+			keto = false // fail closed until review clears
+			diet_uncertain.push({
+				flag: 'keto',
+				note: 'Borderline carb load / portion-dependent; fail closed pending manual review',
+			})
+		} else if (
+			category === 'meat' ||
+			category === 'seafood' ||
+			category === 'egg' ||
+			category === 'oil_fat' ||
+			category === 'herb_spice'
+		) {
+			keto = true
+		} else if (category === 'dairy') {
+			// hard cheeses / butter tend OK; milk/yoghurt handled in KETO_UNCERTAIN
+			keto = true
+		} else if (category === 'vegetable') {
+			keto = true // non-starchy default; starchy in KETO_FALSE
+		} else if (category === 'nut_seed') {
+			keto = true
+		} else if (category === 'fruit') {
+			keto = false
+			if (!KETO_FALSE.has(slug)) {
+				diet_uncertain.push({
+					flag: 'keto',
+					note: 'Most fruit is high-sugar; berry exceptions need review',
+				})
+			}
+		} else if (category === 'legume') {
+			keto = false
+		} else if (category === 'condiment' || category === 'beverage' || category === 'other' || category === 'staple') {
+			keto = true // water/salt/pepper/oil/vinegar/spices default; sugars in KETO_FALSE
+		} else {
+			keto = false
+			diet_uncertain.push({
+				flag: 'keto',
+				note: 'No category rule; fail closed pending review',
+			})
+		}
+	}
+
+	// --- halal (ingredient heuristic; not certification) ---
+	if (halal === undefined) {
+		if (HALAL_FALSE.has(slug)) {
+			halal = false
+		} else if (HALAL_UNCERTAIN.has(slug) || category === 'meat') {
+			halal = false // fail closed without certification / slaughter certainty
+			diet_uncertain.push({
+				flag: 'halal',
+				note:
+					category === 'meat' || HALAL_UNCERTAIN.has(slug)
+						? 'Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess'
+						: 'Uncertain halal status — never guess',
+			})
+		} else if (category === 'seafood') {
+			halal = true // most schools: fish/seafood permissible; no land-animal slaughter
+		} else {
+			halal = true
+		}
+	}
+
+	// --- paleo (ingredient heuristic) ---
+	if (paleo === undefined) {
+		if (PALEO_FALSE.has(slug) || PALEO_FALSE_CATEGORIES.has(category)) {
+			paleo = false
+		} else if (PALEO_UNCERTAIN.has(slug)) {
+			paleo = false
+			diet_uncertain.push({
+				flag: 'paleo',
+				note: 'Paleo schools disagree; fail closed pending manual review',
+			})
+		} else if (
+			category === 'meat' ||
+			category === 'seafood' ||
+			category === 'egg' ||
+			category === 'vegetable' ||
+			category === 'fruit' ||
+			category === 'nut_seed' ||
+			category === 'herb_spice'
+		) {
+			paleo = true
+		} else if (slug === 'honey') {
+			paleo = true // commonly allowed
+		} else if (category === 'oil_fat') {
+			// olive/avocado/coconut oils OK; seed oils / margarine handled in PALEO_FALSE
+			paleo = true
+		} else if (category === 'staple') {
+			paleo = slug !== 'butter' // butter uncertain via PALEO_UNCERTAIN; water/salt/pepper/oil OK
+			if (slug === 'butter') {
+				paleo = false
+			}
+		} else if (category === 'condiment' || category === 'beverage' || category === 'other') {
+			paleo = true
+		} else {
+			paleo = false
+			diet_uncertain.push({
+				flag: 'paleo',
+				note: 'No category rule; fail closed pending review',
+			})
+		}
+	}
+
+	// Deduplicate diet_uncertain by flag+note
+	const seenDu = new Set()
+	const diet_uncertain_unique = []
+	for (const u of diet_uncertain) {
+		const k = `${u.flag}|${u.note}`
+		if (seenDu.has(k)) continue
+		seenDu.add(k)
+		diet_uncertain_unique.push(u)
+	}
+
 	return {
 		slug,
 		name,
-		aliases: [...new Set(aliases.filter((a) => a && a.toLowerCase() !== name.toLowerCase()))].sort(),
+		aliases: [
+			...new Set(aliases.filter((a) => a && a.toLowerCase() !== name.toLowerCase())),
+		].sort(cmpStr),
 		category,
-		allergens: [...allergens].sort(),
+		allergens: [...allergens].sort(cmpStr),
 		allergen_uncertain,
-		diets: { vegan, vegetarian, gluten_free },
-		sources: [...sources].sort(),
+		diet_uncertain: diet_uncertain_unique.sort(
+			(a, b) => cmpStr(a.flag, b.flag) || cmpStr(a.note, b.note),
+		),
+		diets: { vegan, vegetarian, gluten_free, keto, halal, paleo },
+		sources: [...sources].sort(cmpStr),
 	}
 }
 
@@ -1645,6 +2048,13 @@ function build() {
 				detail: `${u.code}: ${u.note}`,
 			})
 		}
+		for (const u of row.diet_uncertain) {
+			reviews.push({
+				slug: row.slug,
+				kind: 'diet_uncertain',
+				detail: `${u.flag}: ${u.note}`,
+			})
+		}
 	}
 	const ambiguous = [
 		'chocolate',
@@ -1672,12 +2082,13 @@ function build() {
 			})
 		}
 	}
-	for (const [label, slugs] of [...aliasMap.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
+	for (const [label, slugs] of [...aliasMap.entries()].sort((a, b) => cmpStr(a[0], b[0]))) {
 		if (slugs.size > 1) {
+			const ordered = [...slugs].sort(cmpStr)
 			reviews.push({
-				slug: [...slugs].sort().join(','),
+				slug: ordered.join(','),
 				kind: 'alias_clash',
-				detail: `label '${label}' maps to ${[...slugs].sort().join(', ')}`,
+				detail: `label '${label}' maps to ${ordered.join(', ')}`,
 			})
 		}
 	}
@@ -1693,9 +2104,9 @@ function build() {
 				'On load into RECIPES_DB, each row also gets a ULID primary key (see docs/data.md). Slug stays UNIQUE.',
 			vectorize: 'Embed name + aliases; metadata includes slug (and ULID after D1 load).',
 		},
-		diet_flags: ['vegan', 'vegetarian', 'gluten_free'],
+		diet_flags: DIET_FLAGS,
 		diet_flags_note:
-			'v1 closed Diet flags only (product.md). Multi-Diet UI moved from v2 into v1; the flag list did not expand (no keto/halal/paleo).',
+			'v1 closed Diet flags (product.md): vegan | vegetarian | gluten_free | keto | halal | paleo. Former parked keto/halal/paleo are now v1. Unclear cases use diet_uncertain — never guess. Allergies always win over flags.',
 		allergen_codes: ALLERGENS,
 		allergen_codes_note:
 			'Aligned with Open Food Facts allergen taxonomy tags (en:*). Easy to hand-check. Uncertain cases use allergen_uncertain — never guess.',

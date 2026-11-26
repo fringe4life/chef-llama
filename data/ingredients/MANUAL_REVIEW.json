@@ -1,5 +1,5 @@
 {
-  "count": 107,
+  "count": 245,
   "items": [
     {
       "slug": "bagel",
@@ -67,6 +67,11 @@
       "detail": "gluten: check label"
     },
     {
+      "slug": "beef-stock",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
       "slug": "chicken-stock",
       "kind": "allergen_uncertain",
       "detail": "celery: commercial usually contains celery"
@@ -75,6 +80,11 @@
       "slug": "chicken-stock",
       "kind": "allergen_uncertain",
       "detail": "gluten: check label"
+    },
+    {
+      "slug": "chicken-stock",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
     },
     {
       "slug": "stock",
@@ -92,6 +102,11 @@
       "detail": "fish: fish stock variant"
     },
     {
+      "slug": "stock",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
       "slug": "vegetable-stock",
       "kind": "allergen_uncertain",
       "detail": "celery: commercial usually contains celery"
@@ -102,9 +117,29 @@
       "detail": "gluten: check label"
     },
     {
+      "slug": "wine",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "wine",
+      "kind": "diet_uncertain",
+      "detail": "paleo: Paleo schools disagree; fail closed pending manual review"
+    },
+    {
       "slug": "baking-powder",
       "kind": "allergen_uncertain",
       "detail": "gluten: most NZ baking powder is GF; rare wheat starch — check if coeliac"
+    },
+    {
+      "slug": "balsamic",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "balsamic",
+      "kind": "diet_uncertain",
+      "detail": "paleo: Paleo schools disagree; fail closed pending manual review"
     },
     {
       "slug": "chocolate",
@@ -122,6 +157,21 @@
       "detail": "nuts: may contain nuts"
     },
     {
+      "slug": "chocolate",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "chocolate",
+      "kind": "diet_uncertain",
+      "detail": "paleo: Paleo schools disagree; fail closed pending manual review"
+    },
+    {
+      "slug": "gelatine",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
       "slug": "harissa",
       "kind": "allergen_uncertain",
       "detail": "gluten: check brand"
@@ -137,6 +187,16 @@
       "detail": "sesame: some brands contain sesame"
     },
     {
+      "slug": "malt-vinegar",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "malt-vinegar",
+      "kind": "diet_uncertain",
+      "detail": "paleo: Paleo schools disagree; fail closed pending manual review"
+    },
+    {
       "slug": "mayonnaise",
       "kind": "allergen_uncertain",
       "detail": "mustard: many mayo recipes include mustard"
@@ -150,6 +210,16 @@
       "slug": "milk-chocolate",
       "kind": "allergen_uncertain",
       "detail": "nuts: may contain nuts"
+    },
+    {
+      "slug": "milk-chocolate",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "milk-chocolate",
+      "kind": "diet_uncertain",
+      "detail": "paleo: Paleo schools disagree; fail closed pending manual review"
     },
     {
       "slug": "mirin",
@@ -212,6 +282,16 @@
       "detail": "gluten: most tamari is GF; confirm label"
     },
     {
+      "slug": "vinegar",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "vinegar",
+      "kind": "diet_uncertain",
+      "detail": "paleo: Paleo schools disagree; fail closed pending manual review"
+    },
+    {
       "slug": "wasabi",
       "kind": "allergen_uncertain",
       "detail": "mustard: imitation wasabi often horseradish; may include mustard — check"
@@ -220,6 +300,21 @@
       "slug": "white-chocolate",
       "kind": "allergen_uncertain",
       "detail": "soybeans: lecithin often soy"
+    },
+    {
+      "slug": "white-chocolate",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "white-chocolate",
+      "kind": "diet_uncertain",
+      "detail": "paleo: Paleo schools disagree; fail closed pending manual review"
+    },
+    {
+      "slug": "wine-vinegar",
+      "kind": "diet_uncertain",
+      "detail": "paleo: Paleo schools disagree; fail closed pending manual review"
     },
     {
       "slug": "worcestershire",
@@ -237,9 +332,79 @@
       "detail": "soybeans: some brands contain soy"
     },
     {
+      "slug": "worcestershire",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "blue-cheese",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "brie",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "buttermilk",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "cheese",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "condensed-milk",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "cottage-cheese",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "cottage-cheese",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "cream",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "cream-cheese",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
       "slug": "custard",
       "kind": "allergen_uncertain",
       "detail": "eggs: egg custard contains eggs; instant custard may not"
+    },
+    {
+      "slug": "custard",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "evaporated-milk",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "feta",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "halloumi",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
     },
     {
       "slug": "ice-cream",
@@ -252,14 +417,254 @@
       "detail": "nuts: flavour variants may contain nuts"
     },
     {
+      "slug": "ice-cream",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "mascarpone",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "milk",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "mozzarella",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "parmesan",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "ricotta",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "ricotta",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "sour-cream",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "yoghurt",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
       "slug": "apricot",
       "kind": "allergen_uncertain",
       "detail": "sulphites: dried apricots often sulphured; fresh usually fine"
     },
     {
+      "slug": "apricot",
+      "kind": "diet_uncertain",
+      "detail": "keto: Most fruit is high-sugar; berry exceptions need review"
+    },
+    {
+      "slug": "blackberry",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "blackcurrant",
+      "kind": "diet_uncertain",
+      "detail": "keto: Most fruit is high-sugar; berry exceptions need review"
+    },
+    {
+      "slug": "blueberry",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "boysenberry",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "cherry",
+      "kind": "diet_uncertain",
+      "detail": "keto: Most fruit is high-sugar; berry exceptions need review"
+    },
+    {
+      "slug": "coconut",
+      "kind": "diet_uncertain",
+      "detail": "keto: Most fruit is high-sugar; berry exceptions need review"
+    },
+    {
+      "slug": "coconut-cream",
+      "kind": "diet_uncertain",
+      "detail": "keto: Most fruit is high-sugar; berry exceptions need review"
+    },
+    {
+      "slug": "coconut-milk",
+      "kind": "diet_uncertain",
+      "detail": "keto: Most fruit is high-sugar; berry exceptions need review"
+    },
+    {
+      "slug": "cranberry",
+      "kind": "diet_uncertain",
+      "detail": "keto: Most fruit is high-sugar; berry exceptions need review"
+    },
+    {
+      "slug": "dragonfruit",
+      "kind": "diet_uncertain",
+      "detail": "keto: Most fruit is high-sugar; berry exceptions need review"
+    },
+    {
+      "slug": "feijoa",
+      "kind": "diet_uncertain",
+      "detail": "keto: Most fruit is high-sugar; berry exceptions need review"
+    },
+    {
+      "slug": "fig",
+      "kind": "diet_uncertain",
+      "detail": "keto: Most fruit is high-sugar; berry exceptions need review"
+    },
+    {
+      "slug": "goji",
+      "kind": "diet_uncertain",
+      "detail": "keto: Most fruit is high-sugar; berry exceptions need review"
+    },
+    {
+      "slug": "gooseberry",
+      "kind": "diet_uncertain",
+      "detail": "keto: Most fruit is high-sugar; berry exceptions need review"
+    },
+    {
+      "slug": "grapefruit",
+      "kind": "diet_uncertain",
+      "detail": "keto: Most fruit is high-sugar; berry exceptions need review"
+    },
+    {
+      "slug": "guava",
+      "kind": "diet_uncertain",
+      "detail": "keto: Most fruit is high-sugar; berry exceptions need review"
+    },
+    {
+      "slug": "jackfruit",
+      "kind": "diet_uncertain",
+      "detail": "keto: Most fruit is high-sugar; berry exceptions need review"
+    },
+    {
+      "slug": "kiwifruit",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "lemon",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "lemon-juice",
+      "kind": "diet_uncertain",
+      "detail": "keto: Most fruit is high-sugar; berry exceptions need review"
+    },
+    {
+      "slug": "lime",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "lime-juice",
+      "kind": "diet_uncertain",
+      "detail": "keto: Most fruit is high-sugar; berry exceptions need review"
+    },
+    {
+      "slug": "lychee",
+      "kind": "diet_uncertain",
+      "detail": "keto: Most fruit is high-sugar; berry exceptions need review"
+    },
+    {
+      "slug": "nectarine",
+      "kind": "diet_uncertain",
+      "detail": "keto: Most fruit is high-sugar; berry exceptions need review"
+    },
+    {
+      "slug": "papaya",
+      "kind": "diet_uncertain",
+      "detail": "keto: Most fruit is high-sugar; berry exceptions need review"
+    },
+    {
+      "slug": "passionfruit",
+      "kind": "diet_uncertain",
+      "detail": "keto: Most fruit is high-sugar; berry exceptions need review"
+    },
+    {
+      "slug": "peach",
+      "kind": "diet_uncertain",
+      "detail": "keto: Most fruit is high-sugar; berry exceptions need review"
+    },
+    {
+      "slug": "persimmon",
+      "kind": "diet_uncertain",
+      "detail": "keto: Most fruit is high-sugar; berry exceptions need review"
+    },
+    {
+      "slug": "plantain",
+      "kind": "diet_uncertain",
+      "detail": "keto: Most fruit is high-sugar; berry exceptions need review"
+    },
+    {
+      "slug": "plum",
+      "kind": "diet_uncertain",
+      "detail": "keto: Most fruit is high-sugar; berry exceptions need review"
+    },
+    {
+      "slug": "pomegranate",
+      "kind": "diet_uncertain",
+      "detail": "keto: Most fruit is high-sugar; berry exceptions need review"
+    },
+    {
+      "slug": "quince",
+      "kind": "diet_uncertain",
+      "detail": "keto: Most fruit is high-sugar; berry exceptions need review"
+    },
+    {
       "slug": "raisins",
       "kind": "allergen_uncertain",
       "detail": "sulphites: may be sulphured"
+    },
+    {
+      "slug": "raspberry",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "redcurrant",
+      "kind": "diet_uncertain",
+      "detail": "keto: Most fruit is high-sugar; berry exceptions need review"
+    },
+    {
+      "slug": "rhubarb",
+      "kind": "diet_uncertain",
+      "detail": "keto: Most fruit is high-sugar; berry exceptions need review"
+    },
+    {
+      "slug": "starfruit",
+      "kind": "diet_uncertain",
+      "detail": "keto: Most fruit is high-sugar; berry exceptions need review"
+    },
+    {
+      "slug": "strawberry",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "tamarillo",
+      "kind": "diet_uncertain",
+      "detail": "keto: Most fruit is high-sugar; berry exceptions need review"
     },
     {
       "slug": "cereal",
@@ -357,6 +762,21 @@
       "detail": "soybeans: some contain soy"
     },
     {
+      "slug": "stock-powder",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "vanilla",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "vanilla",
+      "kind": "diet_uncertain",
+      "detail": "paleo: Paleo schools disagree; fail closed pending manual review"
+    },
+    {
       "slug": "zaatar",
       "kind": "allergen_uncertain",
       "detail": "sesame: sesame-free blends exist; classic includes sesame"
@@ -372,14 +792,69 @@
       "detail": "sesame: sesame-free hummus exists; default assumes tahini"
     },
     {
+      "slug": "bacon",
+      "kind": "diet_uncertain",
+      "detail": "paleo: Paleo schools disagree; fail closed pending manual review"
+    },
+    {
+      "slug": "beef",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "beef-mince",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
       "slug": "beef-schnitzel",
       "kind": "allergen_uncertain",
       "detail": "eggs: crumb binding usually includes egg"
     },
     {
+      "slug": "beef-schnitzel",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "chicken",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "chicken-liver",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "chicken-mince",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
       "slug": "chicken-schnitzel",
       "kind": "allergen_uncertain",
       "detail": "eggs: crumb binding usually includes egg"
+    },
+    {
+      "slug": "chicken-schnitzel",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "chorizo",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "chorizo",
+      "kind": "diet_uncertain",
+      "detail": "paleo: Paleo schools disagree; fail closed pending manual review"
+    },
+    {
+      "slug": "duck",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
     },
     {
       "slug": "frankfurter",
@@ -392,6 +867,36 @@
       "detail": "milk: may contain dairy"
     },
     {
+      "slug": "frankfurter",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "frankfurter",
+      "kind": "diet_uncertain",
+      "detail": "paleo: Paleo schools disagree; fail closed pending manual review"
+    },
+    {
+      "slug": "ham",
+      "kind": "diet_uncertain",
+      "detail": "paleo: Paleo schools disagree; fail closed pending manual review"
+    },
+    {
+      "slug": "lamb",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "lamb-mince",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "lamb-shank",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
       "slug": "meatballs",
       "kind": "allergen_uncertain",
       "detail": "gluten: often contain breadcrumbs"
@@ -400,6 +905,21 @@
       "slug": "meatballs",
       "kind": "allergen_uncertain",
       "detail": "eggs: often bound with egg"
+    },
+    {
+      "slug": "meatballs",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "meatballs",
+      "kind": "diet_uncertain",
+      "detail": "paleo: Paleo schools disagree; fail closed pending manual review"
+    },
+    {
+      "slug": "pastrami",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
     },
     {
       "slug": "salami",
@@ -412,6 +932,16 @@
       "detail": "sulphites: may contain sulphites"
     },
     {
+      "slug": "salami",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "salami",
+      "kind": "diet_uncertain",
+      "detail": "paleo: Paleo schools disagree; fail closed pending manual review"
+    },
+    {
       "slug": "sausage",
       "kind": "allergen_uncertain",
       "detail": "gluten: some NZ sausages contain breadcrumbs; check label"
@@ -422,9 +952,59 @@
       "detail": "sulphites: common preservative in sausages"
     },
     {
+      "slug": "sausage",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "sausage",
+      "kind": "diet_uncertain",
+      "detail": "paleo: Paleo schools disagree; fail closed pending manual review"
+    },
+    {
+      "slug": "turkey",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "venison",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "cashew",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
       "slug": "mixed-nuts",
       "kind": "allergen_uncertain",
       "detail": "peanuts: mixes sometimes include peanuts"
+    },
+    {
+      "slug": "peanut",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "peanut-butter",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "dripping",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "ghee",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "ghee",
+      "kind": "diet_uncertain",
+      "detail": "paleo: Paleo schools disagree; fail closed pending manual review"
     },
     {
       "slug": "margarine",
@@ -435,6 +1015,11 @@
       "slug": "margarine",
       "kind": "allergen_uncertain",
       "detail": "soybeans: often contains soy"
+    },
+    {
+      "slug": "margarine",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
     },
     {
       "slug": "corn-chips",
@@ -452,6 +1037,46 @@
       "detail": "celery: commercial stocks often contain celery"
     },
     {
+      "slug": "butter",
+      "kind": "diet_uncertain",
+      "detail": "halal: Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess"
+    },
+    {
+      "slug": "butter",
+      "kind": "diet_uncertain",
+      "detail": "paleo: Paleo schools disagree; fail closed pending manual review"
+    },
+    {
+      "slug": "salt",
+      "kind": "diet_uncertain",
+      "detail": "paleo: Paleo schools disagree; fail closed pending manual review"
+    },
+    {
+      "slug": "avocado",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "beetroot",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "butternut",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "carrot",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "corn",
+      "kind": "diet_uncertain",
+      "detail": "paleo: Paleo schools disagree; fail closed pending manual review"
+    },
+    {
       "slug": "kimchi",
       "kind": "allergen_uncertain",
       "detail": "fish: many commercial kimchi use fish sauce; check label"
@@ -460,6 +1085,71 @@
       "slug": "kimchi",
       "kind": "allergen_uncertain",
       "detail": "crustaceans: some recipes use shrimp paste"
+    },
+    {
+      "slug": "kumara",
+      "kind": "diet_uncertain",
+      "detail": "paleo: Paleo schools disagree; fail closed pending manual review"
+    },
+    {
+      "slug": "onion",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "parsnip",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "passata",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "peas",
+      "kind": "diet_uncertain",
+      "detail": "paleo: Paleo schools disagree; fail closed pending manual review"
+    },
+    {
+      "slug": "potato",
+      "kind": "diet_uncertain",
+      "detail": "paleo: Paleo schools disagree; fail closed pending manual review"
+    },
+    {
+      "slug": "pumpkin",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "red-onion",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "shallot",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "swede",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "tinned-tomato",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "tomato",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
+    },
+    {
+      "slug": "tomato-paste",
+      "kind": "diet_uncertain",
+      "detail": "keto: Borderline carb load / portion-dependent; fail closed pending manual review"
     },
     {
       "slug": "chocolate",

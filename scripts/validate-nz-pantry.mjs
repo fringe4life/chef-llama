@@ -15,8 +15,9 @@ const doc = JSON.parse(readFileSync(path, 'utf8'))
 
 const ALLERGENS = new Set(doc.allergen_codes)
 const CATEGORIES = new Set(doc.categories)
-const DIETS = ['vegan', 'vegetarian', 'gluten_free']
+const DIETS = ['vegan', 'vegetarian', 'gluten_free', 'keto', 'halal', 'paleo']
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+const cmpStr = (a, b) => String(a).localeCompare(String(b))
 
 const errors = []
 
@@ -26,6 +27,9 @@ if (!Array.isArray(doc.ingredients)) errors.push('ingredients must be an array')
 
 const n = doc.ingredients?.length ?? 0
 if (n < 300 || n > 500) errors.push(`ingredient count ${n} outside 300–500`)
+if (!Array.isArray(doc.diet_flags) || doc.diet_flags.join() !== DIETS.join()) {
+	errors.push('diet_flags must be vegan|vegetarian|gluten_free|keto|halal|paleo')
+}
 
 const slugs = new Set()
 const labels = new Map()
@@ -50,6 +54,9 @@ for (const [idx, row] of (doc.ingredients ?? []).entries()) {
 	if (!Array.isArray(row.allergens)) errors.push(`${where}: allergens must be array`)
 	if (!Array.isArray(row.allergen_uncertain)) {
 		errors.push(`${where}: allergen_uncertain must be array`)
+	}
+	if (!Array.isArray(row.diet_uncertain)) {
+		errors.push(`${where}: diet_uncertain must be array`)
 	}
 	if (!row.diets || typeof row.diets !== 'object') {
 		errors.push(`${where}: diets missing`)
@@ -80,6 +87,11 @@ for (const [idx, row] of (doc.ingredients ?? []).entries()) {
 			errors.push(`${where}: bad allergen_uncertain entry`)
 		}
 	}
+	for (const u of row.diet_uncertain ?? []) {
+		if (!u || !DIETS.includes(u.flag) || typeof u.note !== 'string' || !u.note) {
+			errors.push(`${where}: bad diet_uncertain entry`)
+		}
+	}
 
 	const keys = [row.name.toLowerCase(), ...(row.aliases ?? []).map((a) => a.toLowerCase())]
 	for (const key of keys) {
@@ -90,7 +102,7 @@ for (const [idx, row] of (doc.ingredients ?? []).entries()) {
 
 for (const [label, set] of labels) {
 	if (set.size > 1) {
-		errors.push(`alias clash: '${label}' → ${[...set].sort().join(', ')}`)
+		errors.push(`alias clash: '${label}' → ${[...set].sort(cmpStr).join(', ')}`)
 	}
 }
 

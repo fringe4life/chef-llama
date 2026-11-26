@@ -44,7 +44,7 @@
 
 ### Diet
 - **Required** before the first Generate: completed via **`/onboarding`** (Diet #1).
-  - Fields: `name` (default Home); `flags[]` from the closed list vegan | vegetarian | gluten_free (hard, empty OK); allergy chips via the chip canonicalizer (hard, max 16, empty OK); optional `kcal` (target → `kcal_over`); `servings` 1–12, default 2; optional `max_minutes` (target, no overtime kind); **`skill`** (closed three-level picklist — see below); **`method`** and optional **`devices`** (see below). No keto/halal/paleo in v1.
+  - Fields: `name` (default Home); `flags[]` from the closed list vegan | vegetarian | gluten_free | keto | halal | paleo (hard, empty OK); allergy chips via the chip canonicalizer (hard, max 16, empty OK); optional `kcal` (target → `kcal_over`); `servings` 1–12, default 2; optional `max_minutes` (target, no overtime kind); **`skill`** (closed three-level picklist — see below); **`method`** and optional **`devices`** (see below). keto / halal / paleo were parked as later diets; they are **v1 flags** now (same closed list as the pantry seed).
 - **Skill level** is a v1 Diet field with **three levels**, plus a **this-run toggle** on `/pantry`. It steers the cook: technique choice, step detail, whether steps may run in parallel, and time estimates. Exact level labels are Open.
 - **Cooking method and devices** (v1 Diet fields; Valibot shape, also in [data.md](./data.md) / [ai.md](./ai.md)):
 
