@@ -29,8 +29,8 @@ A Chip flag for food that is already cooked (leftover rice, cooked chicken). Lef
 _Avoid_: Staple, Swap, leftover as a Recipe kind, a `cooked` boolean on uncooked Chips
 
 **Staple**:
-Defaults the Recipe may add if forgotten: water, salt, pepper, oil, butter. At most two per cook. Cooks can **customise staples** on onboarding / Diet settings. The active list is in the prompt.
-_Avoid_: Optional extra, shopping item, garnish, milk (when dairy is excluded), treating customise as an unbounded shopping list
+An ingredient the Cook always has on hand. The list is **user-chosen and customisable** (onboarding / Diet settings) — **not** a fixed app catalogue. The active list goes in the Generate prompt; the Recipe may still pull up to two forgotten staples into `need`. Pantry chips that resolve to a staple are **deduped** (inline note, clear input; never block or scold) — see [product.md](./product.md#staples).
+_Avoid_: Fixed app staple list (water/salt/pepper/oil/butter as product truth), optional extra, shopping item, garnish, milk (when dairy is excluded), treating customise as an unbounded shopping list
 
 **Diet**:
 One named set of saved defaults: name, hard flags (vegan / vegetarian), optional AI preference flags (gluten_free / keto / halal / paleo — prompt rules + label disclaimer, not pantry tags), **avoid list** (ingredient chips + parent expansion), optional kcal, servings (default 2), optional max minutes, **skill** (three levels), **method** (primary cooking method) and optional **devices** (from devices the Cook owns). A Cook may have many Diets in v1; one is **active** for Generate (Diet switcher on `/pantry`). First login completes **`/onboarding`** (creates Diet #1) before the first Generate. This-run toggles may change flags, servings, time, kcal, skill, method, and devices for one cook; the **avoid list always wins** and cannot be removed or ignored. Each Recipe records which Diet it was cooked for (internal; never shown on public recipe pages).

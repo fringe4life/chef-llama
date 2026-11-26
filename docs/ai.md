@@ -25,7 +25,7 @@
   ```
 
   Primary `method`, plus optionally a second device (schema allows up to three in `devices`). Steps and `minutes` must fit those devices and the Cook’s time target (publish quality gate in [product.md](./product.md#quality-publish-gates)).
-- **Staples** in the prompt come from the Cook’s active staples list (defaults water / salt / pepper / oil / butter; customisable — see [product.md](./product.md#onboarding)).
+- **Staples** in the prompt come from the Cook’s active staples list (**user-chosen / customisable**, not a fixed app set — see [product.md](./product.md#staples)). The prompt lists each ingredient once (server dedupes pantry chips that resolve to a staple).
 
 ### Recipe JSON
 - JSON + Valibot. A decode failure → tagged error, no Recipe row, and the Credit hold is **released**. Do not import `effect/Schema` on Generate.
@@ -40,6 +40,7 @@
 ### Chips
 - In-process string canonicalizer in `src/shared/`: split, NFKC + lowercase, strip quantities, units and prep adjectives, a tiny closed NZ synonym map, dedupe, max 16 chips. Leftovers become `{ "name": "rice", "cooked": true }`. Sentence-like paste is rejected.
 - Synonym map target: the committed NZ pantry seed (`data/ingredients/nz-pantry.json` — slugs, aliases, intrinsic flags, parent links, derived vegan/vegetarian). Wiring the seed into the canonicalizer is still Open in [data.md](./data.md#open); until then the tiny map stands.
+- **Dedupe vs staples:** after canonicalization (slug or alias via the NZ pantry seed), a chip that matches one of the Cook’s staples is **not** added to the pantry chip list. UI shows a short inline note (for example “Olive oil is already in your staples”) and clears the input — never blocks or scolds. Autocomplete hides staples or greys them with a **staple** tag. Server dedupes again so the prompt lists each ingredient only once. See [product.md](./product.md#staples).
 - No model rewrite, no embedding and no CRF parser for chips in v1. Clairic for sentence-like paste is v2/v3 (see [v2.md](./v2.md)).
 
 ### Cancel and pending

@@ -44,12 +44,13 @@
 
 ### Diet lives in a Durable Object
 - "Diet" is the canonical term (not Kitchen, not Profile, which collides with auth, and not Pantry prefs, since Pantry is the chips).
-- Per-user **Diet** SQLite DO, `getByName(userId)`. It holds the Diet rows (name, flags, avoid list, default kcal, servings, **skill**, **method**, optional **devices**) and `active_diet_id`. There is **no** D1 `kitchens`/`diets` table and **no** `cooks.active_diet_id`. Diet is not on the Credit DO.
+- Per-user **Diet** SQLite DO, `getByName(userId)`. It holds the Diet rows (name, flags, avoid list, **user-chosen staples**, default kcal, servings, **skill**, **method**, optional **devices**) and `active_diet_id`. There is **no** D1 `kitchens`/`diets` table and **no** `cooks.active_diet_id`. Diet is not on the Credit DO.
 - Generate calls `getActive()` and reads one row; it never refetches a whole profile list.
 - **v1 supports multiple Diets.** A Diet is **required before the first Generate**: **`/onboarding`** creates Diet #1 (devices owned, staples customise, publish defaults explained). `/pantry` then has a Diet switcher for the active Diet, plus add / rename / edit / delete. Deleting the active Diet falls back to another remaining Diet. The site itself stays public.
 - **Skill** (three levels) and **method / devices** are v1 Diet columns; this-run toggles may override them for one Generate. Skill affects technique, step detail, parallel steps, and time estimates (see [ai.md](./ai.md)).
 - **Avoid list wins over pantry chips.** A pantry Chip that matches the Cook’s avoid list (slug/alias, or expanded via a small parent link such as `dairy` / `wheat`) is **swapped** and highlighted, never used as-is (recorded in `swaps`; see [ai.md](./ai.md#recipe-json)). Seed items do **not** store curated allergen codes. The UI states that Cooks must check their own labels. This-run toggles may tighten or loosen diet **flags** and change servings, time, kcal, skill, method, and devices for that Generate only; they can **never** remove or ignore an avoid-list entry. Flag conflicts that remain after this-run toggles (for example vegan Diet + chicken chip with vegetarian still on) also produce a **Swap**, never a silent ignore.
 
+- **Staples** are stored on the Diet (user-chosen / customisable — not a fixed app list). Generate / chip canonicalizer **dedupe** pantry chips that resolve to a staple (slug or alias via the NZ pantry seed) so the AI prompt lists each ingredient once; UI behaviour in [product.md](./product.md#staples).
 - Each Recipe row records which Diet it was cooked for (`diet_id` on the Recipe in `RECIPES_DB`). **`diet_id` is never rendered on public pages** (no Diet name, flags, avoid list, or medical diets on `/recipes/[slug]` or Recent cards).
 - The Fallow module is `src/features/diet/`. (Multi-Diet was parked as v2; **superseded 21 Nov 2026** — see [product.md](./product.md#diet); the old park note remains in [v2.md](./v2.md).)
 

@@ -10,7 +10,7 @@
 
 ### Job
 - Pantry (≥3 chips, max 16) → **one Recipe tonight**. Similar cards after it exists. Photo later. Solo Cook, about 1–4 people.
-- Constraints: Diet flags and the avoid list are **hard**; kcal and time are **targets**; servings 1–12, default 2; kcal stamped. Up to 2 Staples (water, salt, pepper, oil, butter) may be assumed; Cooks can **customise staples** (see [Onboarding](#onboarding)).
+- Constraints: Diet flags and the avoid list are **hard**; kcal and time are **targets**; servings 1–12, default 2; kcal stamped. Staples are the Cook’s **user-chosen** on-hand list (not a fixed app set); up to 2 may be assumed via `need` if forgotten (see [Staples](#staples)).
 
 ### Site vs App
 - The brochure Site is split from the App. Generate never lives on the brochure, and `/` has no generator and no chat.
@@ -39,8 +39,15 @@
 - First-run setup is an **`(app)` route `/onboarding`**, not a blocking dialog on `/pantry`. New Cooks land here after sign-in before the first Generate.
 - Creates Diet #1 and explains **publish defaults** clearly (free-tier recipes go to **Recent** unless opted out later as a paid Cook — see [Publish and privacy](#publish-and-privacy)). The same explanation appears on cook / pantry pages.
 - **Devices owned** drive time and feasibility: onboarding captures which cooking devices the Cook has; that informs Diet `method` / `devices`, time estimates, and whether a Generate’s steps fit the gear.
-- Cooks can **customise staples** (beyond the closed default list of water, salt, pepper, oil, butter — exact customise UX is Open).
+- Cooks **choose and customise staples** (their own on-hand list — not a fixed app catalogue). Exact edit UX remains Open (see [Staples](#staples)).
 - Later Diet add / rename / edit / delete can reuse onboarding fields in a dialog or a short form on `/pantry` (not a second onboarding pass).
+
+### Staples
+- Staples are **user-chosen and customisable**, not a fixed app list.
+- **Dedupe against pantry chips:** when a cook chip resolves (canonical name or alias via the NZ pantry seed) to one of the user’s staples, do **not** add a second chip. Show a short inline note (for example “Olive oil is already in your staples”) and clear the input. Never block or scold.
+- Autocomplete **hides** staples or **greys** them with a **staple** tag.
+- The **server also dedupes** so the AI prompt lists each ingredient only once.
+- Exact edit UX (onboarding vs Diet settings) and max list length remain Open.
 
 ### Diet
 - **Required** before the first Generate: completed via **`/onboarding`** (Diet #1).
@@ -172,10 +179,10 @@ Publish to Recent only when:
 - **Three scheduled Cursor Automations**: architecture hunt, **agent-friction retro every 3 days** (the third Automation) on Grok 4.6 medium, and the monthly deps review. **No slop cron**; `eslint-plugin-slop` runs in lint instead (see [lint.md](./lint.md)). Details: [factory.md](./factory.md); ops summary: [ops.md](./ops.md).
 
 ## Open
-- Generate do's and don'ts (proposed): a **collapsed** disclosure under the chip list, above the Generate button, titled "How to get the most out of Chef Llama" (not a dialog, not on `/`). Keep: Diet first; leftover chips; free cooks then Credits; one Recipe per Generate; ≥3 chips / max 16; Staples assumed (and customise); avoid list always wins; this-run toggles may change flags / servings / time / kcal / skill / method / devices but never drop an avoid entry; publish defaults; an AI-untested disclaimer; Save if you like it; metric and NZ names. Still to pick: always visible vs collapsed; whether a failed Generate refunds; a lawyer pass on the avoid-list / label-disclaimer wording.
+- Generate do's and don'ts (proposed): a **collapsed** disclosure under the chip list, above the Generate button, titled "How to get the most out of Chef Llama" (not a dialog, not on `/`). Keep: Diet first; leftover chips; free cooks then Credits; one Recipe per Generate; ≥3 chips / max 16; Staples (user-chosen; customise); avoid list always wins; this-run toggles may change flags / servings / time / kcal / skill / method / devices but never drop an avoid entry; publish defaults; an AI-untested disclaimer; Save if you like it; metric and NZ names. Still to pick: always visible vs collapsed; whether a failed Generate refunds; a lawyer pass on the avoid-list / label-disclaimer wording.
 - **Skill level labels:** the three closed levels (proposed: beginner | intermediate | advanced — not locked).
 - **Try me surfaces:** which tier(s) show on `/` by default (common only vs all three); whether dessert is required on `/`; brochure card copy for moderately common / uncommon.
-- **Staples customise:** how Cooks edit the staples list (onboarding only vs Diet settings); max length; whether custom staples can leave the closed set.
+- **Staples edit UX:** how Cooks edit the staples list (onboarding only vs Diet settings); max length. (Staples are user-chosen — not a fixed app set; see [Staples](#staples).)
 - **Private recipe URL:** 404 vs signed-in-only for opted-out / unpublished rows; whether Save of a private recipe works for the owner only.
 - **Report threshold N** and reviewer workflow.
 - **“Cooked it” / rating before Recent:** required in v1 or optional later.
