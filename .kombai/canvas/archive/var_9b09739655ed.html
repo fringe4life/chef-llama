@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html><head>
+  <meta charset="utf-8">
+  <meta name="kombai-design-canvas" content="true">
+  
+  
+  
+  
+  
+  
+  <style>html, body { margin: 0; padding: 0; } #root { display: contents; }</style>
+</head><body>
+  <div id="root"><style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:oklch(0.968 0.026 88);
+  --card:oklch(0.994 0.008 88);
+  --tint:oklch(0.940 0.038 86);
+  --ink:oklch(0.255 0.045 45);
+  --ink-muted:oklch(0.470 0.040 48);
+  --ink-faint:oklch(0.545 0.032 50);
+  --rule:oklch(0.885 0.030 70);
+  --rule-hair:oklch(0.918 0.026 76);
+  --rule-strong:oklch(0.800 0.036 62);
+  --grid:oklch(0.925 0.026 76);
+  --accent:oklch(0.505 0.180 32);
+  --accent-ink:oklch(0.990 0.010 90);
+  --veg:oklch(0.600 0.155 138);
+  --meat:oklch(0.460 0.165 25);
+  --rim:oklch(0.640 0.030 70);
+  --font-ui:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --font-read:Seravek,"Gill Sans Nova",Ubuntu,Calibri,"Noto Sans","DejaVu Sans",source-sans-pro,sans-serif;
+  --font-name:Georgia,"Times New Roman",serif;
+  --font-fig:ui-monospace,"Cascadia Code","Source Code Pro",Menlo,Consolas,"DejaVu Sans Mono",monospace;
+}
+html{color-scheme:light}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-ui);font-size:13.5px;line-height:1.45}
+.mono{font-family:var(--font-fig);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.sheet{padding:32px}
+
+.plate{background:var(--card);border:1px solid var(--rule);border-radius:12px;overflow:hidden}
+.bar{display:flex;align-items:center;gap:24px;height:56px;padding:0 32px;border-bottom:1px solid var(--rule-hair)}
+.wordmark{font-family:var(--font-name);font-size:16.5px;font-weight:700;letter-spacing:-.02em}
+.nav{display:flex;gap:18px;margin-left:4px}
+.nav a{font-size:12.5px;color:var(--ink-muted);text-decoration:none;padding:4px 0}
+.nav a[aria-current]{color:var(--ink);box-shadow:inset 0 -2px 0 var(--accent)}
+.av{margin-left:auto;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;border:1px solid var(--rule);background:var(--tint);font-size:10px;font-weight:600;color:var(--ink-muted)}
+
+.page{padding:24px 32px 30px}
+
+.head{display:flex;align-items:baseline;gap:14px}
+.head h1{font-size:22px;font-weight:600;letter-spacing:-.015em;margin:0}
+.asof{font-family:var(--font-fig);font-size:12px;color:var(--ink-faint);margin:0}
+.head .btn{margin-left:auto}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:34px;padding:0 14px;border-radius:6px;border:1px solid transparent;font-family:var(--font-ui);font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap}
+.btn--ghost{border-color:var(--rule-strong);color:var(--ink)}
+.btn--fill{background:var(--accent);color:var(--accent-ink)}
+.tlink{font-family:var(--font-ui);font-size:12px;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--rule-strong);padding-bottom:1px}
+
+/* account band */
+.band{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);margin-top:18px;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.cell{padding:16px 22px 17px 0}
+.cell + .cell{border-left:1px solid var(--rule);padding-left:22px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.lbl{font-size:11.5px;color:var(--ink-muted);margin:0}
+.val{display:flex;align-items:baseline;gap:7px;margin:3px 0 0}
+.val b{font-family:var(--font-fig);font-variant-numeric:tabular-nums;font-size:33px;font-weight:400;line-height:1.05;letter-spacing:-.02em}
+.val span{font-size:12.5px;color:var(--ink-muted)}
+.note{font-size:12px;color:var(--ink-faint);margin:5px 0 0}
+.state{display:flex;align-items:baseline;gap:7px;font-size:16px;font-weight:600;letter-spacing:-.01em;margin:3px 0 0}
+.state i{width:7px;height:7px;border-radius:50%;background:var(--veg);transform:translateY(-2px)}
+.state b{font-family:var(--font-fig);font-size:20px;font-weight:400}
+
+/* sections */
+.section{margin-top:24px}
+.shead{display:flex;align-items:center;gap:14px}
+.shead h2{font-size:14.5px;font-weight:600;margin:0}
+.seg{margin-left:auto;display:inline-flex;border:1px solid var(--rule);border-radius:6px;overflow:hidden}
+.seg span{font-size:12px;padding:7px 11px;color:var(--ink-muted)}
+.seg span + span{border-left:1px solid var(--rule)}
+.seg span[aria-pressed]{background:var(--tint);color:var(--ink);font-weight:600}
+.period{font-family:var(--font-fig);font-size:11.5px;color:var(--ink-faint);margin:5px 0 0}
+
+.summary{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:13px;padding-bottom:12px;border-bottom:1px solid var(--rule-hair)}
+.stats{display:flex;align-items:baseline;gap:20px;margin:0;padding:0;list-style:none}
+.stats li{display:flex;align-items:baseline;gap:6px}
+.stats b{font-family:var(--font-fig);font-variant-numeric:tabular-nums;font-size:16px;font-weight:400}
+.stats span{font-size:12px;color:var(--ink-muted)}
+.stats em{font-style:normal;font-family:var(--font-fig);font-size:12px;color:var(--ink-muted)}
+.legend{display:flex;gap:15px;margin:0;padding:0;list-style:none;font-size:11.5px;color:var(--ink-muted)}
+.legend li{display:inline-flex;align-items:center;gap:6px}
+.sw{width:9px;height:9px;border-radius:1px;display:inline-block}
+.sw--g{background:var(--veg)}
+.sw--c{background:var(--meat)}
+.sw--p{background:linear-gradient(to top,color-mix(in oklab,var(--veg) 32%,var(--paper)) 0 46%,color-mix(in oklab,var(--meat) 32%,var(--paper)) 46% 100%);border:1px solid var(--rim)}
+
+/* plot */
+.plot{display:grid;grid-template-columns:24px minmax(0,1fr);column-gap:9px;margin-top:18px;padding-bottom:30px}
+.plot__y{position:relative;height:168px}
+.plot__y span{position:absolute;right:0;bottom:calc(var(--t)/var(--max)*100%);transform:translateY(50%);font-family:var(--font-fig);font-size:11px;color:var(--ink-muted)}
+.bars{position:relative;height:168px;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);align-items:end;border-bottom:1px solid var(--rule-strong)}
+.bars::before{content:"";position:absolute;inset:0;pointer-events:none;background-image:repeating-linear-gradient(to top,var(--grid) 0 1px,transparent 1px calc(100% / var(--max)))}
+.bucket{position:relative;height:100%;display:flex;align-items:flex-end;justify-content:center}
+.bucket__past{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:54%;max-width:92px;height:calc(var(--prev) / var(--max) * 100%);border:1px solid var(--rim);background:linear-gradient(to top,color-mix(in oklab,var(--veg) 32%,var(--paper)) 0 var(--pg),color-mix(in oklab,var(--meat) 32%,var(--paper)) var(--pg) 100%)}
+.bucket__col{position:relative;width:40%;max-width:68px;height:calc(var(--total) / var(--max) * 100%);display:flex;flex-direction:column-reverse;gap:2px}
+.seg--g{height:calc(var(--g) / var(--total) * 100%);background:var(--veg)}
+.seg--c{flex:1;background:var(--meat)}
+.bucket__v{position:absolute;bottom:calc(var(--total) / var(--max) * 100% + 5px);left:50%;transform:translateX(-50%);font-family:var(--font-fig);font-size:12px;font-variant-numeric:tabular-nums}
+.bucket__d{position:absolute;top:100%;margin-top:7px;left:50%;transform:translateX(-50%);font-family:var(--font-fig);font-size:11px;color:var(--ink-muted);white-space:nowrap}
+
+/* ledger */
+table{width:100%;border-collapse:collapse;table-layout:fixed;margin-top:12px}
+th{font-family:var(--font-fig);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted);font-weight:400;text-align:left;height:32px;padding:0 12px 0 0;border-bottom:1px solid var(--rule);vertical-align:middle}
+td{padding:9px 12px 10px 0;border-bottom:1px solid var(--rule-hair);vertical-align:middle;font-size:12.5px}
+th:first-child,td:first-child{width:26%}
+th:nth-child(2),td:nth-child(2){width:19%}
+th:nth-child(3),td:nth-child(3){width:13%}
+th:nth-child(4),td:nth-child(4){width:28%}
+th:last-child,td:last-child{width:14%;text-align:right;padding-right:0}
+td.n{font-family:var(--font-fig);font-variant-numeric:tabular-nums;font-size:12.5px}
+.r{text-align:right}
+.meta{display:block;font-family:var(--font-ui);font-size:11px;color:var(--ink-faint);margin-top:1px}
+.pack{display:flex;align-items:center;gap:9px}
+.pack__m{position:relative;flex:1;min-width:44px;height:4px;border-radius:1px;background:var(--tint);box-shadow:inset 0 0 0 1px var(--rule)}
+.pack__m i{position:absolute;inset:0 auto 0 0;width:var(--left);background:var(--accent)}
+.pack .n{font-family:var(--font-fig);font-variant-numeric:tabular-nums;font-size:12.5px;min-width:30px;text-align:right}
+.foot{font-family:var(--font-fig);font-size:11.5px;color:var(--ink-muted);margin:11px 0 0}
+
+.key{display:flex;flex-wrap:wrap;gap:4px 14px;margin:16px 2px 0;font-family:var(--font-fig);font-size:10px;line-height:1.6;color:var(--ink-muted)}
+.key b{font-weight:400;color:var(--ink)}
+</style>
+<div class="sheet" data-dynamic="true" data-kid="1" data-name="page wrapper" data-reason="sheet padding reinitialized by script so it clears the fixed bar (width/height set to bar metrics)">
+<div class="plate" data-kid="1-1" data-name="top app card container">
+<header class="bar" data-kid="1-1-1" data-name="top navigation bar">
+<span class="wordmark" data-kid="1-1-1-1" data-name="brand wordmark text">Chef Llama</span>
+<nav aria-label="Main" class="nav" data-kid="1-1-1-2" data-name="main navigation link group">
+<a data-kid="1-1-1-2-1" data-name="Pantry navigation link" href="#">Pantry</a>
+<a data-kid="1-1-1-2-2" data-name="Recipes navigation link" href="#">Recipes</a>
+<a data-kid="1-1-1-2-3" data-name="Saved navigation link" href="#">Saved</a>
+<a aria-current="page" data-kid="1-1-1-2-4" data-name="Dashboard current-page navigation link" href="#">Dashboard</a>
+<a data-kid="1-1-1-2-5" data-name="Billing navigation link" href="#">Billing</a>
+</nav>
+<span aria-hidden="true" class="av" data-kid="1-1-1-3" data-name="user avatar initials chip">AR</span>
+</header>
+<main class="page" data-kid="1-1-2" data-name="main dashboard content">
+<div class="head" data-kid="1-1-2-1" data-name="page head row with title and action">
+<h1 data-kid="1-1-2-1-1" data-name="dashboard page title">Dashboard</h1>
+<p class="asof" data-kid="1-1-2-1-2" data-name="dashboard as-of timestamp">4 November 2026, 9:14 am</p>
+<a class="btn btn--ghost" data-kid="1-1-2-1-3" data-name="buy credits ghost button" href="#">Buy Credits</a>
+</div>
+<section aria-label="Credit account" class="band" data-kid="1-1-2-2" data-name="credit account summary band">
+<div class="cell" data-kid="1-1-2-2-1" data-name="available balance cell">
+<p class="lbl" data-kid="1-1-2-2-1-1" data-name="available credits label">Available</p>
+<p class="val" data-kid="1-1-2-2-1-2" data-name="available credits value row"><b data-kid="1-1-2-2-1-2-1" data-name="available credits number">143</b><span data-kid="1-1-2-2-1-2-2" data-name="credits unit label">Credits</span></p>
+<p class="note" data-kid="1-1-2-2-1-3" data-name="credit cost note">One Credit per cook. <a class="tlink" data-kid="1-1-2-2-1-3-1" data-name="credit history link" href="#">Credit history</a></p>
+</div>
+<div class="cell" data-kid="1-1-2-2-2" data-name="free cooks cell">
+<div data-kid="1-1-2-2-2-1" data-name="free cooks info block">
+<p class="lbl" data-kid="1-1-2-2-2-1-1" data-name="free cooks label">Free cooks</p>
+<p class="state" data-kid="1-1-2-2-2-1-2" data-name="free cooks remaining state"><i aria-hidden="true" data-kid="1-1-2-2-2-1-2-1" data-name="status indicator dot"></i><span data-kid="1-1-2-2-2-1-2-2" data-name="remaining cooks text"><b data-kid="1-1-2-2-2-1-2-2-1" data-name="remaining cooks number">3</b> left today</span></p>
+<p class="note" data-kid="1-1-2-2-2-1-3" data-name="daily reset note">Resets <span class="mono" data-kid="1-1-2-2-2-1-3-1" data-name="daily reset time">5:00 am</span>.</p>
+</div>
+<a class="btn btn--fill" data-kid="1-1-2-2-2-2" data-name="cook from pantry filled button" href="#">Cook from the pantry</a>
+</div>
+</section>
+<section aria-labelledby="cooks-h" class="section" data-kid="1-1-2-3" data-name="cooks overview section">
+<div class="shead" data-kid="1-1-2-3-1" data-name="cooks section header with range control">
+<h2 data-kid="1-1-2-3-1-1" data-name="cooks section title" id="cooks-h">Cooks</h2>
+<div aria-label="Range" class="seg" data-kid="1-1-2-3-1-2" data-name="time range segmented control" role="group">
+<span data-kid="1-1-2-3-1-2-1" data-name="1 week range segment">1 week</span>
+<span aria-pressed="true" data-kid="1-1-2-3-1-2-2" data-name="1 month selected range segment">1 month</span>
+<span data-kid="1-1-2-3-1-2-3" data-name="1 year range segment">1 year</span>
+</div>
+</div>
+<p class="period" data-kid="1-1-2-3-2" data-name="comparison period caption">7 October – 3 November 2026, against 7 September – 6 October 2026</p>
+<div class="summary" data-kid="1-1-2-3-3" data-name="cooks summary row with legend">
+<ul class="stats" data-kid="1-1-2-3-3-1" data-name="cooks summary stats list">
+<li data-kid="1-1-2-3-3-1-1" data-name="current period cooks stat"><b data-kid="1-1-2-3-3-1-1-1" data-name="current cooks number">33</b><span data-kid="1-1-2-3-3-1-1-2" data-name="cooks stat label">cooks</span></li>
+<li data-kid="1-1-2-3-3-1-2" data-name="previous period cooks stat"><b data-kid="1-1-2-3-3-1-2-1" data-name="previous cooks number">22</b><span data-kid="1-1-2-3-3-1-2-2" data-name="previous stat label">previous</span></li>
+<li data-kid="1-1-2-3-3-1-3" data-name="change stat"><b data-kid="1-1-2-3-3-1-3-1" data-name="change amount">+11</b><em data-kid="1-1-2-3-3-1-3-2" data-name="percentage change">+50%</em></li>
+</ul>
+<ul class="legend" data-kid="1-1-2-3-3-2" data-name="chart legend list">
+<li data-kid="1-1-2-3-3-2-1" data-name="gift-funded legend item"><span aria-hidden="true" class="sw sw--g" data-kid="1-1-2-3-3-2-1-1" data-name="gift-funded color swatch"></span>Gift-funded</li>
+<li data-kid="1-1-2-3-3-2-2" data-name="credit-funded legend item"><span aria-hidden="true" class="sw sw--c" data-kid="1-1-2-3-3-2-2-1" data-name="credit-funded color swatch"></span>Credit-funded</li>
+<li data-kid="1-1-2-3-3-2-3" data-name="previous period legend item"><span aria-hidden="true" class="sw sw--p" data-kid="1-1-2-3-3-2-3-1" data-name="previous period dual-tone swatch"></span>Previous period</li>
+</ul>
+</div>
+<div class="plot" data-kid="1-1-2-3-4" data-name="cooks bar chart plot">
+<div aria-hidden="true" class="plot__y" data-kid="1-1-2-3-4-1" data-name="y-axis scale labels" style="--max:10">
+<span data-kid="1-1-2-3-4-1-1" data-name="y-axis max label" style="--t:10">10</span>
+<span data-kid="1-1-2-3-4-1-2" data-name="y-axis mid label" style="--t:5">5</span>
+<span data-kid="1-1-2-3-4-1-3" data-name="y-axis baseline label" style="--t:0">0</span>
+</div>
+<div class="bars" data-kid="1-1-2-3-4-2" data-name="bar chart plot area" style="--max:10">
+<div class="bucket" data-kid="1-1-2-3-4-2-1" data-name="first week bar bucket" style="--total:8;--prev:5;--g:2;--pg:25%">
+<span aria-hidden="true" class="bucket__past" data-kid="1-1-2-3-4-2-1-1" data-name="previous period ghost bar"></span>
+<span class="bucket__v" data-kid="1-1-2-3-4-2-1-2" data-name="bar value label">8</span>
+<span class="bucket__col" data-kid="1-1-2-3-4-2-1-3" data-name="stacked bar column"><span aria-hidden="true" class="seg--g" data-kid="1-1-2-3-4-2-1-3-1" data-name="gift-funded bar segment"></span><span aria-hidden="true" class="seg--c" data-kid="1-1-2-3-4-2-1-3-2" data-name="credit-funded bar segment"></span></span>
+<span class="bucket__d" data-kid="1-1-2-3-4-2-1-4" data-name="week range axis label">7–13 Oct</span>
+</div>
+<div class="bucket" data-kid="1-1-2-3-4-2-2" data-name="second week bar bucket" style="--total:9;--prev:6;--g:1;--pg:14%">
+<span aria-hidden="true" class="bucket__past" data-kid="1-1-2-3-4-2-2-1" data-name="previous period ghost bar"></span>
+<span class="bucket__v" data-kid="1-1-2-3-4-2-2-2" data-name="bar value label">9</span>
+<span class="bucket__col" data-kid="1-1-2-3-4-2-2-3" data-name="stacked bar column"><span aria-hidden="true" class="seg--g" data-kid="1-1-2-3-4-2-2-3-1" data-name="gift-funded bar segment"></span><span aria-hidden="true" class="seg--c" data-kid="1-1-2-3-4-2-2-3-2" data-name="credit-funded bar segment"></span></span>
+<span class="bucket__d" data-kid="1-1-2-3-4-2-2-4" data-name="week range axis label">14–20 Oct</span>
+</div>
+<div class="bucket" data-kid="1-1-2-3-4-2-3" data-name="third week bar bucket" style="--total:7;--prev:4;--g:2;--pg:29%">
+<span aria-hidden="true" class="bucket__past" data-kid="1-1-2-3-4-2-3-1" data-name="previous period ghost bar"></span>
+<span class="bucket__v" data-kid="1-1-2-3-4-2-3-2" data-name="bar value label">7</span>
+<span class="bucket__col" data-kid="1-1-2-3-4-2-3-3" data-name="stacked bar column"><span aria-hidden="true" class="seg--g" data-kid="1-1-2-3-4-2-3-3-1" data-name="gift-funded bar segment"></span><span aria-hidden="true" class="seg--c" data-kid="1-1-2-3-4-2-3-3-2" data-name="credit-funded bar segment"></span></span>
+<span class="bucket__d" data-kid="1-1-2-3-4-2-3-4" data-name="week range axis label">21–27 Oct</span>
+</div>
+<div class="bucket" data-kid="1-1-2-3-4-2-4" data-name="fourth week bar bucket" style="--total:9;--prev:7;--g:1;--pg:13%">
+<span aria-hidden="true" class="bucket__past" data-kid="1-1-2-3-4-2-4-1" data-name="previous period ghost bar"></span>
+<span class="bucket__v" data-kid="1-1-2-3-4-2-4-2" data-name="bar value label">9</span>
+<span class="bucket__col" data-kid="1-1-2-3-4-2-4-3" data-name="stacked bar column"><span aria-hidden="true" class="seg--g" data-kid="1-1-2-3-4-2-4-3-1" data-name="gift-funded bar segment"></span><span aria-hidden="true" class="seg--c" data-kid="1-1-2-3-4-2-4-3-2" data-name="credit-funded bar segment"></span></span>
+<span class="bucket__d" data-kid="1-1-2-3-4-2-4-4" data-name="week range axis label">28 Oct–3 Nov</span>
+</div>
+</div>
+</div>
+</section>
+<section aria-labelledby="buy-h" class="section" data-kid="1-1-2-4" data-name="purchases section">
+<div class="shead" data-kid="1-1-2-4-1" data-name="purchases section header">
+<h2 data-kid="1-1-2-4-1-1" data-name="purchases section title" id="buy-h">Purchases</h2>
+<a class="tlink" data-kid="1-1-2-4-1-2" data-name="all purchases link" href="#" style="margin-left:auto">All purchases</a>
+</div>
+<table data-kid="1-1-2-4-2" data-name="purchases ledger table">
+<thead data-kid="1-1-2-4-2-1" data-name="ledger table head">
+<tr data-kid="1-1-2-4-2-1-1" data-name="header row">
+<th data-kid="1-1-2-4-2-1-1-1" data-name="date column header" scope="col">Date</th>
+<th data-kid="1-1-2-4-2-1-1-2" data-name="amount column header" scope="col">Amount</th>
+<th class="r" data-kid="1-1-2-4-2-1-1-3" data-name="credits column header" scope="col">Credits</th>
+<th data-kid="1-1-2-4-2-1-1-4" data-name="pack remaining column header" scope="col">Left in pack</th>
+<th data-kid="1-1-2-4-2-1-1-5" data-name="receipt column header" scope="col">Receipt</th>
+</tr>
+</thead>
+<tbody data-kid="1-1-2-4-2-2" data-name="ledger table body">
+<tr data-kid="1-1-2-4-2-2-1" data-name="first purchase row">
+<td class="n" data-kid="1-1-2-4-2-2-1-1" data-name="purchase date cell">21 October 2026</td>
+<td class="n" data-kid="1-1-2-4-2-2-1-2" data-name="purchase amount and card cell">NZ$32.00<span class="meta" data-kid="1-1-2-4-2-2-1-2-1" data-name="card method meta">Visa ···· 4242</span></td>
+<td class="n r" data-kid="1-1-2-4-2-2-1-3" data-name="credits purchased count cell">120</td>
+<td data-kid="1-1-2-4-2-2-1-4" data-name="pack remaining cell"><span class="pack" data-kid="1-1-2-4-2-2-1-4-1" data-name="pack remaining meter"><span class="pack__m" data-kid="1-1-2-4-2-2-1-4-1-1" data-name="full pack meter track" style="--left:100%"><i data-kid="1-1-2-4-2-2-1-4-1-1-1" data-name="pack meter fill"></i></span><span class="n" data-kid="1-1-2-4-2-2-1-4-1-2" data-name="remaining credits count">120</span></span></td>
+<td class="r" data-kid="1-1-2-4-2-2-1-5" data-name="receipt link cell"><a class="tlink" data-kid="1-1-2-4-2-2-1-5-1" data-name="receipt download link" href="#">Receipt</a></td>
+</tr>
+<tr data-kid="1-1-2-4-2-2-2" data-name="second purchase row">
+<td class="n" data-kid="1-1-2-4-2-2-2-1" data-name="purchase date cell">2 October 2026</td>
+<td class="n" data-kid="1-1-2-4-2-2-2-2" data-name="purchase amount and card cell">NZ$16.00<span class="meta" data-kid="1-1-2-4-2-2-2-2-1" data-name="card method meta">Visa ···· 4242</span></td>
+<td class="n r" data-kid="1-1-2-4-2-2-2-3" data-name="credits purchased count cell">50</td>
+<td data-kid="1-1-2-4-2-2-2-4" data-name="pack remaining cell"><span class="pack" data-kid="1-1-2-4-2-2-2-4-1" data-name="partially used pack meter"><span class="pack__m" data-kid="1-1-2-4-2-2-2-4-1-1" data-name="pack meter track" style="--left:46%"><i data-kid="1-1-2-4-2-2-2-4-1-1-1" data-name="pack meter fill"></i></span><span class="n" data-kid="1-1-2-4-2-2-2-4-1-2" data-name="remaining credits count">23</span></span></td>
+<td class="r" data-kid="1-1-2-4-2-2-2-5" data-name="receipt link cell"><a class="tlink" data-kid="1-1-2-4-2-2-2-5-1" data-name="receipt download link" href="#">Receipt</a></td>
+</tr>
+<tr data-kid="1-1-2-4-2-2-3" data-name="third purchase row">
+<td class="n" data-kid="1-1-2-4-2-2-3-1" data-name="purchase date cell">12 September 2026</td>
+<td class="n" data-kid="1-1-2-4-2-2-3-2" data-name="purchase amount and card cell">NZ$8.00<span class="meta" data-kid="1-1-2-4-2-2-3-2-1" data-name="card method meta">Visa ···· 4242</span></td>
+<td class="n r" data-kid="1-1-2-4-2-2-3-3" data-name="credits purchased count cell">20</td>
+<td data-kid="1-1-2-4-2-2-3-4" data-name="pack remaining cell"><span class="pack" data-kid="1-1-2-4-2-2-3-4-1" data-name="exhausted pack meter"><span class="pack__m" data-kid="1-1-2-4-2-2-3-4-1-1" data-name="empty pack meter track" style="--left:0%"><i data-kid="1-1-2-4-2-2-3-4-1-1-1" data-name="pack meter fill"></i></span><span class="n" data-kid="1-1-2-4-2-2-3-4-1-2" data-name="remaining credits count">0</span></span></td>
+<td class="r" data-kid="1-1-2-4-2-2-3-5" data-name="receipt link cell"><a class="tlink" data-kid="1-1-2-4-2-2-3-5-1" data-name="receipt download link" href="#">Receipt</a></td>
+</tr>
+</tbody>
+</table>
+<p class="foot" data-kid="1-1-2-4-3" data-name="purchases footer totals">3 purchases · NZ$56.00 · 190 Credits</p>
+</section>
+</main>
+</div>
+<p class="key" data-kid="1-2" data-name="typography key legend">
+<span data-kid="1-2-1" data-name="wordmark font key entry">wordmark <b data-kid="1-2-1-1" data-name="Georgia font name">Georgia 700</b></span>
+<span data-kid="1-2-2" data-name="nav and buttons font key entry">nav and buttons <b data-kid="1-2-2-1" data-name="System UI font name">System UI</b></span>
+<span data-kid="1-2-3" data-name="balance and axis font key entry">balance, counts, axis <b data-kid="1-2-3-1" data-name="Mono font name">Mono</b></span>
+<span data-kid="1-2-4" data-name="amounts and dates font key entry">amounts, dates, foot total <b data-kid="1-2-4-1" data-name="Mono font name">Mono</b></span>
+<span data-kid="1-2-5" data-name="labels and notes font key entry">labels and notes <b data-kid="1-2-5-1" data-name="System UI font name">System UI</b></span>
+</p>
+</div>
+</div>
+</body></html>

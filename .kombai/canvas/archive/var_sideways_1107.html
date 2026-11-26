@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html><head>
+  <meta charset="utf-8">
+  <meta name="kombai-design-canvas" content="true">
+  
+  
+  
+  
+  
+  
+  <style>html, body { margin: 0; padding: 0; } #root { display: contents; }</style>
+</head><body>
+  <div id="root"><style>
+:root{
+  color-scheme: light dark;
+  --background: light-dark(hsl(38 42% 96%), hsl(30 12% 8%));
+  --surface-2: light-dark(hsl(36 34% 93%), hsl(30 9% 15%));
+  --ink: light-dark(hsl(28 24% 15%), hsl(36 28% 93%));
+  --ink-muted: light-dark(hsl(30 9% 38%), hsl(30 8% 66%));
+  --ink-faint: light-dark(hsl(30 7% 50%), hsl(30 7% 54%));
+  --rule: light-dark(hsl(34 24% 85%), hsl(30 8% 21%));
+  --rule-hair: light-dark(hsl(34 22% 90%), hsl(30 8% 16%));
+  --rule-strong: light-dark(hsl(32 18% 70%), hsl(30 8% 30%));
+  --accent: light-dark(hsl(30 74% 37%), hsl(34 82% 60%));
+  --gift: light-dark(hsl(168 18% 43%), hsl(168 24% 54%));
+  --gift-ink: light-dark(hsl(168 18% 39%), hsl(168 24% 54%));
+  --credit-ink: light-dark(hsl(30 74% 36%), hsl(34 82% 60%));
+  --sans: ui-sans-serif, system-ui, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --serif: ui-serif, Georgia, "Times New Roman", serif;
+}
+body{
+  margin:0;background:var(--background);color:var(--ink);
+  font-family:var(--sans);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased;
+}
+p,ul{margin:0}
+ul{padding:0;list-style:none}
+.page{max-width:1040px;margin:0 auto;padding:40px 24px 48px;box-sizing:border-box}
+.head h1{margin:0;font-size:22px;font-weight:600;letter-spacing:-.015em}
+.periods{font-family:var(--serif);font-size:13px;color:var(--ink-faint);margin-top:4px}
+.block{margin-top:34px;padding-top:20px;border-top:1px solid var(--rule)}
+.block h2{margin:0;font-size:13.5px;font-weight:600}
+.block__note{margin-top:6px;font-size:12.5px;color:var(--ink-muted);max-width:70ch}
+
+/* ---------------- weight ladder ---------------- */
+.wgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:18px;max-width:520px}
+.wcell{border:1px solid var(--rule-hair);border-radius:8px;padding:10px 12px 8px;background:var(--surface-2)}
+.wcell b{display:block;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:11px;letter-spacing:-.02em;color:var(--gift-ink)}
+.wcell i{display:block;margin-top:6px;font-style:normal;font-size:10px;color:var(--ink-faint);letter-spacing:.04em}
+.wbig{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:12px;max-width:520px}
+.wbig b{display:block;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:40px;line-height:1.05;letter-spacing:-.03em;color:var(--ink)}
+
+/* ---------------- figure placement ---------------- */
+.legend{display:flex;align-items:center;gap:18px;font-size:12.5px;color:var(--ink-muted);flex-wrap:wrap;margin-top:12px}
+.legend li{display:inline-flex;align-items:center;gap:7px}
+.sw{width:11px;height:11px;border-radius:1px;display:inline-block}
+.sw--gift{background:var(--gift)}
+.sw--credit{background:var(--accent)}
+.sw--prev{
+  background:linear-gradient(to top,
+    color-mix(in oklab,var(--gift) 45%,var(--background)) 0 calc(50% - 1px),
+    var(--background) calc(50% - 1px) calc(50% + 1px),
+    color-mix(in oklab,var(--accent) 45%,var(--background)) calc(50% + 1px) 100%);
+  box-shadow:inset 0 0 0 1px var(--ink-faint);
+}
+.sw--start{width:2px;height:12px;background:var(--ink-faint)}
+
+.card{
+  width:390px;max-width:100%;margin-top:18px;padding:16px;box-sizing:border-box;
+  border:1px solid var(--rule-strong);border-radius:10px;background:var(--background);
+}
+.card h3{margin:0;font-size:15px;font-weight:600}
+.card .periods{font-size:12px}
+.card .legend{gap:12px;margin-top:10px;font-size:11.5px}
+
+.cap{margin-top:10px;font-size:12px;color:var(--ink-muted);max-width:70ch}
+
+.strip{
+  --c-gift:var(--gift);
+  --c-credit:var(--accent);
+  --split:calc(var(--n-gift) / var(--n-total) * 100%);
+  display:block;
+  block-size:11px;
+  inline-size:calc(var(--n-total) / var(--max) * 100%);
+  background-image:linear-gradient(to right,
+    var(--c-gift) 0 var(--split),
+    var(--background) var(--split) calc(var(--split) + 2px),
+    var(--c-credit) calc(var(--split) + 2px) 100%);
+  background-repeat:no-repeat;
+}
+.strip--prev{
+  --c-gift:color-mix(in oklab,var(--gift) 45%,var(--background));
+  --c-credit:color-mix(in oklab,var(--accent) 45%,var(--background));
+  --split:calc(var(--p-gift) / var(--p-total) * 100%);
+  block-size:9px;
+  inline-size:calc(var(--p-total) / var(--max) * 100%);
+  box-shadow:inset 0 0 0 1px var(--ink-faint);
+}
+
+/* variant A — figures hug the bar, no room for a word */
+.lanes{margin-top:12px}
+.lane{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:10px;row-gap:2px;padding:11px 0;border-block-end:1px solid var(--rule-hair)}
+.lane:last-child{border-block-end:0}
+.lane__date{font-family:var(--serif);font-size:12.5px;color:var(--ink)}
+.lane__delta{font-family:var(--mono);font-size:12px;color:var(--ink-muted);text-align:right;font-weight:600}
+.lane__bars{grid-column:1 / -1;display:grid;grid-template-columns:26px minmax(0,1fr);column-gap:8px;row-gap:1px}
+.lane__tag{grid-column:1;align-self:center;font-size:11px;color:var(--ink-faint)}
+.lane__bars .strip{grid-column:2;align-self:center}
+.lane__vals{
+  grid-column:2;display:flex;justify-content:space-between;gap:4px;
+  inline-size:calc(var(--n-total) / var(--max) * 100%);
+  font-family:var(--mono);font-size:11px;font-variant-numeric:tabular-nums;font-weight:600;
+}
+.lane__vals[data-shape='gift'],
+.lane__vals[data-shape='credit']{justify-content:flex-start}
+.lane__vals--prev{inline-size:calc(var(--p-total) / var(--max) * 100%)}
+.v--gift{color:var(--gift-ink)}
+.v--credit{color:var(--credit-ink)}
+
+/* variant B — a fixed rail, so the figures stop depending on bar width */
+.lane2{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 88px;
+  column-gap:12px;row-gap:5px;
+  padding:11px 0;border-block-end:1px solid var(--rule-hair);align-items:center;
+}
+.lane2:last-child{border-block-end:0}
+.lane2__head{display:flex;align-items:baseline;gap:8px}
+.lane2__date{font-family:var(--serif);font-size:12.5px;color:var(--ink)}
+.lane2__delta{margin-inline-start:auto;font-family:var(--mono);font-size:11px;color:var(--ink-muted);font-weight:600}
+.lane2__bars{display:grid;row-gap:4px}
+.rail{
+  grid-column:2;grid-row:1 / span 2;align-self:center;
+  display:grid;grid-template-columns:24px 27px 25px;column-gap:6px;row-gap:2px;
+  font-size:11px;
+}
+.rail--head{grid-row:1;align-self:start}
+.lane2--head{padding-block:2px 4px;border-block-end:1px solid var(--rule-hair)}
+.lane2--head .rail__f{font-family:var(--sans);font-size:10px;font-weight:400;color:var(--ink-faint);letter-spacing:.03em}
+.rail__k{color:var(--ink-faint);font-size:10.5px}
+.rail__f{
+  font-family:var(--mono);font-variant-numeric:tabular-nums;
+  font-size:12px;font-weight:600;text-align:right;
+}
+.rail__f--prev{color:var(--ink-muted)}
+.rail--head .rail__f{font-family:var(--sans);font-size:10px;font-weight:400;color:var(--ink-faint);letter-spacing:.03em}
+.rail__dash{color:var(--ink-faint);text-align:right;font-family:var(--mono);font-size:12px}
+</style>
+
+<div class="page">
+  <div class="head">
+    <h1>Sideways: the weight of a number, and where it sits</h1>
+    <p class="periods">8 marks, 390px. The same four weeks with the figures in two places.</p>
+  </div>
+
+  <section class="block">
+    <h2>Weight, and whether the face has one</h2>
+    <p class="block__note">A bare numeral carries the value by itself, so it wants stroke weight. The catch is the stack: system monos often ship no bold face, so 700 is synthesised. At 11px that smears strokes and closes the counters of 6, 8 and 9. The top row is the numeral at the size it is used; the bottom row is the same face at 40px, where a fake bold is obvious.</p>
+    <ul class="wgrid">
+      <li class="wcell"><b style="font-weight:400">2 &nbsp; 6</b><i>400</i></li>
+      <li class="wcell"><b style="font-weight:500">2 &nbsp; 6</b><i>500</i></li>
+      <li class="wcell"><b style="font-weight:600">2 &nbsp; 6</b><i>600</i></li>
+      <li class="wcell"><b style="font-weight:700">2 &nbsp; 6</b><i>700</i></li>
+    </ul>
+    <ul class="wbig">
+      <li><b style="font-weight:400">689</b></li>
+      <li><b style="font-weight:500">689</b></li>
+      <li><b style="font-weight:600">689</b></li>
+      <li><b style="font-weight:700">689</b></li>
+    </ul>
+  </section>
+
+  <section class="block">
+    <h2>Variant A — figures hug the bar</h2>
+    <p class="block__note">What the sheet does now. The figures sit inside the bar's own width, so they inherit its limits: no room for a word, and two numbers only fit when the bar is wide enough to separate them. Weight alone has to do the work of saying "this is a value".</p>
+    <div class="card">
+      <h3>Cooks</h3>
+      <p class="periods">7 October – 3 November 2026</p>
+      <ul class="legend">
+        <li><span class="sw sw--gift"></span>Gift</li>
+        <li><span class="sw sw--credit"></span>Credit</li>
+        <li><span class="sw sw--prev"></span>Previous</li>
+      </ul>
+      <ul class="lanes" style="--max:10">
+        <li class="lane">
+          <span class="lane__date">7–13 Oct</span>
+          <span class="lane__delta">—</span>
+          <span class="lane__bars">
+            <span class="lane__tag">Now</span>
+            <span class="strip" style="--n-gift:2;--n-total:8"></span>
+            <span class="lane__vals" data-shape="both" style="--n-total:8"><span class="v--gift">2</span><span class="v--credit">6</span></span>
+          </span>
+        </li>
+        <li class="lane">
+          <span class="lane__date">14–20 Oct</span>
+          <span class="lane__delta">+1</span>
+          <span class="lane__bars">
+            <span class="lane__tag">Now</span>
+            <span class="strip" style="--n-gift:1;--n-total:9"></span>
+            <span class="lane__vals" data-shape="both" style="--n-total:9"><span class="v--gift">1</span><span class="v--credit">8</span></span>
+          </span>
+          <span class="lane__bars">
+            <span class="lane__tag">Prev</span>
+            <span class="strip strip--prev" style="--p-gift:2;--p-total:8"></span>
+            <span class="lane__vals lane__vals--prev" data-shape="both" style="--p-total:8"><span class="v--gift">2</span><span class="v--credit">6</span></span>
+          </span>
+        </li>
+        <li class="lane">
+          <span class="lane__date">21–27 Oct</span>
+          <span class="lane__delta">−2</span>
+          <span class="lane__bars">
+            <span class="lane__tag">Now</span>
+            <span class="strip" style="--n-gift:2;--n-total:7"></span>
+            <span class="lane__vals" data-shape="both" style="--n-total:7"><span class="v--gift">2</span><span class="v--credit">5</span></span>
+          </span>
+          <span class="lane__bars">
+            <span class="lane__tag">Prev</span>
+            <span class="strip strip--prev" style="--p-gift:2;--p-total:9"></span>
+            <span class="lane__vals lane__vals--prev" data-shape="both" style="--p-total:9"><span class="v--gift">2</span><span class="v--credit">7</span></span>
+          </span>
+        </li>
+        <li class="lane">
+          <span class="lane__date">28 Oct–3 Nov</span>
+          <span class="lane__delta">+2</span>
+          <span class="lane__bars">
+            <span class="lane__tag">Now</span>
+            <span class="strip" style="--n-gift:1;--n-total:9"></span>
+            <span class="lane__vals" data-shape="both" style="--n-total:9"><span class="v--gift">1</span><span class="v--credit">8</span></span>
+          </span>
+          <span class="lane__bars">
+            <span class="lane__tag">Prev</span>
+            <span class="strip strip--prev" style="--p-gift:2;--p-total:7"></span>
+            <span class="lane__vals lane__vals--prev" data-shape="both" style="--p-total:7"><span class="v--gift">2</span><span class="v--credit">5</span></span>
+          </span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Variant B — a rail of its own</h2>
+    <p class="block__note">The figures leave the bar and take a fixed 88px column, right-aligned, so they line up down the whole list and there is room for the word. "Free" and "paid" label the rows once each, and the Now / Prev headings cover both periods, which is what removes "just show the number". The bar keeps whatever width is left, and previous-period figures are washed because the row label already says which figure is which.</p>
+    <div class="card">
+      <h3>Cooks</h3>
+      <p class="periods">7 October – 3 November 2026</p>
+      <ul class="legend">
+        <li><span class="sw sw--gift"></span>Gift</li>
+        <li><span class="sw sw--credit"></span>Credit</li>
+        <li><span class="sw sw--prev"></span>Previous</li>
+      </ul>
+      <ul class="lanes" style="--max:10">
+        <li class="lane2 lane2--head">
+          <span class="lane2__date"></span>
+          <span class="rail rail--head"><span class="rail__k"></span><span class="rail__f">Now</span><span class="rail__f">Prev</span></span>
+        </li>
+        <li class="lane2">
+          <span class="lane2__head">
+            <span class="lane2__date">7–13 Oct</span>
+            <span class="lane2__delta">—</span>
+          </span>
+          <span class="lane2__bars">
+            <span class="strip" style="--n-gift:2;--n-total:8"></span>
+          </span>
+          <span class="rail">
+            <span class="rail__k">free</span><span class="rail__f v--gift">2</span><span class="rail__dash">–</span>
+            <span class="rail__k">paid</span><span class="rail__f v--credit">6</span><span class="rail__dash">–</span>
+          </span>
+        </li>
+        <li class="lane2">
+          <span class="lane2__head">
+            <span class="lane2__date">14–20 Oct</span>
+            <span class="lane2__delta">+1</span>
+          </span>
+          <span class="lane2__bars">
+            <span class="strip" style="--n-gift:1;--n-total:9"></span>
+            <span class="strip strip--prev" style="--p-gift:2;--p-total:8"></span>
+          </span>
+          <span class="rail">
+            <span class="rail__k">free</span><span class="rail__f v--gift">1</span><span class="rail__f rail__f--prev">2</span>
+            <span class="rail__k">paid</span><span class="rail__f v--credit">8</span><span class="rail__f rail__f--prev">6</span>
+          </span>
+        </li>
+        <li class="lane2">
+          <span class="lane2__head">
+            <span class="lane2__date">21–27 Oct</span>
+            <span class="lane2__delta">−2</span>
+          </span>
+          <span class="lane2__bars">
+            <span class="strip" style="--n-gift:2;--n-total:7"></span>
+            <span class="strip strip--prev" style="--p-gift:2;--p-total:9"></span>
+          </span>
+          <span class="rail">
+            <span class="rail__k">free</span><span class="rail__f v--gift">2</span><span class="rail__f rail__f--prev">2</span>
+            <span class="rail__k">paid</span><span class="rail__f v--credit">5</span><span class="rail__f rail__f--prev">7</span>
+          </span>
+        </li>
+        <li class="lane2">
+          <span class="lane2__head">
+            <span class="lane2__date">28 Oct–3 Nov</span>
+            <span class="lane2__delta">+2</span>
+          </span>
+          <span class="lane2__bars">
+            <span class="strip" style="--n-gift:1;--n-total:9"></span>
+            <span class="strip strip--prev" style="--p-gift:2;--p-total:7"></span>
+          </span>
+          <span class="rail">
+            <span class="rail__k">free</span><span class="rail__f v--gift">1</span><span class="rail__f rail__f--prev">2</span>
+            <span class="rail__k">paid</span><span class="rail__f v--credit">8</span><span class="rail__f rail__f--prev">5</span>
+          </span>
+        </li>
+      </ul>
+    </div>
+    <p class="cap">What the rail costs: 88px off every bar. At 390px the bar's usable length falls from about 250px to about 160px, so a difference of one cook is 6% of the bar instead of 10%. That is the trade — legible figures against a shorter scale.</p>
+  </section>
+
+  <section class="block">
+    <h2>What this changes</h2>
+    <p class="block__note">The figures stop being part of the mark and become a column of the list. That is a different object from a chart with labels: it is a table that happens to draw a bar, which is defensible for this data — the pairs are the point, and there are never more than 24 of them.</p>
+  </section>
+</div>
+</div>
+</body></html>
