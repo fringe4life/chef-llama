@@ -10,7 +10,7 @@ Default is **deny**: `private, no-store`. The **only** way to cache is `publicCa
 
 - Throws unless the route is under `(static)` or `(site)` and the method is GET/HEAD.
 - Integers only. `browser ≤ 3600`, `edge ≤ 1 year`, `swr ≤ 7 days`, `browser ≤ edge`.
-- 1–10 tags matching `^(popular|popular-top|popular-[a-z0-9-]+|recipe-[0-9a-hjkmnp-tv-z]{26})$` (`CacheTag` template-literal type).
+- 1–10 tags matching `^(recent|try-me|popular|popular-top|popular-[a-z0-9-]+|recipe-[0-9a-hjkmnp-tv-z]{26})$` (`CacheTag` template-literal type). `popular*` is for **v2** Popular ingredients only.
 - Emits `Cache-Control: public, max-age=B`, `Cloudflare-CDN-Cache-Control: max-age=E[, stale-while-revalidate=S]`, `Cache-Tag`. **Never** `s-maxage`.
 
 Hook: if the response did not go through `publicCache` → `private, no-store`, strip CDN / Cache-Tag headers. Public routes: `Set-Cookie` or `Vary: Cookie` / `Authorization` is a violation (dev throws; prod strips, no-store, log `[cache-guard]`).
@@ -21,8 +21,8 @@ Do **not**:
 - import auth / `getSession` from a public layout or page (`chef/public-route-purity`)
 - ship `csr=true` on `(static)` / `(site)` (`chef/public-csr-false`)
 - render theme from cookies on the server for public pages (blocking inline script in `app.html` only)
-- rebuild Popular on save; the Jobs Worker **cron** snapshots KV
-- cache unknown `/popular/[type]` 404s
+- rebuild Popular on save or run a Popular ranking cron in v1 (v1 public list is **Recent**; brochure seeds are **Try me**; counted Popular ingredients are **v2** — see `docs/product.md`, `docs/v2.md`)
+- cache unknown `/popular/[type]` 404s (v2 only; no `/popular` in v1)
 - cache recipe 301s or 404s (Workers Cache heuristic 301 1200s / 404 180s per typo path)
 - import `#lib/server/*` from `src/params.ts` (matchers run in the browser)
 - add ogygia or `OGYGIA_SECRET`
@@ -39,14 +39,15 @@ Topic files in `docs/` are the **only** place decisions live. Each has a **Decid
 
 | Topic | File |
 |---|---|
-| Product: job, routes, Diet, Popular rules, pending, errors, icons | `docs/product.md` |
-| Vocabulary (Cook, Recipe, Diet, Staples, Credits…) | `docs/GLOSSARY.md` |
+| Product: job, routes, Diet, Recent, Try me, onboarding, publish/privacy, moderation approach, pending, errors; icons (Kombai — no separate topic file; see product + theme) | `docs/product.md` |
+| Vocabulary (Cook, Recipe, Diet, Staples, Credits, Recent, Try me, Onboarding…) | `docs/GLOSSARY.md` |
 | Auth: Better Auth, Google + email OTP, the `redirectTo` post-login redirect, sessions, guest Generate, mail | `docs/auth.md` |
 | Data: ULID ids, recipe slugs, Drizzle, D1, DOs, KV, Queues, Vectorize, write path | `docs/data.md` |
 | AI Generate: model, prompt, Recipe JSON, chips, cancel | `docs/ai.md` |
 | Payments: Stripe packs, Credits, free-cook pool and status, 00:00 UTC reset, tax, topup | `docs/payments.md` |
 | Caching, 0-JS public pages, Save on the cached recipe page | `docs/caching.md` |
-| SEO: indexing and `noindex`, Popular purge, head tags and Open Graph (PNG `og:image`), sitemaps, robots.txt, AI crawlers, llms.txt | `docs/seo.md` |
+| SEO: indexing and `noindex`, sitemaps, head tags and Open Graph (PNG `og:image`), robots.txt, AI crawlers, llms.txt | `docs/seo.md` |
+| Ads (exploration only — not a decision; recommendation none yet) | `docs/ads.md` |
 | Security: rate limits, WAF, zone hardening, session IP, secrets + Varlock | `docs/security.md` |
 | Theme: shadcn-style oklch tokens, light/dark, browser floor, typography, z-index, native overlays, design loop | `docs/theme.md` |
 | Usage chart on `/account`: sideways CSS bars, full spec | `docs/chart.md` |

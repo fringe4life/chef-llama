@@ -5,6 +5,7 @@
 ## Decided
 - **Observability v1**: Workers Paid **Logs + Issues + Analytics Engine** `writeDataPoint` per Generate. **No Sentry in v1.** No `@effect/opentelemetry` NodeSdk on workerd.
 - **Workers are not always-on**: rely on cache + a small isolate, not min-instances or cron pings. No cron ping of `/`.
+- **v1 public list is Recent** (date-sorted published recipes, short cache, **no cron**, no ranking). Brochure pantry seeds are **Try me** (static). Counted **Popular ingredients** (canonical IDs, pairs/triples, KV snapshot, cache/sitemap refresh) are **v2** ([v2.md](./v2.md); product: [product.md](./product.md#recent)). **No weekly Popular cron in v1.** Purge route for account deletion / publish / report-hide remains ([caching.md](./caching.md#cache-purge-route)).
 - **Request billing with Workers Cache on:** every request to the Site Worker is billed, including cache hits, static-asset requests and service-binding calls; cache storage is free. Workers Paid includes 10M requests/month, then US$0.30 per million. Details: [caching.md](./caching.md#decided).
 - **Production exceptions**: Cloudflare Workers Issues → Cursor Automation → draft fix PRs. An **event** path, not a fourth scheduled hunt. Don't poll Logs from GitHub Actions.
 - **Three scheduled Cursor Automations** (the cap is 3). Premium is required. Spend cap. PR creation off unless a run is explicitly allowed to open one draft digest. Never the cook model or Workers AI (Neurons are account-wide and would eat the gift). Details and cost: [factory.md](./factory.md).
@@ -38,6 +39,7 @@
 
 ## Open
 - **Domain spelling check:** confirm the exact registered spelling in the Cloudflare dashboard before anything is wired up (Custom Domains, Access, WAF, DNS/mail records, OAuth clients, Stripe webhook). The project Gmail's Cloudflare verification email (14 Nov) said `cheflamma.nz`.
+- Observability for **v2** Popular ingredients only when that ranking ships; v1 Recent needs ordinary request/D1 miss metrics, not a ranking job.
 - **Architecture hunt cadence:** fortnightly or weekly.
 - **Logging still open:** Coinnich's explicit yes on the whole C15 design beyond the decided pieces above; the C16 edge list (where `makeLoggerLive` is provided); the user-hash secret name; whether to log a short prompt hash or length instead of any prompt text; whether `Website.SvelteKit` passes `observability` through, and whether `cf-ray` is on incoming requests (check on the first preview).
 - **Recommendations** (not decisions): `Effect.withLogSpan` durations now (free on the same log object); real traces only on `pr-{n}` previews when chasing performance, via Alchemy `Cloudflare.Telemetry()` (needs compat date ≥ 2026-07-28) or `observability.traces` ([Workers tracing](https://developers.cloudflare.com/workers/observability/traces/), updated 12 Nov 2026; early beta; counts toward the same GB allowance from 1 Dec). Leave traces off on prod by default.
