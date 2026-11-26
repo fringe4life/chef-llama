@@ -56,8 +56,6 @@ const CATEGORIES = [
 /** Closed v1 Diet flags (product.md): original three + former parked keto/halal/paleo. */
 const DIET_FLAGS = ['vegan', 'vegetarian', 'gluten_free', 'keto', 'halal', 'paleo']
 
-/** @param {string} a @param {string} b */
-const cmpStr = (a, b) => String(a).localeCompare(String(b))
 
 /** High-carb / starch / sugar — keto fail-closed false (ingredient heuristic, not macros). */
 const KETO_FALSE = new Set([
@@ -503,15 +501,15 @@ function item(spec) {
 		name,
 		aliases: [
 			...new Set(aliases.filter((a) => a && a.toLowerCase() !== name.toLowerCase())),
-		].sort(cmpStr),
+		].sort((a, b) => String(a).localeCompare(String(b))),
 		category,
-		allergens: [...allergens].sort(cmpStr),
+		allergens: [...allergens].sort((a, b) => String(a).localeCompare(String(b))),
 		allergen_uncertain,
 		diet_uncertain: diet_uncertain_unique.sort(
-			(a, b) => cmpStr(a.flag, b.flag) || cmpStr(a.note, b.note),
+			(a, b) => String(a.flag).localeCompare(String(b.flag)) || String(a.note).localeCompare(String(b.note)),
 		),
 		diets: { vegan, vegetarian, gluten_free, keto, halal, paleo },
-		sources: [...sources].sort(cmpStr),
+		sources: [...sources].sort((a, b) => String(a).localeCompare(String(b))),
 	}
 }
 
@@ -2082,9 +2080,9 @@ function build() {
 			})
 		}
 	}
-	for (const [label, slugs] of [...aliasMap.entries()].sort((a, b) => cmpStr(a[0], b[0]))) {
+	for (const [label, slugs] of [...aliasMap.entries()].sort((a, b) => String(a[0]).localeCompare(String(b[0])))) {
 		if (slugs.size > 1) {
-			const ordered = [...slugs].sort(cmpStr)
+			const ordered = [...slugs].sort((a, b) => String(a).localeCompare(String(b)))
 			reviews.push({
 				slug: ordered.join(','),
 				kind: 'alias_clash',

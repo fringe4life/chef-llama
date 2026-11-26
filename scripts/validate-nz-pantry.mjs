@@ -17,8 +17,6 @@ const ALLERGENS = new Set(doc.allergen_codes)
 const CATEGORIES = new Set(doc.categories)
 const DIETS = ['vegan', 'vegetarian', 'gluten_free', 'keto', 'halal', 'paleo']
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
-const cmpStr = (a, b) => String(a).localeCompare(String(b))
-
 const errors = []
 
 if (doc.version !== 1) errors.push('version must be 1')
@@ -102,7 +100,8 @@ for (const [idx, row] of (doc.ingredients ?? []).entries()) {
 
 for (const [label, set] of labels) {
 	if (set.size > 1) {
-		errors.push(`alias clash: '${label}' → ${[...set].sort(cmpStr).join(', ')}`)
+		const ordered = [...set].sort((a, b) => String(a).localeCompare(String(b)))
+		errors.push(`alias clash: '${label}' → ${ordered.join(', ')}`)
 	}
 }
 
