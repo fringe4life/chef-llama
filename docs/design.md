@@ -159,6 +159,24 @@ Do not polyfill custom dropdowns. Focus: `outline: 2px solid var(--ring); outlin
 
 ---
 
+## Selection controls
+
+One shell serves the Diet step's **Dietary requirements** and the devices field: eight marks, a name, a pocket, one wash. They differ only in what sits in the pocket. Board: `onboarding.canvas#var_9eb82776e647` (`Tile: one shell, tick and rank`). `Diet D` and `Diet D phone` on the same canvas and `Devices E` on `devices.canvas` carry it; the eight device glyphs and their states are [icons.md](./icons.md#the-eight-cooking-methods).
+
+- **A `<label>` around a visually hidden `<input type="checkbox">`.** One real input per tile, so the field is a `role="group"` of checkboxes with no ARIA invented on top. The canvases read state from `:has(input:checked)`; in StyleX the same state arrives as a composed style on the label, because a StyleX style selects only the element it is applied to. Six states, all the shell's: rest, hover, focus-visible, filling, checked, at limit. No indication adds one.
+- **One box, one wash.** `--card` on a hairline `--border`, `--radius-sm` 4px, `min-block-size: 92px` (96 at two across), `--space-3 --space-2` padding, content centred. The wash is a single `::before` filled `--primary`: `clip-path: circle(0% at var(--fill-x) var(--fill-y))` at rest, `circle(150% …)` checked, arriving on `--ease-arrive` at `--duration-base` and leaving on `--ease-depart` at `--duration-quick`.
+- **The origin is the pocket, in both fields.** `--slot: 20px` at `--slot-inset: var(--space-2)` gives `--fill-x: calc(100% - var(--slot-inset) - var(--slot) / 2)` and the matching `--fill-y`, so moving the slot moves the fill and no second number exists to drift. From a corner the wash needs **150%**: at eight across the far corner is 141 px away against a 117 px reference radius, so the 110% that sufficed from the centre of the mark would stop 12 px short.
+- **The pocket is drawn at rest, for the tick as well as the rank.** A keyline (`--input` 74% toward `--foreground`) with `--surface` inside, clipped to the same slightly-off polygon as the chip's. That empty slot is what says where the mark will land; without it the tick appears from nothing and the two fields stop reading as one control.
+- **Checked is a fill, and each indication answers differently.** The tick is 11 px with no frame of its own: the pocket clears and the tick draws over it (`stroke-dasharray: 17`, `--ease-arrive` at `--duration-quick`, delayed `--duration-tick`). The rank inverts the pocket to `--primary-foreground` on `--ease-squish` and seals the numeral in on the same delayed `--ease-arrive`. Over the fill, text is `--primary-foreground` and the name goes 700.
+- **The numeral is data.** It is the index of the app's own selected array, not a CSS counter over the DOM, because a Cook may pick in any order and removing one closes the gap, so the numbers always run 1..n.
+- **The bank owns the cap and the order; a tile knows neither.** Diet passes no cap. The devices field caps at three, and the first is the primary method. At the cap the rest draw dashed with a cold mark ([icons.md](./icons.md#the-states-for-the-form-only)); whether a press there swaps rank 3 or does nothing is still open in that file, and the component forces neither.
+- **The count gives way, never the tile.** Eight across at ≥64 rem of the bank's own width, four at ≥30 rem, two below, as container queries on a wrapper — a container cannot query itself, so the wrapper carries `container-type` and the bank reflows inside it. A tile keeps its shape and its 96 px block size at two across, and the mark steps 40 → 48 rather than the tile shrinking.
+- **Paint is the shell's; the mark consumes it.** The shell publishes `--surface`, `--food`, `--leaf`, `--steam`, `--sw` and `--mark-size`; a mark declares no colour of its own, which is what lets sixteen glyphs share one shell with no per-glyph checked rules. Steam is a third layer of the mark, not a feature of the tile.
+- **The chip is the same idea at thumb size.** 32 px tall, a 14 px slot, the same pocket, the same tick draw, the same clear-on-check and the same 4 px corner; only the slot and the label placement differ. That is why the pocket is drawn on the tile too — the smaller version already promised it.
+- **Focus** is `outline: 2px solid var(--ring)` at `outline-offset: 2px`; **press** is `translateY(1px)` on `--ease-squish`; **hover** moves surface, border and pocket on `--ease-linear` at `--duration-tick`. Everything that travels collapses under `prefers-reduced-motion: reduce`; the colour change stays.
+
+---
+
 ## Visual direction
 
 One aesthetic: **working kitchen, not generative-AI purple.**
@@ -174,12 +192,19 @@ One aesthetic: **working kitchen, not generative-AI purple.**
 
 ## Local mock
 
-The mock is the canvases in `.kombai/canvas/` — `index`, `landing`, `account`, `chart`, `type`, split on 2026-11-17 from the single `chef-llama.canvas` that came over from the old `larder` workspace; `index.canvas` lists what each holds and which node ids the docs cite. **Fonts: system stacks only** ([theme.md](./theme.md#fonts)). **Not locked.**
+The mock is the canvases in `.kombai/canvas/` — `index`, `landing`, `account`, `chart`, `type`, split on 2026-11-17 from the single `chef-llama.canvas` that came over from the old `larder` workspace, plus `onboarding` (added 2026-11-23) for the Diet step and the [selection control](#selection-controls), and `devices` for the eight device marks with their states and motion. `index.canvas` lists the surface canvases and the node ids the docs cite; it does not carry `onboarding` or `devices` yet. **Fonts: system stacks only** ([theme.md](./theme.md#fonts)). **Not locked.**
 
 ---
 
 ## Implementation notes for the Svelte app (not done here)
 
 - Put tokens in `*.stylex.ts` `defineVars` with `--` keys, and the non-StyleX raw CSS in `src/lib/theme/tokens.css` ([theme.md](./theme.md#native-overlays)).
-- Components: `IngredientChip`, `RecipeCard`, `AccountMenu` wrapping native popover/dialog.
+- Components: `IngredientChip`, `RecipeCard`, `AccountMenu` wrapping native popover/dialog, and `SelectionTile` / `SelectionBank` for the two fields ([§ Selection controls](#selection-controls)).
+- The bank's reflow and the fill's origin are container queries and derived custom properties, neither of which StyleX can express against an ancestor, so they live in the raw-CSS companion beside the component ([theme.md](./theme.md#native-overlays)).
 - Do not introduce Radix/shadcn JS. Compatible **tokens only**.
+
+---
+
+## Open
+
+- **Whether the pocket carries a graphite underdrawing of the tick.** The chip was meant to hold a faint copy of the same path at about 18% ink, so a rest state reads as "a tick will be drawn here" rather than a plain box, with the ink tick tracing over it on check. Neither the chip nor the tile has that rule in its current CSS — the clear-on-check behaviour arrived without it. One decision covers both sizes, and the two must not diverge.
