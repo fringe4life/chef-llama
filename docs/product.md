@@ -10,7 +10,7 @@
 
 ### Job
 - Pantry (≥3 chips, max 16) → **one Recipe tonight**. Similar cards after it exists. Photo later. Solo Cook, about 1–4 people.
-- Constraints: Diet and allergies are **hard**; kcal and time are **targets**; servings 1–12, default 2; kcal stamped. Up to 2 Staples (water, salt, pepper, oil, butter) may be assumed; Cooks can **customise staples** (see [Onboarding](#onboarding)).
+- Constraints: Diet flags and the avoid list are **hard**; kcal and time are **targets**; servings 1–12, default 2; kcal stamped. Up to 2 Staples (water, salt, pepper, oil, butter) may be assumed; Cooks can **customise staples** (see [Onboarding](#onboarding)).
 
 ### Site vs App
 - The brochure Site is split from the App. Generate never lives on the brochure, and `/` has no generator and no chat.
@@ -30,7 +30,7 @@
 ### Recipe view
 - A Recipe has its own route; a sheet is the same route, narrow. It shows the recipe exactly as generated.
 - Servings scaling is **v2** (see [v2.md](./v2.md)).
-- **Public privacy:** a published recipe page shows the **recipe only** — never the Cook’s profile, Diet name/flags, allergies, or medical diets. `diet_id` stays internal for Generate / account history; it is not rendered on the public page. Details: [Publish and privacy](#publish-and-privacy).
+- **Public privacy:** a published recipe page shows the **recipe only** — never the Cook’s profile, Diet name/flags, avoid list, or medical diets. `diet_id` stays internal for Generate / account history; it is not rendered on the public page. Details: [Publish and privacy](#publish-and-privacy).
 
 ### Save
 - The recipe page always shows a **Save** button (never "Saved"). It is a remote `form()` that posts to `/saved`, works without JS, and sends a signed-out Cook to sign in and back to a "Save this recipe?" card on `/saved`. Details: [caching.md](./caching.md#save-on-the-cached-recipe-page-a-remote-form-that-posts-to-saved); redirect rules: [auth.md](./auth.md#post-login-redirect-redirectto).
@@ -44,7 +44,8 @@
 
 ### Diet
 - **Required** before the first Generate: completed via **`/onboarding`** (Diet #1).
-  - Fields: `name` (default Home); `flags[]` from the closed list vegan | vegetarian | gluten_free | keto | halal | paleo (hard, empty OK); allergy chips via the chip canonicalizer (hard, max 16, empty OK); optional `kcal` (target → `kcal_over`); `servings` 1–12, default 2; optional `max_minutes` (target, no overtime kind); **`skill`** (closed three-level picklist — see below); **`method`** and optional **`devices`** (see below). keto / halal / paleo were parked as later diets; they are **v1 flags** now (same closed list as the pantry seed).
+  - Fields: `name` (default Home); **hard flags** `vegan` | `vegetarian` (empty OK) — matched via pantry intrinsic composition; optional preference flags `gluten_free` | `keto` | `halal` | `paleo` are **not** per-item pantry tags (short rules for the AI + label disclaimer); **avoid list** (ingredient chips via the chip canonicalizer, hard, max 16, empty OK); optional `kcal` (target → `kcal_over`); `servings` 1–12, default 2; optional `max_minutes` (target, no overtime kind); **`skill`** (closed three-level picklist — see below); **`method`** and optional **`devices`** (see below).
+
 - **Skill level** is a v1 Diet field with **three levels**, plus a **this-run toggle** on `/pantry`. It steers the cook: technique choice, step detail, whether steps may run in parallel, and time estimates. Exact level labels are Open.
 - **Cooking method and devices** (v1 Diet fields; Valibot shape, also in [data.md](./data.md) / [ai.md](./ai.md)):
 
@@ -54,7 +55,8 @@
   ```
 
   Product intent: devices the Cook **owns** (from onboarding) constrain feasibility; a **primary** `method`, plus optionally a **second** device for that cook. The schema allows up to three entries in `devices`; v1 UI aims at primary + one optional second. This-run toggles may change method / devices for one Generate.
-- **Allergies always win.** A pantry Chip that conflicts with an allergy is **swapped** and highlighted, never used as-is. This-run toggles may tighten or loosen diet **flags** (for example drop vegetarian for one cook) and change servings, time, kcal, skill, method, and devices, but they can **never** remove or ignore an allergy.
+- **Avoid list (no curated allergen tags on pantry items).** The Cook lists ingredients to avoid. Code **blocks** pantry chips whose canonical slug or alias matches an avoid entry, and expands a **small** parent-link set for obvious cases only (e.g. butter / cheese / yoghurt → `dairy`; flour → `wheat`). Seed rows carry **no** `allergens[]` / `may contain` data. **UI must tell Cooks they are responsible for checking their own product labels** — the seed is not a medical allergen database. A blocked chip is **swapped** and highlighted, never used as-is. This-run toggles may tighten or loosen diet **flags** (for example drop vegetarian for one cook) and change servings, time, kcal, skill, method, and devices, but they can **never** remove or ignore an avoid-list entry.
+
 - **Multi-Diet in v1:** `/pantry` has a Diet switcher that sets the active Diet before Generate. Cooks can add, rename, edit, and delete Diets. Deleting the active Diet falls back to another remaining Diet. Each Recipe records which Diet it was cooked for (internal only on public pages).
 - Storage is the per-user Diet DO with `getActive()` (see [data.md](./data.md#diet-lives-in-a-durable-object)).
 
@@ -67,7 +69,7 @@
 ### Try me
 - Curated starter pantries on **`/`** so a Cook can tap once, land on `/pantry` with chips prefilled, and still **Generate with their own Diet**. Complementary to Recent (Recent lists published recipes; Try me seeds pantries).
 - **Four meals**, one each for **breakfast**, **lunch**, **dinner**, and **dessert**. Each meal has **three tiered chip sets** — **common**, **moderately common**, and **uncommon** — each 3–5 chips (same `/pantry?i=` seed shape as before). Min chips on Generate stays **3**.
-- **Static committed list** in the repo — no Generate counting, no canonical-ID ranking, no weekly cron, no KV snapshot. Chip strings below are display labels; allergen / diet tags come from **canonical ingredient IDs** when wired. Diet allergies still **swap conflicting pantry chips** as usual (see [Diet](#diet)).
+- **Static committed list** in the repo — no Generate counting, no canonical-ID ranking, no weekly cron, no KV snapshot. Chip strings below are display labels; canonical IDs / intrinsic flags / parent links come from the pantry seed when wired. Avoid-list matches still **swap conflicting pantry chips** as usual (see [Diet](#diet)).
 - **Common** (Coinnich-approved; default brochure seed):
 
   | Meal | Dish | Chips | Source |
@@ -128,7 +130,7 @@
 - **Free-tier** recipes are **published to Recent by default** (eligible after moderation / quality gates).
 - **Paid** Cooks (Credits / packs) may **opt out** so a recipe stays **private** (not listed on Recent; not fetchable as a public brochure page for anonymous visitors — exact private URL behaviour Open).
 - Explain publish defaults clearly on **`/onboarding`** and on cook / pantry pages.
-- **Public page content:** recipe title, ingredients, steps, time, servings, kcal as on the Recipe JSON — **never** the Cook’s profile, Diet name, diet flags, allergies, or medical diets.
+- **Public page content:** recipe title, ingredients, steps, time, servings, kcal as on the Recipe JSON — **never** the Cook’s profile, Diet name, diet flags, avoid list, or medical diets.
 - SEO / indexing of individual recipes stays `noindex` by default ([seo.md](./seo.md)); Recent itself is indexable.
 
 ### Moderation (approach)
@@ -170,7 +172,7 @@ Publish to Recent only when:
 - **Three scheduled Cursor Automations**: architecture hunt, **agent-friction retro every 3 days** (the third Automation) on Grok 4.6 medium, and the monthly deps review. **No slop cron**; `eslint-plugin-slop` runs in lint instead (see [lint.md](./lint.md)). Details: [factory.md](./factory.md); ops summary: [ops.md](./ops.md).
 
 ## Open
-- Generate do's and don'ts (proposed): a **collapsed** disclosure under the chip list, above the Generate button, titled "How to get the most out of Chef Llama" (not a dialog, not on `/`). Keep: Diet first; leftover chips; free cooks then Credits; one Recipe per Generate; ≥3 chips / max 16; Staples assumed (and customise); allergies always win; this-run toggles may change flags / servings / time / kcal / skill / method / devices but never drop an allergy; publish defaults; an AI-untested disclaimer; Save if you like it; metric and NZ names. Still to pick: always visible vs collapsed; whether a failed Generate refunds; a lawyer pass on the allergy wording.
+- Generate do's and don'ts (proposed): a **collapsed** disclosure under the chip list, above the Generate button, titled "How to get the most out of Chef Llama" (not a dialog, not on `/`). Keep: Diet first; leftover chips; free cooks then Credits; one Recipe per Generate; ≥3 chips / max 16; Staples assumed (and customise); avoid list always wins; this-run toggles may change flags / servings / time / kcal / skill / method / devices but never drop an avoid entry; publish defaults; an AI-untested disclaimer; Save if you like it; metric and NZ names. Still to pick: always visible vs collapsed; whether a failed Generate refunds; a lawyer pass on the avoid-list / label-disclaimer wording.
 - **Skill level labels:** the three closed levels (proposed: beginner | intermediate | advanced — not locked).
 - **Try me surfaces:** which tier(s) show on `/` by default (common only vs all three); whether dessert is required on `/`; brochure card copy for moderately common / uncommon.
 - **Staples customise:** how Cooks edit the staples list (onboarding only vs Diet settings); max length; whether custom staples can leave the closed set.

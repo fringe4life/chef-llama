@@ -6,57 +6,36 @@ Short note for the canonical list in `nz-pantry.json`. Method and regeneration: 
 
 1. Curate ~300–500 **everyday NZ pantry** items (supermarket + common kai), not a bulk taxonomy dump.
 2. Prefer **NZ display names** and aliases (capsicum, kumara, courgette, coriander, mince, spring onion, silverbeet, kiwifruit, feijoa, pāua, tarakihi, …).
-3. Attach **deterministic v1 Diet flags** for the closed list: `vegan` | `vegetarian` | `gluten_free` | `keto` | `halal` | `paleo` (see product Diet). Unclear flags → `diet_uncertain[]` and the manual review list — **never guess**.
-4. Attach allergen codes aligned with Open Food Facts `en:*` tags. Definite contains → `allergens[]`. `may contain` / source disagreement / brand variance → `allergen_uncertain[]` with a note. **Never guess.**
-5. Hand-review list: `MANUAL_REVIEW.json` (+ summary in `MANUAL_REVIEW.md`).
-6. **Allergies always win** over diet flags (product precedence).
+3. Store **names + aliases** only for matching. No curated allergen codes, no `may contain` rows.
+4. Attach **intrinsic composition flags**: `meat` | `fish` | `dairy` | `egg` | `animal_derived`. Derive `diets.vegan` / `diets.vegetarian` from those (see below). Do **not** store per-item `gluten_free`, `keto`, `halal`, or `paleo`.
+5. **Avoid model:** the Cook lists ingredients to avoid. Code blocks chips whose `slug` or alias matches, and expands a **small** set of parent links (e.g. butter / cheese / yoghurt → `dairy`; flour → `wheat`). The UI tells Cooks they are responsible for checking their own product labels — this seed is not a medical allergen database.
+6. Hand-review list: `MANUAL_REVIEW.json` (+ summary in `MANUAL_REVIEW.md`) — identity / alias issues only.
+7. Other Diet preferences (`gluten_free`, `keto`, `halal`, `paleo`) are **short rules given to the AI** plus the same label disclaimer — not pantry tags.
 
-## Diet flag rules (ingredient heuristics)
+## Intrinsic flags → vegan / vegetarian
 
-These are **chip-level** compatibility flags for Swap / Diet matching — not certified claims, not per-recipe macros.
+| Flag | Meaning |
+|---|---|
+| `meat` | Land-animal flesh (category `meat`) |
+| `fish` | Seafood including crustaceans / molluscs (category `seafood`) |
+| `dairy` | Milk and dairy products; also butter / ghee |
+| `egg` | Eggs and egg parts |
+| `animal_derived` | Animal origin beyond the four above (honey, gelatine, lard, dripping, anchovy-based sauces, …) |
 
-### vegan
+- **`vegan`** = none of the five flags.
+- **`vegetarian`** = no `meat`, no `fish`, and no vegetarian-blocking `animal_derived` (gelatine, lard, dripping, worcestershire, fish sauce, oyster sauce, …). **Honey** is `animal_derived` but vegetarian-OK. Dairy and egg remain vegetarian.
 
-- `false` for meat, seafood, dairy, egg, and known animal condiments (honey, gelatine, worcestershire with anchovy, oyster sauce, butter, ghee, lard, dripping, …).
-- `true` otherwise (plants, oils that are not animal fat, staples water/salt/pepper/oil).
+## Parent links (obvious only)
 
-### vegetarian
+Parent group ids (not necessarily ingredient slugs): `dairy`, `wheat`.
 
-- `false` for meat and seafood (and gelatine).
-- `true` for dairy, egg, honey, and plants.
-- Vegan implies vegetarian.
-
-### gluten_free
-
-- `false` when `gluten` is in `allergens[]` (fail closed; e.g. standard soy sauce, oats treated as gluten for NZ coeliac practice).
-- `true` otherwise. Brand-level exceptions stay in `allergen_uncertain`.
-
-### keto
-
-- Ingredient heuristic (not grams of carb per serving).
-- **`false`**: grains, bakery, flours, rice/pasta/noodles, most legumes, starchy veg (potato, kumara, corn, …), sugars/syrups/honey, most fruit juices, beer, high-sugar dried fruit / tropical fruit listed in the generator’s `KETO_FALSE` set.
-- **`true`**: meat, seafood, egg, oils/fats, herbs/spices, non-starchy veg default, most cheese/butter, nut_seed default, water/salt/pepper.
-- **Uncertain** (`diet_uncertain.keto`, flag stored `false` until review): milk, yoghurt, berries, tomato/onion/carrot and similar borderline veg, some nuts, chocolate, wine, cream — portion / brand dependent.
-
-### halal
-
-- Ingredient heuristic — **not** a halal certificate.
-- **`false`**: pork and pork products (bacon, ham, lard, prosciutto, …); intoxicants (wine, beer, mirin, shaoxing, wine vinegar).
-- **`true`**: plants; seafood (most schools: no land-animal slaughter issue).
-- **Uncertain** (`diet_uncertain.halal`, flag stored `false` until review): non-pork meat (slaughter / certification unknown); gelatine; cheeses that may use animal rennet; stocks / stock powder; worcestershire; vanilla (alcohol carrier); balsamic / generic vinegar; butter/ghee/margarine when enzyme or wine-derived processing is unclear.
-
-### paleo
-
-- Ingredient heuristic across common paleo schools (they disagree at the edges).
-- **`false`**: grains, legumes (incl. peanut/soy), dairy, bakery, refined sugars/syrups, many seed oils / margarine, soy sauces / tofu family.
-- **`true`**: meat, seafood, egg, vegetables, fruit, tree nuts/seeds (non-peanut), herbs/spices, honey (commonly allowed), olive/avocado/coconut oils.
-- **Uncertain** (`diet_uncertain.paleo`, flag stored `false` until review): butter/ghee, potato/kumara/corn/peas, processed meats (sausage, bacon, …), chocolate, wine, some vinegars, iodised salt additives.
+Examples: butter, cheese, yoghurt, milk, cream, … → `dairy`; flour, self-raising flour → `wheat`. Avoiding a parent group blocks every chip that carries that `parent`.
 
 ## Sources used
 
 | Source | Licence | How used |
 |---|---|---|
-| **Open Food Facts** ingredient + allergen taxonomies | [ODbL](https://opendatacommons.org/licenses/odbl/) | Seed for names, synonyms, allergen links. Derived database is **share-alike**; keep this attribution. |
+| **Open Food Facts** ingredient taxonomies | [ODbL](https://opendatacommons.org/licenses/odbl/) | Seed for names and synonyms. Derived database is **share-alike**; keep this attribution. (Allergen taxonomy is **not** copied onto seed rows.) |
 | **USDA FoodData Central** | Public domain (US government work) | Naming gaps only (e.g. less-common produce). |
 | **FoodOn** | CC BY 4.0 | Naming gaps / NZ kai cross-checks (e.g. pāua, whitebait, feijoa). |
 
@@ -70,7 +49,7 @@ Checked [foodcomposition.co.nz/terms](https://foodcomposition.co.nz/terms/) (FOO
 - **Must not modify** any part of the FOODfiles™ Data.
 - When reproduced in a product, data must be presented in its **original and unaltered** form, with acknowledgement, and third-party access subject to those terms.
 
-A curated, aliased, diet-flagged pantry list is a **modified / derived** product, so NZFCD / FOODfiles rows are **out of scope** for this seed. Do not import nutrient tables or food names from NZFCD into `nz-pantry.json`.
+A curated, aliased pantry list is a **modified / derived** product, so NZFCD / FOODfiles rows are **out of scope** for this seed. Do not import nutrient tables or food names from NZFCD into `nz-pantry.json`.
 
 ## Do not use
 
@@ -86,12 +65,11 @@ A curated, aliased, diet-flagged pantry list is a **modified / derived** product
 Valibot field sketch (to land under `#lib/schemas/*` with app code):
 
 ```ts
-// closed allergen / category / diet picklists match nz-pantry.json
 ingredient: {
   slug, name, aliases[], category,
-  allergens[], allergen_uncertain: { code, note }[],
-  diets: { vegan, vegetarian, gluten_free, keto, halal, paleo },
-  diet_uncertain: { flag, note }[],
+  parent?: 'dairy' | 'wheat',
+  intrinsic: { meat, fish, dairy, egg, animal_derived },
+  diets: { vegan, vegetarian }, // derived
   sources[]
 }
 ```

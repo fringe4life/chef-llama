@@ -21,7 +21,7 @@ The Cook’s current list of on-hand Chips for one Generate. Generate requires t
 _Avoid_: Fridge, cupboard, inventory, shopping list
 
 **Chip**:
-One canonical pantry ingredient. May carry `cooked: true` when already cooked; uncooked Chips omit the flag. Canonical IDs / NZ names / aliases / allergen and v1 diet flags live in the pantry seed (`data/ingredients/`).
+One canonical pantry ingredient. May carry `cooked: true` when already cooked; uncooked Chips omit the flag. Canonical IDs / NZ names / aliases / intrinsic flags / parent links live in the pantry seed (`data/ingredients/`).
 _Avoid_: token, tag, leftover as the Chip’s name
 
 **Already-cooked**:
@@ -33,7 +33,7 @@ Defaults the Recipe may add if forgotten: water, salt, pepper, oil, butter. At m
 _Avoid_: Optional extra, shopping item, garnish, milk (when dairy is excluded), treating customise as an unbounded shopping list
 
 **Diet**:
-One named set of saved defaults: name, diet flags (vegan / vegetarian / gluten_free / keto / halal / paleo), allergies, optional kcal, servings (default 2), optional max minutes, **skill** (three levels), **method** (primary cooking method) and optional **devices** (from devices the Cook owns). A Cook may have many Diets in v1; one is **active** for Generate (Diet switcher on `/pantry`). First login completes **`/onboarding`** (creates Diet #1) before the first Generate. This-run toggles may change flags, servings, time, kcal, skill, method, and devices for one cook; **allergies always win** and cannot be removed or ignored. Each Recipe records which Diet it was cooked for (internal; never shown on public recipe pages).
+One named set of saved defaults: name, hard flags (vegan / vegetarian), optional AI preference flags (gluten_free / keto / halal / paleo — prompt rules + label disclaimer, not pantry tags), **avoid list** (ingredient chips + parent expansion), optional kcal, servings (default 2), optional max minutes, **skill** (three levels), **method** (primary cooking method) and optional **devices** (from devices the Cook owns). A Cook may have many Diets in v1; one is **active** for Generate (Diet switcher on `/pantry`). First login completes **`/onboarding`** (creates Diet #1) before the first Generate. This-run toggles may change flags, servings, time, kcal, skill, method, and devices for one cook; the **avoid list always wins** and cannot be removed or ignored. Each Recipe records which Diet it was cooked for (internal; never shown on public recipe pages).
 _Avoid_: Kitchen, Profile, Pantry prefs, account settings, Better Auth user metadata, "chips override Diet", first-run Diet dialog on `/pantry`
 
 **Skill**:
@@ -45,8 +45,8 @@ Diet cooking gear. `method` is the primary pick from the closed list fry-pan | s
 _Avoid_: free-text appliances, treating devices as the only method field, inventing gear outside the picklist
 
 **Swap**:
-A Chip Llama replaces because it conflicts with an **allergy** (always) or with remaining diet-flag hard constraints after this-run toggles. Swapped Chips are highlighted and never used as-is. Recorded only on Recipes with `kind: "swap"` as `{ from, to }[]`.
-_Avoid_: Ignore, tell, required empty swaps array, BaseRecipe vs DietRecipe types, treating allergy conflicts as optional
+A Chip Llama replaces because it conflicts with the Cook’s **avoid list** (always) or with remaining diet-flag hard constraints after this-run toggles. Swapped Chips are highlighted and never used as-is. Recorded only on Recipes with `kind: "swap"` as `{ from, to }[]`.
+_Avoid_: Ignore, tell, required empty swaps array, BaseRecipe vs DietRecipe types, treating avoid-list conflicts as optional
 
 **kind**:
 Discriminant on the Recipe: `"plain"` or `"swap"`. Diet is not a kind. kcal miss is not a kind.
@@ -57,7 +57,7 @@ True when estimated kcal per serving exceeds the active Diet or this-run kcal ca
 _Avoid_: `over`, over budget, over tokens, over time
 
 **Recipe**:
-One cookable dish for tonight that fits the Pantry (and constraints on that run). Free-tier recipes **publish to Recent by default**; paid Cooks may opt out (private). Public pages show the recipe only — never profile, Diet, allergies, or medical diets.
+One cookable dish for tonight that fits the Pantry (and constraints on that run). Free-tier recipes **publish to Recent by default**; paid Cooks may opt out (private). Public pages show the recipe only — never profile, Diet, avoid list, or medical diets.
 _Avoid_: Meal plan, candidate set, post, feed item, markdown blob, “every Generate is always public with no opt-out”
 
 **Saved**:

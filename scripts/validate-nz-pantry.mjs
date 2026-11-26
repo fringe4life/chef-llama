@@ -13,10 +13,22 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const path = join(root, 'data', 'ingredients', 'nz-pantry.json')
 const doc = JSON.parse(readFileSync(path, 'utf8'))
 
-const ALLERGENS = new Set(doc.allergen_codes)
 const CATEGORIES = new Set(doc.categories)
-const DIETS = ['vegan', 'vegetarian', 'gluten_free', 'keto', 'halal', 'paleo']
+const INTRINSIC = ['meat', 'fish', 'dairy', 'egg', 'animal_derived']
+const PARENTS = new Set(['dairy', 'wheat'])
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+
+/** animal_derived that also block lacto-ovo vegetarian (not honey). */
+const VEGETARIAN_BLOCKING_ANIMAL = new Set([
+	'gelatine',
+	'lard',
+	'dripping',
+	'worcestershire',
+	'fish-sauce',
+	'oyster-sauce',
+	'bone-broth',
+])
+
 const errors = []
 
 if (doc.version !== 1) errors.push('version must be 1')
@@ -25,9 +37,14 @@ if (!Array.isArray(doc.ingredients)) errors.push('ingredients must be an array')
 
 const n = doc.ingredients?.length ?? 0
 if (n < 300 || n > 500) errors.push(`ingredient count ${n} outside 300–500`)
-if (!Array.isArray(doc.diet_flags) || doc.diet_flags.join() !== DIETS.join()) {
-	errors.push('diet_flags must be vegan|vegetarian|gluten_free|keto|halal|paleo')
+
+if (!Array.isArray(doc.diet_flags) || doc.diet_flags.join() !== 'vegan,vegetarian') {
+	errors.push('diet_flags must be vegan|vegetarian (derived only)')
 }
+if (!Array.isArray(doc.intrinsic_flags) || doc.intrinsic_flags.join() !== INTRINSIC.join()) {
+	errors.push(`intrinsic_flags must be ${INTRINSIC.join('|')}`)
+}
+if (doc.allergen_codes != null) errors.push('allergen_codes must be removed from seed')
 
 const slugs = new Set()
 const labels = new Map()
@@ -49,45 +66,66 @@ for (const [idx, row] of (doc.ingredients ?? []).entries()) {
 	}
 	if (!CATEGORIES.has(row.category)) errors.push(`${where}: bad category ${row.category}`)
 	if (!Array.isArray(row.aliases)) errors.push(`${where}: aliases must be array`)
-	if (!Array.isArray(row.allergens)) errors.push(`${where}: allergens must be array`)
-	if (!Array.isArray(row.allergen_uncertain)) {
-		errors.push(`${where}: allergen_uncertain must be array`)
+
+	if (row.allergens != null || row.allergen_uncertain != null) {
+		errors.push(`${where}: curated allergens must not be present`)
 	}
-	if (!Array.isArray(row.diet_uncertain)) {
-		errors.push(`${where}: diet_uncertain must be array`)
+	if (row.diet_uncertain != null) {
+		errors.push(`${where}: diet_uncertain must not be present`)
 	}
-	if (!row.diets || typeof row.diets !== 'object') {
-		errors.push(`${where}: diets missing`)
+	if (row.parent != null && !PARENTS.has(row.parent)) {
+		errors.push(`${where}: bad parent ${row.parent}`)
+	}
+
+	const intr = row.intrinsic
+	if (!intr || typeof intr !== 'object') {
+		errors.push(`${where}: intrinsic missing`)
 	} else {
-		for (const d of DIETS) {
-			if (typeof row.diets[d] !== 'boolean') {
-				errors.push(`${where}: diets.${d} must be boolean`)
+		for (const f of INTRINSIC) {
+			if (typeof intr[f] !== 'boolean') {
+				errors.push(`${where}: intrinsic.${f} must be boolean`)
 			}
 		}
-		if (row.diets.vegan && !row.diets.vegetarian) {
-			errors.push(`${where}: vegan implies vegetarian`)
+		if (row.category === 'meat' && !intr.meat) {
+			errors.push(`${where}: meat category requires intrinsic.meat`)
 		}
-		if (row.allergens?.includes('gluten') && row.diets.gluten_free) {
-			errors.push(`${where}: gluten allergen but gluten_free true`)
+		if (row.category === 'seafood' && !intr.fish) {
+			errors.push(`${where}: seafood category requires intrinsic.fish`)
 		}
-		if (
-			(row.category === 'meat' || row.category === 'seafood') &&
-			(row.diets.vegan || row.diets.vegetarian)
-		) {
-			errors.push(`${where}: meat/seafood cannot be vegan/vegetarian`)
+		if (row.category === 'dairy' && !intr.dairy) {
+			errors.push(`${where}: dairy category requires intrinsic.dairy`)
 		}
-	}
-	for (const a of row.allergens ?? []) {
-		if (!ALLERGENS.has(a)) errors.push(`${where}: unknown allergen ${a}`)
-	}
-	for (const u of row.allergen_uncertain ?? []) {
-		if (!u || !ALLERGENS.has(u.code) || typeof u.note !== 'string' || !u.note) {
-			errors.push(`${where}: bad allergen_uncertain entry`)
+		if (row.category === 'egg' && !intr.egg) {
+			errors.push(`${where}: egg category requires intrinsic.egg`)
 		}
-	}
-	for (const u of row.diet_uncertain ?? []) {
-		if (!u || !DIETS.includes(u.flag) || typeof u.note !== 'string' || !u.note) {
-			errors.push(`${where}: bad diet_uncertain entry`)
+
+		const vegan =
+			!intr.meat && !intr.fish && !intr.dairy && !intr.egg && !intr.animal_derived
+		const vegetarian =
+			!intr.meat &&
+			!intr.fish &&
+			!(intr.animal_derived && VEGETARIAN_BLOCKING_ANIMAL.has(row.slug))
+
+		if (!row.diets || typeof row.diets !== 'object') {
+			errors.push(`${where}: diets missing`)
+		} else {
+			if (typeof row.diets.vegan !== 'boolean' || typeof row.diets.vegetarian !== 'boolean') {
+				errors.push(`${where}: diets.vegan/vegetarian must be boolean`)
+			}
+			if (row.diets.vegan !== vegan) {
+				errors.push(`${where}: diets.vegan inconsistent with intrinsic`)
+			}
+			if (row.diets.vegetarian !== vegetarian) {
+				errors.push(`${where}: diets.vegetarian inconsistent with intrinsic`)
+			}
+			if (row.diets.vegan && !row.diets.vegetarian) {
+				errors.push(`${where}: vegan implies vegetarian`)
+			}
+			for (const banned of ['gluten_free', 'keto', 'halal', 'paleo']) {
+				if (banned in row.diets) {
+					errors.push(`${where}: diets.${banned} must not be present`)
+				}
+			}
 		}
 	}
 

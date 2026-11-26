@@ -2,10 +2,17 @@
 /**
  * Regenerates data/ingredients/nz-pantry.json and MANUAL_REVIEW.json.
  *
- * Curated everyday NZ pantry seed (not a dump of OFF/USDA). Names, synonyms,
- * and allergen links are informed by Open Food Facts taxonomies (ODbL), with
- * USDA FoodData Central / FoodOn used only to fill naming gaps. Do not pull
- * NZ Food Composition Database rows (no-modify licence — see SOURCES.md).
+ * Curated everyday NZ pantry seed (not a dump of OFF/USDA). Names and synonyms
+ * are informed by Open Food Facts taxonomies (ODbL), with USDA FoodData Central /
+ * FoodOn used only to fill naming gaps. Do not pull NZ Food Composition Database
+ * rows (no-modify licence — see SOURCES.md).
+ *
+ * Coinnich (allergens / diets):
+ * - No curated allergen or "may contain" data on items.
+ * - User avoid-list blocks chips by slug/alias (+ small parent links).
+ * - Intrinsic flags only: meat | fish | dairy | egg | animal_derived.
+ * - vegan / vegetarian are derived from those; gluten_free / keto / halal / paleo
+ *   are AI prompt rules + label disclaimer, not per-item tags.
  *
  * Usage: node scripts/generate-nz-pantry.mjs
  */
@@ -16,23 +23,6 @@ import { fileURLToPath } from 'node:url'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = join(__dirname, '..')
 const outDir = join(root, 'data', 'ingredients')
-
-const ALLERGENS = [
-	'gluten',
-	'crustaceans',
-	'eggs',
-	'fish',
-	'peanuts',
-	'soybeans',
-	'milk',
-	'nuts',
-	'celery',
-	'mustard',
-	'sesame',
-	'sulphites',
-	'lupin',
-	'molluscs',
-]
 
 const CATEGORIES = [
 	'staple',
@@ -53,292 +43,75 @@ const CATEGORIES = [
 	'other',
 ]
 
-/** Closed v1 Diet flags (product.md): original three + former parked keto/halal/paleo. */
-const DIET_FLAGS = ['vegan', 'vegetarian', 'gluten_free', 'keto', 'halal', 'paleo']
-
-
-/** High-carb / starch / sugar — keto fail-closed false (ingredient heuristic, not macros). */
-const KETO_FALSE = new Set([
-	'potato',
-	'kumara',
-	'yams',
-	'taro',
-	'cassava',
-	'corn',
-	'peas',
-	'sugar-snap-peas',
-	'snow-peas',
-	'flour',
-	'self-raising-flour',
-	'bread',
-	'sourdough',
-	'wrap',
-	'flour-tortilla',
-	'pasta',
-	'lasagna-sheet',
-	'noodles',
-	'udon',
-	'soba',
-	'ramen-noodles',
-	'couscous',
-	'bulgur',
-	'barley',
-	'oats',
-	'rice',
-	'brown-rice',
-	'risotto-rice',
-	'sushi-rice',
-	'rice-noodles',
-	'vermicelli',
-	'rice-paper',
-	'wonton-wrapper',
-	'polenta',
-	'cornflour',
-	'breadcrumbs',
-	'cracker',
-	'weet-bix',
-	'cereal',
-	'semolina',
-	'rye',
-	'spelt',
-	'chickpea',
-	'lentil',
-	'black-bean',
-	'kidney-bean',
-	'cannellini',
-	'butter-bean',
-	'baked-beans',
-	'split-pea',
-	'mung-bean',
-	'hummus',
-	'quinoa',
-	'sugar',
-	'brown-sugar',
-	'icing-sugar',
-	'coconut-sugar',
-	'honey',
-	'maple-syrup',
-	'golden-syrup',
-	'treacle',
-	'jam',
-	'corn-syrup',
-	'beer',
-	'orange-juice',
-	'apple-juice',
-	'tomato-juice',
-	'puff-pastry',
-	'shortcrust',
-	'filo',
-	'pizza-base',
-	'bagel',
-	'croissant',
-	'muffin',
-	'biscuit',
-	'corn-chips',
-	'popcorn',
-	'dates',
-	'raisins',
-	'dried-apricot',
-	'banana',
-	'mango',
-	'pineapple',
-	'grape',
-	'apple',
-	'pear',
-	'orange',
-	'mandarin',
-	'watermelon',
-	'rockmelon',
-	'honeydew',
-])
-
-/** Borderline keto — never guess; diet_uncertain.keto. */
-const KETO_UNCERTAIN = new Set([
-	'milk',
-	'yoghurt',
-	'buttermilk',
-	'cottage-cheese',
-	'ricotta',
-	'carrot',
-	'onion',
-	'red-onion',
-	'shallot',
-	'tomato',
-	'tinned-tomato',
-	'passata',
-	'tomato-paste',
-	'beetroot',
-	'parsnip',
-	'swede',
-	'pumpkin',
-	'butternut',
-	'peas',
-	'strawberry',
-	'blueberry',
-	'raspberry',
-	'blackberry',
-	'boysenberry',
-	'kiwifruit',
-	'lemon',
-	'lime',
-	'avocado', // fat-ok but fruit sugars debated at volume
-	'peanut',
-	'peanut-butter',
-	'cashew',
-	'chocolate',
-	'milk-chocolate',
-	'white-chocolate',
-	'wine',
-	'cream',
-	'sour-cream',
-	'ice-cream',
-	'custard',
-	'condensed-milk',
-	'evaporated-milk',
-])
-
-/** Clearly haram at ingredient level (pork or intoxicant). */
-const HALAL_FALSE = new Set([
-	'pork',
-	'pork-mince',
-	'bacon',
-	'ham',
-	'lard',
-	'prosciutto',
-	'wine',
-	'beer',
-	'mirin',
-	'shaoxing',
-	'wine-vinegar',
-])
+/** Intrinsic composition flags (seed). vegan / vegetarian are derived. */
+const INTRINSIC_FLAGS = ['meat', 'fish', 'dairy', 'egg', 'animal_derived']
 
 /**
- * Halal unclear without certification / slaughter / enzyme source.
- * Meat (non-pork), gelatine, rennet cheeses, stocks, alcohol-adjacent.
+ * Obvious parent links only — expand user avoid-list.
+ * Values are parent group ids (not necessarily ingredient slugs).
+ * @type {Record<string, 'dairy' | 'wheat'>}
  */
-const HALAL_UNCERTAIN = new Set([
-	'beef',
-	'beef-mince',
-	'lamb',
-	'lamb-mince',
-	'lamb-shank',
-	'chicken',
-	'chicken-mince',
-	'chicken-liver',
-	'turkey',
-	'duck',
-	'venison',
-	'sausage',
-	'salami',
-	'chorizo',
-	'pastrami',
-	'meatballs',
-	'frankfurter',
-	'beef-schnitzel',
-	'chicken-schnitzel',
+const PARENT_BY_SLUG = {
+	butter: 'dairy',
+	ghee: 'dairy',
+	milk: 'dairy',
+	cream: 'dairy',
+	'sour-cream': 'dairy',
+	'cream-cheese': 'dairy',
+	buttermilk: 'dairy',
+	yoghurt: 'dairy',
+	cheese: 'dairy',
+	mozzarella: 'dairy',
+	parmesan: 'dairy',
+	feta: 'dairy',
+	ricotta: 'dairy',
+	'cottage-cheese': 'dairy',
+	brie: 'dairy',
+	'blue-cheese': 'dairy',
+	halloumi: 'dairy',
+	mascarpone: 'dairy',
+	'condensed-milk': 'dairy',
+	'evaporated-milk': 'dairy',
+	'ice-cream': 'dairy',
+	custard: 'dairy',
+	flour: 'wheat',
+	'self-raising-flour': 'wheat',
+}
+
+/** Animal-derived beyond meat/fish/dairy/egg (blocks vegan). */
+const ANIMAL_DERIVED = new Set([
+	'honey',
 	'gelatine',
-	'cheese',
-	'parmesan',
-	'mozzarella',
-	'feta',
-	'brie',
-	'blue-cheese',
-	'halloumi',
-	'mascarpone',
-	'cream-cheese',
-	'cottage-cheese',
-	'ricotta',
-	'stock',
-	'chicken-stock',
-	'beef-stock',
-	'stock-powder',
-	'worcestershire',
-	'vanilla',
-	'balsamic',
-	'malt-vinegar',
-	'vinegar',
+	'lard',
 	'dripping',
-	'ghee',
-	'butter',
-	'margarine',
+	'worcestershire', // typically anchovy
+	'fish-sauce',
+	'oyster-sauce',
+	'bone-broth',
 ])
 
-/** Paleo fail-closed false: grains, legumes, dairy, bakery, refined sugar. */
-const PALEO_FALSE_CATEGORIES = new Set(['grain', 'legume', 'dairy', 'bakery'])
-const PALEO_FALSE = new Set([
-	'sugar',
-	'brown-sugar',
-	'icing-sugar',
-	'coconut-sugar',
-	'maple-syrup',
-	'golden-syrup',
-	'treacle',
-	'jam',
-	'corn-syrup',
-	'beer',
-	'soy-sauce',
-	'tamari',
-	'teriyaki',
-	'hoisin',
-	'miso',
-	'tofu',
-	'tempeh',
-	'edamame',
-	'peanut',
-	'peanut-butter',
-	'peanut-oil',
-	'peanut-sauce',
-	'margarine',
-	'vegetable-oil',
-	'corn-chips',
-	'popcorn',
-	'ice-cream',
-	'custard',
+/** animal_derived that also block lacto-ovo vegetarian (not honey). */
+const VEGETARIAN_BLOCKING_ANIMAL = new Set([
+	'gelatine',
+	'lard',
+	'dripping',
+	'worcestershire',
+	'fish-sauce',
+	'oyster-sauce',
+	'bone-broth',
 ])
 
-/** Paleo borderline. */
-const PALEO_UNCERTAIN = new Set([
-	'butter',
-	'ghee',
-	'potato',
-	'kumara',
-	'corn',
-	'peas',
-	'sausage',
-	'bacon',
-	'ham',
-	'salami',
-	'chorizo',
-	'frankfurter',
-	'meatballs',
-	'vanilla',
-	'chocolate',
-	'milk-chocolate',
-	'white-chocolate',
-	'wine',
-	'salt', // iodised / additives vary
-	'vinegar',
-	'balsamic',
-	'wine-vinegar',
-	'malt-vinegar',
-])
-
-/** @typedef {{ code: string, note: string }} Uncertain */
-/** @typedef {{ flag: string, note: string }} DietUncertain */
 /** @typedef {{
  *   slug: string,
  *   name: string,
  *   aliases?: string[],
  *   category: string,
- *   allergens?: string[],
- *   allergen_uncertain?: Uncertain[],
- *   diet_uncertain?: DietUncertain[],
- *   vegan?: boolean,
- *   vegetarian?: boolean,
- *   gluten_free?: boolean,
- *   keto?: boolean,
- *  halal?: boolean,
- *   paleo?: boolean,
+ *   parent?: 'dairy' | 'wheat',
+ *   meat?: boolean,
+ *   fish?: boolean,
+ *   dairy?: boolean,
+ *   egg?: boolean,
+ *   animal_derived?: boolean,
  *   sources?: string[],
  * }} Spec */
 
@@ -351,167 +124,60 @@ function item(spec) {
 		name,
 		aliases = [],
 		category,
-		allergens = [],
-		allergen_uncertain = [],
-		diet_uncertain: dietUncertainIn = [],
 		sources = ['off', 'curated'],
 	} = spec
 
-	let { vegan, vegetarian, gluten_free, keto, halal, paleo } = spec
-	// diets closed list: vegan | vegetarian | gluten_free | keto | halal | paleo
-	/** @type {DietUncertain[]} */
-	const diet_uncertain = [...dietUncertainIn]
+	let meat = spec.meat
+	let fish = spec.fish
+	let dairy = spec.dairy
+	let egg = spec.egg
+	let animal_derived = spec.animal_derived
 
-	if (category === 'meat' || category === 'seafood') {
-		vegan = false
-		vegetarian = false
-	} else if (category === 'dairy' || category === 'egg') {
-		vegan = false
-		if (vegetarian === undefined) vegetarian = true
-	}
+	if (meat === undefined) meat = category === 'meat'
+	if (fish === undefined) fish = category === 'seafood'
+	if (dairy === undefined) dairy = category === 'dairy' || slug === 'butter' || slug === 'ghee'
+	if (egg === undefined) egg = category === 'egg'
+	if (animal_derived === undefined) animal_derived = ANIMAL_DERIVED.has(slug)
 
-	if (vegan === undefined) vegan = true
-	if (vegetarian === undefined) vegetarian = true
-	if (vegan) vegetarian = true
+	// Category hard rules
+	if (category === 'meat') meat = true
+	if (category === 'seafood') fish = true
+	if (category === 'dairy') dairy = true
+	if (category === 'egg') egg = true
 
-	if (gluten_free === undefined) {
-		gluten_free = !allergens.includes('gluten')
-	}
-	if (allergens.includes('gluten')) gluten_free = false
+	const vegan = !meat && !fish && !dairy && !egg && !animal_derived
+	const vegetarian =
+		!meat &&
+		!fish &&
+		!(animal_derived && VEGETARIAN_BLOCKING_ANIMAL.has(slug))
 
-	// --- keto (ingredient heuristic; see SOURCES.md) ---
-	if (keto === undefined) {
-		if (KETO_FALSE.has(slug) || category === 'grain' || category === 'bakery') {
-			keto = false
-		} else if (KETO_UNCERTAIN.has(slug)) {
-			keto = false // fail closed until review clears
-			diet_uncertain.push({
-				flag: 'keto',
-				note: 'Borderline carb load / portion-dependent; fail closed pending manual review',
-			})
-		} else if (
-			category === 'meat' ||
-			category === 'seafood' ||
-			category === 'egg' ||
-			category === 'oil_fat' ||
-			category === 'herb_spice'
-		) {
-			keto = true
-		} else if (category === 'dairy') {
-			// hard cheeses / butter tend OK; milk/yoghurt handled in KETO_UNCERTAIN
-			keto = true
-		} else if (category === 'vegetable') {
-			keto = true // non-starchy default; starchy in KETO_FALSE
-		} else if (category === 'nut_seed') {
-			keto = true
-		} else if (category === 'fruit') {
-			keto = false
-			if (!KETO_FALSE.has(slug)) {
-				diet_uncertain.push({
-					flag: 'keto',
-					note: 'Most fruit is high-sugar; berry exceptions need review',
-				})
-			}
-		} else if (category === 'legume') {
-			keto = false
-		} else if (category === 'condiment' || category === 'beverage' || category === 'other' || category === 'staple') {
-			keto = true // water/salt/pepper/oil/vinegar/spices default; sugars in KETO_FALSE
-		} else {
-			keto = false
-			diet_uncertain.push({
-				flag: 'keto',
-				note: 'No category rule; fail closed pending review',
-			})
-		}
-	}
+	const parent =
+		spec.parent ??
+		PARENT_BY_SLUG[slug] ??
+		(category === 'dairy' ? 'dairy' : undefined)
 
-	// --- halal (ingredient heuristic; not certification) ---
-	if (halal === undefined) {
-		if (HALAL_FALSE.has(slug)) {
-			halal = false
-		} else if (HALAL_UNCERTAIN.has(slug) || category === 'meat') {
-			halal = false // fail closed without certification / slaughter certainty
-			diet_uncertain.push({
-				flag: 'halal',
-				note:
-					category === 'meat' || HALAL_UNCERTAIN.has(slug)
-						? 'Needs halal certification, slaughter method, or enzyme/alcohol source check — never guess'
-						: 'Uncertain halal status — never guess',
-			})
-		} else if (category === 'seafood') {
-			halal = true // most schools: fish/seafood permissible; no land-animal slaughter
-		} else {
-			halal = true
-		}
-	}
-
-	// --- paleo (ingredient heuristic) ---
-	if (paleo === undefined) {
-		if (PALEO_FALSE.has(slug) || PALEO_FALSE_CATEGORIES.has(category)) {
-			paleo = false
-		} else if (PALEO_UNCERTAIN.has(slug)) {
-			paleo = false
-			diet_uncertain.push({
-				flag: 'paleo',
-				note: 'Paleo schools disagree; fail closed pending manual review',
-			})
-		} else if (
-			category === 'meat' ||
-			category === 'seafood' ||
-			category === 'egg' ||
-			category === 'vegetable' ||
-			category === 'fruit' ||
-			category === 'nut_seed' ||
-			category === 'herb_spice'
-		) {
-			paleo = true
-		} else if (slug === 'honey') {
-			paleo = true // commonly allowed
-		} else if (category === 'oil_fat') {
-			// olive/avocado/coconut oils OK; seed oils / margarine handled in PALEO_FALSE
-			paleo = true
-		} else if (category === 'staple') {
-			paleo = slug !== 'butter' // butter uncertain via PALEO_UNCERTAIN; water/salt/pepper/oil OK
-			if (slug === 'butter') {
-				paleo = false
-			}
-		} else if (category === 'condiment' || category === 'beverage' || category === 'other') {
-			paleo = true
-		} else {
-			paleo = false
-			diet_uncertain.push({
-				flag: 'paleo',
-				note: 'No category rule; fail closed pending review',
-			})
-		}
-	}
-
-	// Deduplicate diet_uncertain by flag+note
-	const seenDu = new Set()
-	const diet_uncertain_unique = []
-	for (const u of diet_uncertain) {
-		const k = `${u.flag}|${u.note}`
-		if (seenDu.has(k)) continue
-		seenDu.add(k)
-		diet_uncertain_unique.push(u)
-	}
-
-	return {
+	/** @type {Record<string, unknown>} */
+	const row = {
 		slug,
 		name,
 		aliases: [
 			...new Set(aliases.filter((a) => a && a.toLowerCase() !== name.toLowerCase())),
 		].sort((a, b) => String(a).localeCompare(String(b))),
 		category,
-		allergens: [...allergens].sort((a, b) => String(a).localeCompare(String(b))),
-		allergen_uncertain,
-		diet_uncertain: diet_uncertain_unique.sort(
-			(a, b) => String(a.flag).localeCompare(String(b.flag)) || String(a.note).localeCompare(String(b.note)),
-		),
-		diets: { vegan, vegetarian, gluten_free, keto, halal, paleo },
+		intrinsic: {
+			meat: Boolean(meat),
+			fish: Boolean(fish),
+			dairy: Boolean(dairy),
+			egg: Boolean(egg),
+			animal_derived: Boolean(animal_derived),
+		},
+		diets: { vegan, vegetarian },
 		sources: [...sources].sort((a, b) => String(a).localeCompare(String(b))),
 	}
+	if (parent) row.parent = parent
+	return row
 }
+
 
 /** @type {Spec[]} */
 const specs = [
@@ -524,10 +190,7 @@ const specs = [
 		slug: 'butter',
 		name: 'butter',
 		aliases: ['salted butter', 'unsalted butter'],
-		category: 'staple',
-		allergens: ['milk'],
-		vegan: false,
-		vegetarian: true,
+		category: 'staple'
 	},
 
 	// Vegetables — NZ names preferred
@@ -536,28 +199,28 @@ const specs = [
 		name: 'capsicum',
 		aliases: ['bell pepper', 'sweet pepper', 'red capsicum', 'green capsicum', 'yellow capsicum'],
 		category: 'vegetable',
-		sources: ['off', 'usda', 'curated'],
+		sources: ['off', 'usda', 'curated']
 	},
 	{
 		slug: 'kumara',
 		name: 'kumara',
 		aliases: ['sweet potato', 'kūmara'],
 		category: 'vegetable',
-		sources: ['off', 'usda', 'curated'],
+		sources: ['off', 'usda', 'curated']
 	},
 	{
 		slug: 'courgette',
 		name: 'courgette',
 		aliases: ['zucchini', 'baby marrow'],
 		category: 'vegetable',
-		sources: ['off', 'usda', 'curated'],
+		sources: ['off', 'usda', 'curated']
 	},
 	{
 		slug: 'aubergine',
 		name: 'aubergine',
 		aliases: ['eggplant', 'brinjal'],
 		category: 'vegetable',
-		sources: ['off', 'usda', 'curated'],
+		sources: ['off', 'usda', 'curated']
 	},
 	{ slug: 'tomato', name: 'tomato', aliases: ['tomatoes', 'cherry tomato', 'roma tomato'], category: 'vegetable' },
 	{ slug: 'onion', name: 'onion', aliases: ['brown onion', 'white onion', 'yellow onion'], category: 'vegetable' },
@@ -567,7 +230,7 @@ const specs = [
 		name: 'spring onion',
 		aliases: ['scallion', 'green onion', 'salad onion'],
 		category: 'vegetable',
-		sources: ['off', 'usda', 'curated'],
+		sources: ['off', 'usda', 'curated']
 	},
 	{ slug: 'shallot', name: 'shallot', aliases: ['eschalot'], category: 'vegetable' },
 	{ slug: 'garlic', name: 'garlic', aliases: ['garlic clove', 'fresh garlic'], category: 'vegetable' },
@@ -578,8 +241,7 @@ const specs = [
 		slug: 'celery',
 		name: 'celery',
 		aliases: ['celery stalk', 'celery sticks'],
-		category: 'vegetable',
-		allergens: ['celery'],
+		category: 'vegetable'
 	},
 	{ slug: 'broccoli', name: 'broccoli', aliases: ['broccoli florets'], category: 'vegetable' },
 	{ slug: 'cauliflower', name: 'cauliflower', category: 'vegetable' },
@@ -590,7 +252,7 @@ const specs = [
 		name: 'silverbeet',
 		aliases: ['swiss chard', 'chard', 'rainbow chard'],
 		category: 'vegetable',
-		sources: ['off', 'usda', 'curated'],
+		sources: ['off', 'usda', 'curated']
 	},
 	{ slug: 'spinach', name: 'spinach', aliases: ['baby spinach', 'english spinach'], category: 'vegetable' },
 	{ slug: 'lettuce', name: 'lettuce', aliases: ['garden lettuce'], category: 'vegetable' },
@@ -607,19 +269,19 @@ const specs = [
 		slug: 'cucumber',
 		name: 'cucumber',
 		aliases: ['telegraph cucumber', 'lebanese cucumber'],
-		category: 'vegetable',
+		category: 'vegetable'
 	},
 	{
 		slug: 'pumpkin',
 		name: 'pumpkin',
 		aliases: ['buttercup pumpkin', 'crown pumpkin', 'squash'],
-		category: 'vegetable',
+		category: 'vegetable'
 	},
 	{
 		slug: 'butternut',
 		name: 'butternut',
 		aliases: ['butternut squash', 'butternut pumpkin'],
-		category: 'vegetable',
+		category: 'vegetable'
 	},
 	{ slug: 'beetroot', name: 'beetroot', aliases: ['beet', 'beets'], category: 'vegetable' },
 	{ slug: 'parsnip', name: 'parsnip', category: 'vegetable' },
@@ -634,7 +296,7 @@ const specs = [
 		slug: 'green-beans',
 		name: 'green beans',
 		aliases: ['french beans', 'string beans'],
-		category: 'vegetable',
+		category: 'vegetable'
 	},
 	{ slug: 'broad-beans', name: 'broad beans', aliases: ['fava beans'], category: 'vegetable' },
 	{ slug: 'peas', name: 'peas', aliases: ['garden peas', 'frozen peas', 'green peas'], category: 'vegetable' },
@@ -645,7 +307,7 @@ const specs = [
 		slug: 'mushroom',
 		name: 'mushroom',
 		aliases: ['mushrooms', 'button mushroom', 'swiss brown'],
-		category: 'vegetable',
+		category: 'vegetable'
 	},
 	{ slug: 'portobello', name: 'portobello', aliases: ['portabella', 'flat mushroom'], category: 'vegetable' },
 	{ slug: 'shiitake', name: 'shiitake', category: 'vegetable' },
@@ -654,7 +316,7 @@ const specs = [
 		slug: 'chilli',
 		name: 'chilli',
 		aliases: ['chili', 'chilli pepper', 'fresh chilli', 'red chilli'],
-		category: 'vegetable',
+		category: 'vegetable'
 	},
 	{ slug: 'jalapeno', name: 'jalapeño', aliases: ['jalapeno'], category: 'vegetable' },
 	{
@@ -662,7 +324,7 @@ const specs = [
 		name: 'yams',
 		aliases: ['nz yams', 'oca'],
 		category: 'vegetable',
-		sources: ['curated', 'foodon'],
+		sources: ['curated', 'foodon']
 	},
 	{ slug: 'taro', name: 'taro', category: 'vegetable', sources: ['usda', 'foodon', 'curated'] },
 	{ slug: 'cassava', name: 'cassava', aliases: ['manioc', 'yuca'], category: 'vegetable' },
@@ -672,7 +334,7 @@ const specs = [
 		slug: 'jerusalem-artichoke',
 		name: 'jerusalem artichoke',
 		aliases: ['sunchoke'],
-		category: 'vegetable',
+		category: 'vegetable'
 	},
 	{ slug: 'brussels-sprouts', name: 'brussels sprouts', aliases: ['brussel sprouts'], category: 'vegetable' },
 	{ slug: 'witloof', name: 'witloof', aliases: ['chicory', 'belgian endive', 'endive'], category: 'vegetable' },
@@ -684,7 +346,7 @@ const specs = [
 		slug: 'tinned-tomato',
 		name: 'tinned tomato',
 		aliases: ['canned tomato', 'diced tomato', 'chopped tomato', 'crushed tomato'],
-		category: 'vegetable',
+		category: 'vegetable'
 	},
 	{ slug: 'passata', name: 'passata', aliases: ['tomato passata', 'sieved tomato'], category: 'vegetable' },
 	{ slug: 'sun-dried-tomato', name: 'sun-dried tomato', aliases: ['sundried tomato'], category: 'vegetable' },
@@ -692,7 +354,7 @@ const specs = [
 		slug: 'olive',
 		name: 'olive',
 		aliases: ['olives', 'kalamata', 'green olive', 'black olive'],
-		category: 'vegetable',
+		category: 'vegetable'
 	},
 	{ slug: 'pickled-onion', name: 'pickled onion', category: 'vegetable' },
 	{ slug: 'gherkin', name: 'gherkin', aliases: ['pickle', 'pickles', 'dill pickle'], category: 'vegetable' },
@@ -700,11 +362,7 @@ const specs = [
 	{
 		slug: 'kimchi',
 		name: 'kimchi',
-		category: 'vegetable',
-		allergen_uncertain: [
-			{ code: 'fish', note: 'many commercial kimchi use fish sauce; check label' },
-			{ code: 'crustaceans', note: 'some recipes use shrimp paste' },
-		],
+		category: 'vegetable'
 	},
 
 	// Fruit
@@ -712,7 +370,7 @@ const specs = [
 		slug: 'apple',
 		name: 'apple',
 		aliases: ['apples', 'granny smith', 'braeburn', 'royal gala'],
-		category: 'fruit',
+		category: 'fruit'
 	},
 	{ slug: 'pear', name: 'pear', aliases: ['pears', 'nashi'], category: 'fruit' },
 	{ slug: 'banana', name: 'banana', aliases: ['bananas'], category: 'fruit' },
@@ -733,14 +391,14 @@ const specs = [
 		name: 'kiwifruit',
 		aliases: ['kiwi', 'kiwi fruit', 'green kiwifruit', 'gold kiwifruit'],
 		category: 'fruit',
-		sources: ['off', 'usda', 'curated'],
+		sources: ['off', 'usda', 'curated']
 	},
 	{
 		slug: 'feijoa',
 		name: 'feijoa',
 		aliases: ['pineapple guava'],
 		category: 'fruit',
-		sources: ['curated', 'foodon'],
+		sources: ['curated', 'foodon']
 	},
 	{ slug: 'passionfruit', name: 'passionfruit', aliases: ['passion fruit'], category: 'fruit' },
 	{ slug: 'tamarillo', name: 'tamarillo', aliases: ['tree tomato'], category: 'fruit', sources: ['curated'] },
@@ -750,17 +408,13 @@ const specs = [
 		slug: 'apricot',
 		name: 'apricot',
 		aliases: ['apricots'],
-		category: 'fruit',
-		allergen_uncertain: [
-			{ code: 'sulphites', note: 'dried apricots often sulphured; fresh usually fine' },
-		],
+		category: 'fruit'
 	},
 	{
 		slug: 'dried-apricot',
 		name: 'dried apricot',
 		aliases: ['dried apricots'],
-		category: 'fruit',
-		allergens: ['sulphites'],
+		category: 'fruit'
 	},
 	{ slug: 'plum', name: 'plum', aliases: ['plums'], category: 'fruit' },
 	{ slug: 'cherry', name: 'cherry', aliases: ['cherries'], category: 'fruit' },
@@ -779,8 +433,7 @@ const specs = [
 		slug: 'raisins',
 		name: 'raisins',
 		aliases: ['sultanas', 'dried grapes'],
-		category: 'fruit',
-		allergen_uncertain: [{ code: 'sulphites', note: 'may be sulphured' }],
+		category: 'fruit'
 	},
 	{ slug: 'cranberry', name: 'cranberry', aliases: ['cranberries', 'dried cranberries'], category: 'fruit' },
 	{ slug: 'fig', name: 'fig', aliases: ['figs', 'dried figs'], category: 'fruit' },
@@ -806,7 +459,7 @@ const specs = [
 		name: 'beef mince',
 		aliases: ['mince', 'ground beef', 'hamburger mince', 'minced beef'],
 		category: 'meat',
-		sources: ['off', 'usda', 'curated'],
+		sources: ['off', 'usda', 'curated']
 	},
 	{ slug: 'lamb', name: 'lamb', aliases: ['lamb roast', 'lamb chops', 'hogget', 'mutton'], category: 'meat' },
 	{ slug: 'lamb-mince', name: 'lamb mince', aliases: ['minced lamb', 'ground lamb'], category: 'meat' },
@@ -819,23 +472,19 @@ const specs = [
 		slug: 'sausage',
 		name: 'sausage',
 		aliases: ['sausages', 'bangers'],
-		category: 'meat',
-		allergen_uncertain: [
-			{ code: 'gluten', note: 'some NZ sausages contain breadcrumbs; check label' },
-			{ code: 'sulphites', note: 'common preservative in sausages' },
-		],
+		category: 'meat'
 	},
 	{
 		slug: 'chicken',
 		name: 'chicken',
 		aliases: ['chicken breast', 'chicken thigh', 'whole chicken'],
-		category: 'meat',
+		category: 'meat'
 	},
 	{
 		slug: 'chicken-mince',
 		name: 'chicken mince',
 		aliases: ['minced chicken', 'ground chicken'],
-		category: 'meat',
+		category: 'meat'
 	},
 	{ slug: 'chicken-liver', name: 'chicken liver', aliases: ['liver'], category: 'meat' },
 	{ slug: 'turkey', name: 'turkey', category: 'meat' },
@@ -844,11 +493,7 @@ const specs = [
 	{
 		slug: 'salami',
 		name: 'salami',
-		category: 'meat',
-		allergen_uncertain: [
-			{ code: 'milk', note: 'some salami uses milk powder' },
-			{ code: 'sulphites', note: 'may contain sulphites' },
-		],
+		category: 'meat'
 	},
 	{ slug: 'chorizo', name: 'chorizo', category: 'meat' },
 	{ slug: 'prosciutto', name: 'prosciutto', aliases: ['parma ham'], category: 'meat' },
@@ -856,125 +501,101 @@ const specs = [
 	{
 		slug: 'meatballs',
 		name: 'meatballs',
-		category: 'meat',
-		allergen_uncertain: [
-			{ code: 'gluten', note: 'often contain breadcrumbs' },
-			{ code: 'eggs', note: 'often bound with egg' },
-		],
+		category: 'meat'
 	},
 	{
 		slug: 'frankfurter',
 		name: 'frankfurter',
 		aliases: ['hot dog', 'saveloy'],
-		category: 'meat',
-		allergen_uncertain: [
-			{ code: 'gluten', note: 'check casing and fillers' },
-			{ code: 'milk', note: 'may contain dairy' },
-		],
+		category: 'meat'
 	},
 	{
 		slug: 'beef-schnitzel',
 		name: 'beef schnitzel',
 		aliases: ['schnitzel'],
-		category: 'meat',
-		allergens: ['gluten'],
-		allergen_uncertain: [{ code: 'eggs', note: 'crumb binding usually includes egg' }],
-		gluten_free: false,
+		category: 'meat'
 	},
 	{
 		slug: 'chicken-schnitzel',
 		name: 'chicken schnitzel',
-		category: 'meat',
-		allergens: ['gluten'],
-		allergen_uncertain: [{ code: 'eggs', note: 'crumb binding usually includes egg' }],
-		gluten_free: false,
+		category: 'meat'
 	},
 
 	// Seafood
-	{ slug: 'salmon', name: 'salmon', aliases: ['atlantic salmon', 'king salmon'], category: 'seafood', allergens: ['fish'] },
-	{ slug: 'tuna', name: 'tuna', aliases: ['tinned tuna', 'canned tuna'], category: 'seafood', allergens: ['fish'] },
-	{ slug: 'tarakihi', name: 'tarakihi', aliases: ['terakihi'], category: 'seafood', allergens: ['fish'], sources: ['curated', 'foodon'] },
-	{ slug: 'snapper', name: 'snapper', aliases: ['schnapper'], category: 'seafood', allergens: ['fish'] },
-	{ slug: 'gurnard', name: 'gurnard', category: 'seafood', allergens: ['fish'], sources: ['curated'] },
-	{ slug: 'hoki', name: 'hoki', category: 'seafood', allergens: ['fish'], sources: ['curated'] },
-	{ slug: 'cod', name: 'cod', aliases: ['blue cod'], category: 'seafood', allergens: ['fish'] },
-	{ slug: 'warehou', name: 'warehou', category: 'seafood', allergens: ['fish'], sources: ['curated'] },
-	{ slug: 'kahawai', name: 'kahawai', category: 'seafood', allergens: ['fish'], sources: ['curated'] },
-	{ slug: 'mackerel', name: 'mackerel', category: 'seafood', allergens: ['fish'] },
-	{ slug: 'sardine', name: 'sardine', aliases: ['sardines', 'pilchard'], category: 'seafood', allergens: ['fish'] },
-	{ slug: 'anchovy', name: 'anchovy', aliases: ['anchovies'], category: 'seafood', allergens: ['fish'] },
+	{ slug: 'salmon', name: 'salmon', aliases: ['atlantic salmon', 'king salmon'], category: 'seafood' },
+	{ slug: 'tuna', name: 'tuna', aliases: ['tinned tuna', 'canned tuna'], category: 'seafood' },
+	{ slug: 'tarakihi', name: 'tarakihi', aliases: ['terakihi'], category: 'seafood', sources: ['curated', 'foodon'] },
+	{ slug: 'snapper', name: 'snapper', aliases: ['schnapper'], category: 'seafood' },
+	{ slug: 'gurnard', name: 'gurnard', category: 'seafood', sources: ['curated'] },
+	{ slug: 'hoki', name: 'hoki', category: 'seafood', sources: ['curated'] },
+	{ slug: 'cod', name: 'cod', aliases: ['blue cod'], category: 'seafood' },
+	{ slug: 'warehou', name: 'warehou', category: 'seafood', sources: ['curated'] },
+	{ slug: 'kahawai', name: 'kahawai', category: 'seafood', sources: ['curated'] },
+	{ slug: 'mackerel', name: 'mackerel', category: 'seafood' },
+	{ slug: 'sardine', name: 'sardine', aliases: ['sardines', 'pilchard'], category: 'seafood' },
+	{ slug: 'anchovy', name: 'anchovy', aliases: ['anchovies'], category: 'seafood' },
 	{
 		slug: 'whitebait',
 		name: 'whitebait',
 		aliases: ['īnanga', 'inanga'],
 		category: 'seafood',
-		allergens: ['fish'],
-		sources: ['curated', 'foodon'],
+		sources: ['curated', 'foodon']
 	},
 	{
 		slug: 'fish-fillet',
 		name: 'fish fillet',
 		aliases: ['white fish', 'fish'],
-		category: 'seafood',
-		allergens: ['fish'],
+		category: 'seafood'
 	},
 	{
 		slug: 'prawn',
 		name: 'prawn',
 		aliases: ['prawns', 'shrimp', 'shrimps'],
-		category: 'seafood',
-		allergens: ['crustaceans'],
+		category: 'seafood'
 	},
-	{ slug: 'crab', name: 'crab', category: 'seafood', allergens: ['crustaceans'] },
+	{ slug: 'crab', name: 'crab', category: 'seafood' },
 	{
 		slug: 'crayfish',
 		name: 'crayfish',
 		aliases: ['koura', 'rock lobster', 'lobster'],
 		category: 'seafood',
-		allergens: ['crustaceans'],
-		sources: ['curated'],
+		sources: ['curated']
 	},
 	{
 		slug: 'mussel',
 		name: 'mussel',
 		aliases: ['mussels', 'green-lipped mussel', 'greenshell mussel'],
-		category: 'seafood',
-		allergens: ['molluscs'],
+		category: 'seafood'
 	},
 	{
 		slug: 'paua',
 		name: 'pāua',
 		aliases: ['paua', 'abalone'],
 		category: 'seafood',
-		allergens: ['molluscs'],
-		sources: ['curated', 'foodon'],
+		sources: ['curated', 'foodon']
 	},
 	{
 		slug: 'oyster',
 		name: 'oyster',
 		aliases: ['oysters', 'bluff oyster'],
-		category: 'seafood',
-		allergens: ['molluscs'],
+		category: 'seafood'
 	},
-	{ slug: 'scallop', name: 'scallop', aliases: ['scallops'], category: 'seafood', allergens: ['molluscs'] },
-	{ slug: 'squid', name: 'squid', aliases: ['calamari'], category: 'seafood', allergens: ['molluscs'] },
-	{ slug: 'octopus', name: 'octopus', category: 'seafood', allergens: ['molluscs'] },
+	{ slug: 'scallop', name: 'scallop', aliases: ['scallops'], category: 'seafood' },
+	{ slug: 'squid', name: 'squid', aliases: ['calamari'], category: 'seafood' },
+	{ slug: 'octopus', name: 'octopus', category: 'seafood' },
 	{
 		slug: 'clam',
 		name: 'clam',
 		aliases: ['clams', 'tuatua', 'toheroa'],
 		category: 'seafood',
-		allergens: ['molluscs'],
-		sources: ['curated'],
+		sources: ['curated']
 	},
-	{ slug: 'fish-sauce', name: 'fish sauce', aliases: ['nam pla'], category: 'seafood', allergens: ['fish'] },
+	{ slug: 'fish-sauce', name: 'fish sauce', aliases: ['nam pla'], category: 'seafood' },
 	{
 		slug: 'fish-stock',
 		name: 'fish stock',
 		aliases: ['fish broth'],
-		category: 'seafood',
-		allergens: ['fish'],
-		allergen_uncertain: [{ code: 'celery', note: 'commercial stocks often contain celery' }],
+		category: 'seafood'
 	},
 
 	// Dairy
@@ -982,87 +603,70 @@ const specs = [
 		slug: 'milk',
 		name: 'milk',
 		aliases: ['full cream milk', 'trim milk', 'homogenised milk', 'dairy milk'],
-		category: 'dairy',
-		allergens: ['milk'],
+		category: 'dairy'
 	},
 	{
 		slug: 'cream',
 		name: 'cream',
 		aliases: ['pouring cream', 'thickened cream', 'whipping cream'],
-		category: 'dairy',
-		allergens: ['milk'],
+		category: 'dairy'
 	},
-	{ slug: 'sour-cream', name: 'sour cream', aliases: ['soured cream'], category: 'dairy', allergens: ['milk'] },
+	{ slug: 'sour-cream', name: 'sour cream', aliases: ['soured cream'], category: 'dairy' },
 	{
 		slug: 'yoghurt',
 		name: 'yoghurt',
 		aliases: ['yogurt', 'greek yoghurt', 'natural yoghurt'],
-		category: 'dairy',
-		allergens: ['milk'],
+		category: 'dairy'
 	},
 	{
 		slug: 'cheese',
 		name: 'cheese',
 		aliases: ['tasty cheese', 'cheddar', 'colby'],
-		category: 'dairy',
-		allergens: ['milk'],
+		category: 'dairy'
 	},
 	{
 		slug: 'parmesan',
 		name: 'parmesan',
 		aliases: ['parmigiano', 'parmigiano-reggiano', 'grana padano'],
-		category: 'dairy',
-		allergens: ['milk'],
+		category: 'dairy'
 	},
 	{
 		slug: 'mozzarella',
 		name: 'mozzarella',
 		aliases: ['mozarella', 'pizza cheese'],
-		category: 'dairy',
-		allergens: ['milk'],
+		category: 'dairy'
 	},
-	{ slug: 'feta', name: 'feta', aliases: ['fetta'], category: 'dairy', allergens: ['milk'] },
-	{ slug: 'ricotta', name: 'ricotta', category: 'dairy', allergens: ['milk'] },
+	{ slug: 'feta', name: 'feta', aliases: ['fetta'], category: 'dairy' },
+	{ slug: 'ricotta', name: 'ricotta', category: 'dairy' },
 	{
 		slug: 'cream-cheese',
 		name: 'cream cheese',
 		aliases: ['philadelphia'],
-		category: 'dairy',
-		allergens: ['milk'],
+		category: 'dairy'
 	},
-	{ slug: 'cottage-cheese', name: 'cottage cheese', category: 'dairy', allergens: ['milk'] },
-	{ slug: 'brie', name: 'brie', aliases: ['camembert'], category: 'dairy', allergens: ['milk'] },
-	{ slug: 'blue-cheese', name: 'blue cheese', aliases: ['blue vein'], category: 'dairy', allergens: ['milk'] },
-	{ slug: 'halloumi', name: 'halloumi', aliases: ['haloumi'], category: 'dairy', allergens: ['milk'] },
-	{ slug: 'mascarpone', name: 'mascarpone', category: 'dairy', allergens: ['milk'] },
-	{ slug: 'buttermilk', name: 'buttermilk', aliases: ['butter milk'], category: 'dairy', allergens: ['milk'] },
+	{ slug: 'cottage-cheese', name: 'cottage cheese', category: 'dairy' },
+	{ slug: 'brie', name: 'brie', aliases: ['camembert'], category: 'dairy' },
+	{ slug: 'blue-cheese', name: 'blue cheese', aliases: ['blue vein'], category: 'dairy' },
+	{ slug: 'halloumi', name: 'halloumi', aliases: ['haloumi'], category: 'dairy' },
+	{ slug: 'mascarpone', name: 'mascarpone', category: 'dairy' },
+	{ slug: 'buttermilk', name: 'buttermilk', aliases: ['butter milk'], category: 'dairy' },
 	{
 		slug: 'condensed-milk',
 		name: 'condensed milk',
 		aliases: ['sweetened condensed milk'],
-		category: 'dairy',
-		allergens: ['milk'],
+		category: 'dairy'
 	},
-	{ slug: 'evaporated-milk', name: 'evaporated milk', category: 'dairy', allergens: ['milk'] },
+	{ slug: 'evaporated-milk', name: 'evaporated milk', category: 'dairy' },
 	{
 		slug: 'ice-cream',
 		name: 'ice cream',
 		aliases: ['icecream'],
-		category: 'dairy',
-		allergens: ['milk'],
-		allergen_uncertain: [
-			{ code: 'eggs', note: 'some ice cream contains egg' },
-			{ code: 'nuts', note: 'flavour variants may contain nuts' },
-		],
+		category: 'dairy'
 	},
 	{
 		slug: 'custard',
 		name: 'custard',
-		category: 'dairy',
-		allergens: ['milk'],
-		allergen_uncertain: [
-			{ code: 'eggs', note: 'egg custard contains eggs; instant custard may not' },
-		],
+		category: 'dairy'
 	},
 
 	// Eggs
@@ -1070,212 +674,151 @@ const specs = [
 		slug: 'egg',
 		name: 'egg',
 		aliases: ['eggs', 'free range egg', 'whole egg'],
-		category: 'egg',
-		allergens: ['eggs'],
+		category: 'egg'
 	},
 	{
 		slug: 'egg-white',
 		name: 'egg white',
 		aliases: ['egg whites', 'albumen'],
-		category: 'egg',
-		allergens: ['eggs'],
+		category: 'egg'
 	},
-	{ slug: 'egg-yolk', name: 'egg yolk', aliases: ['egg yolks'], category: 'egg', allergens: ['eggs'] },
+	{ slug: 'egg-yolk', name: 'egg yolk', aliases: ['egg yolks'], category: 'egg' },
 
 	// Grains
 	{
 		slug: 'flour',
 		name: 'flour',
 		aliases: ['plain flour', 'all-purpose flour', 'wheat flour'],
-		category: 'grain',
-		allergens: ['gluten'],
+		category: 'grain'
 	},
 	{
 		slug: 'self-raising-flour',
 		name: 'self-raising flour',
 		aliases: ['self raising flour', 'self-rising flour'],
-		category: 'grain',
-		allergens: ['gluten'],
+		category: 'grain'
 	},
 	{
 		slug: 'bread',
 		name: 'bread',
 		aliases: ['loaf', 'sliced bread', 'white bread', 'wholemeal bread'],
-		category: 'grain',
-		allergens: ['gluten'],
+		category: 'grain'
 	},
-	{ slug: 'sourdough', name: 'sourdough', aliases: ['sourdough bread'], category: 'grain', allergens: ['gluten'] },
+	{ slug: 'sourdough', name: 'sourdough', aliases: ['sourdough bread'], category: 'grain' },
 	{
 		slug: 'wrap',
 		name: 'wrap',
 		aliases: ['tortilla', 'flatbread', 'pita'],
-		category: 'grain',
-		allergens: ['gluten'],
-		allergen_uncertain: [
-			{ code: 'gluten', note: 'corn tortillas are usually GF; flour wraps are not — prefer corn-tortilla slug' },
-		],
+		category: 'grain'
 	},
-	{ slug: 'flour-tortilla', name: 'flour tortilla', category: 'bakery', allergens: ['gluten'] },
+	{ slug: 'flour-tortilla', name: 'flour tortilla', category: 'bakery' },
 	{
 		slug: 'corn-tortilla',
 		name: 'corn tortilla',
-		category: 'bakery',
-		allergen_uncertain: [{ code: 'gluten', note: 'usually GF corn; confirm brand' }],
-		gluten_free: true,
+		category: 'bakery'
 	},
 	{
 		slug: 'pasta',
 		name: 'pasta',
 		aliases: ['spaghetti', 'penne', 'fettuccine'],
-		category: 'grain',
-		allergens: ['gluten'],
+		category: 'grain'
 	},
 	{
 		slug: 'lasagna-sheet',
 		name: 'lasagna sheet',
 		aliases: ['lasagne sheet'],
-		category: 'grain',
-		allergens: ['gluten'],
-		allergen_uncertain: [{ code: 'eggs', note: 'egg pasta variants' }],
+		category: 'grain'
 	},
 	{
 		slug: 'noodles',
 		name: 'noodles',
 		aliases: ['egg noodles', 'wheat noodles'],
-		category: 'grain',
-		allergens: ['gluten'],
-		allergen_uncertain: [
-			{ code: 'eggs', note: 'egg noodles contain eggs; rice noodles do not — prefer rice-noodles slug' },
-		],
+		category: 'grain'
 	},
 	{
 		slug: 'rice-noodles',
 		name: 'rice noodles',
 		aliases: ['pad thai noodles', 'vermicelli rice'],
-		category: 'grain',
-		gluten_free: true,
+		category: 'grain'
 	},
-	{ slug: 'udon', name: 'udon', aliases: ['udon noodles'], category: 'grain', allergens: ['gluten'] },
+	{ slug: 'udon', name: 'udon', aliases: ['udon noodles'], category: 'grain' },
 	{
 		slug: 'soba',
 		name: 'soba',
 		aliases: ['soba noodles', 'buckwheat noodles'],
-		category: 'grain',
-		allergens: ['gluten'],
-		allergen_uncertain: [
-			{
-				code: 'gluten',
-				note: '100% buckwheat soba can be GF; most soba is wheat+buckwheat — fail closed gluten',
-			},
-		],
+		category: 'grain'
 	},
 	{
 		slug: 'ramen-noodles',
 		name: 'ramen noodles',
 		aliases: ['instant noodles', '2-minute noodles'],
-		category: 'grain',
-		allergens: ['gluten'],
-		allergen_uncertain: [
-			{ code: 'soybeans', note: 'seasoning packs often soy' },
-			{ code: 'sesame', note: 'some flavour packs' },
-			{ code: 'crustaceans', note: 'seafood flavours' },
-			{ code: 'milk', note: 'some flavour packs' },
-		],
+		category: 'grain'
 	},
 	{
 		slug: 'vermicelli',
 		name: 'vermicelli',
 		aliases: ['glass noodles', 'bean thread noodles'],
-		category: 'grain',
-		allergen_uncertain: [
-			{
-				code: 'gluten',
-				note: 'rice/mung vermicelli usually GF; wheat vermicelli is not — ambiguous name',
-			},
-		],
-		gluten_free: true,
+		category: 'grain'
 	},
-	{ slug: 'couscous', name: 'couscous', category: 'grain', allergens: ['gluten'] },
+	{ slug: 'couscous', name: 'couscous', category: 'grain' },
 	{
 		slug: 'bulgur',
 		name: 'bulgur',
 		aliases: ['bulgur wheat', 'cracked wheat'],
-		category: 'grain',
-		allergens: ['gluten'],
+		category: 'grain'
 	},
-	{ slug: 'barley', name: 'barley', aliases: ['pearl barley'], category: 'grain', allergens: ['gluten'] },
+	{ slug: 'barley', name: 'barley', aliases: ['pearl barley'], category: 'grain' },
 	{
 		slug: 'oats',
 		name: 'oats',
 		aliases: ['rolled oats', 'porridge oats', 'oatmeal'],
-		category: 'grain',
-		allergens: ['gluten'],
-		allergen_uncertain: [
-			{
-				code: 'gluten',
-				note: 'botanically GF but NZ coeliac advice: only certified GF oats; standard oats fail closed',
-			},
-		],
-		gluten_free: false,
+		category: 'grain'
 	},
 	{
 		slug: 'rice',
 		name: 'rice',
 		aliases: ['white rice', 'long grain rice', 'jasmine rice', 'basmati'],
-		category: 'grain',
-		gluten_free: true,
+		category: 'grain'
 	},
-	{ slug: 'brown-rice', name: 'brown rice', category: 'grain', gluten_free: true },
-	{ slug: 'risotto-rice', name: 'risotto rice', aliases: ['arborio'], category: 'grain', gluten_free: true },
-	{ slug: 'sushi-rice', name: 'sushi rice', category: 'grain', gluten_free: true },
-	{ slug: 'quinoa', name: 'quinoa', category: 'grain', gluten_free: true },
-	{ slug: 'polenta', name: 'polenta', aliases: ['cornmeal'], category: 'grain', gluten_free: true },
+	{ slug: 'brown-rice', name: 'brown rice', category: 'grain' },
+	{ slug: 'risotto-rice', name: 'risotto rice', aliases: ['arborio'], category: 'grain' },
+	{ slug: 'sushi-rice', name: 'sushi rice', category: 'grain' },
+	{ slug: 'quinoa', name: 'quinoa', category: 'grain' },
+	{ slug: 'polenta', name: 'polenta', aliases: ['cornmeal'], category: 'grain' },
 	{
 		slug: 'cornflour',
 		name: 'cornflour',
 		aliases: ['cornstarch', 'maize flour'],
-		category: 'grain',
-		gluten_free: true,
+		category: 'grain'
 	},
-	{ slug: 'breadcrumbs', name: 'breadcrumbs', aliases: ['panko'], category: 'grain', allergens: ['gluten'] },
-	{ slug: 'cracker', name: 'cracker', aliases: ['crackers', 'water cracker'], category: 'grain', allergens: ['gluten'] },
+	{ slug: 'breadcrumbs', name: 'breadcrumbs', aliases: ['panko'], category: 'grain' },
+	{ slug: 'cracker', name: 'cracker', aliases: ['crackers', 'water cracker'], category: 'grain' },
 	{
 		slug: 'weet-bix',
 		name: 'weet-bix',
 		aliases: ['weetbix', 'wheat biscuits'],
 		category: 'grain',
-		allergens: ['gluten'],
-		sources: ['curated'],
+		sources: ['curated']
 	},
 	{
 		slug: 'cereal',
 		name: 'cereal',
 		aliases: ['breakfast cereal'],
-		category: 'grain',
-		allergens: ['gluten'],
-		allergen_uncertain: [
-			{ code: 'gluten', note: 'many cereals contain wheat; some corn/rice are GF' },
-		],
+		category: 'grain'
 	},
-	{ slug: 'semolina', name: 'semolina', category: 'grain', allergens: ['gluten'] },
-	{ slug: 'rye', name: 'rye', aliases: ['rye flour', 'rye bread'], category: 'grain', allergens: ['gluten'] },
-	{ slug: 'spelt', name: 'spelt', aliases: ['spelt flour'], category: 'grain', allergens: ['gluten'] },
+	{ slug: 'semolina', name: 'semolina', category: 'grain' },
+	{ slug: 'rye', name: 'rye', aliases: ['rye flour', 'rye bread'], category: 'grain' },
+	{ slug: 'spelt', name: 'spelt', aliases: ['spelt flour'], category: 'grain' },
 	{
 		slug: 'rice-paper',
 		name: 'rice paper',
 		aliases: ['rice paper wrapper'],
-		category: 'grain',
-		gluten_free: true,
+		category: 'grain'
 	},
 	{
 		slug: 'wonton-wrapper',
 		name: 'wonton wrapper',
 		aliases: ['dumpling wrapper'],
-		category: 'grain',
-		allergens: ['gluten'],
-		allergen_uncertain: [{ code: 'eggs', note: 'often contain egg' }],
-		vegan: false,
-		vegetarian: true,
+		category: 'grain'
 	},
 
 	// Legumes
@@ -1284,126 +827,112 @@ const specs = [
 		slug: 'lentil',
 		name: 'lentil',
 		aliases: ['lentils', 'red lentil', 'brown lentil', 'green lentil'],
-		category: 'legume',
+		category: 'legume'
 	},
 	{ slug: 'black-bean', name: 'black bean', aliases: ['black beans'], category: 'legume' },
 	{
 		slug: 'kidney-bean',
 		name: 'kidney bean',
 		aliases: ['red kidney bean', 'kidney beans'],
-		category: 'legume',
+		category: 'legume'
 	},
 	{
 		slug: 'cannellini',
 		name: 'cannellini',
 		aliases: ['white bean', 'white beans', 'navy bean'],
-		category: 'legume',
+		category: 'legume'
 	},
 	{ slug: 'butter-bean', name: 'butter bean', aliases: ['lima bean'], category: 'legume' },
 	{
 		slug: 'baked-beans',
 		name: 'baked beans',
 		aliases: ['beans in tomato sauce'],
-		category: 'legume',
-		allergen_uncertain: [{ code: 'gluten', note: 'some sauces thicken with wheat; check label' }],
+		category: 'legume'
 	},
 	{
 		slug: 'tofu',
 		name: 'tofu',
 		aliases: ['bean curd', 'firm tofu', 'silken tofu'],
-		category: 'legume',
-		allergens: ['soybeans'],
+		category: 'legume'
 	},
-	{ slug: 'tempeh', name: 'tempeh', category: 'legume', allergens: ['soybeans'] },
+	{ slug: 'tempeh', name: 'tempeh', category: 'legume' },
 	{
 		slug: 'edamame',
 		name: 'edamame',
 		aliases: ['soy beans', 'soya beans'],
-		category: 'legume',
-		allergens: ['soybeans'],
+		category: 'legume'
 	},
 	{
 		slug: 'hummus',
 		name: 'hummus',
 		aliases: ['houmous'],
-		category: 'legume',
-		allergens: ['sesame'],
-		allergen_uncertain: [
-			{ code: 'sesame', note: 'sesame-free hummus exists; default assumes tahini' },
-		],
+		category: 'legume'
 	},
 	{
 		slug: 'split-pea',
 		name: 'split pea',
 		aliases: ['yellow split pea', 'green split pea'],
-		category: 'legume',
+		category: 'legume'
 	},
 	{ slug: 'mung-bean', name: 'mung bean', aliases: ['moong'], category: 'legume' },
 
 	// Nuts & seeds
-	{ slug: 'peanut', name: 'peanut', aliases: ['peanuts', 'groundnut'], category: 'nut_seed', allergens: ['peanuts'] },
+	{ slug: 'peanut', name: 'peanut', aliases: ['peanuts', 'groundnut'], category: 'nut_seed' },
 	{
 		slug: 'peanut-butter',
 		name: 'peanut butter',
 		aliases: ['PB'],
-		category: 'nut_seed',
-		allergens: ['peanuts'],
+		category: 'nut_seed'
 	},
-	{ slug: 'almond', name: 'almond', aliases: ['almonds'], category: 'nut_seed', allergens: ['nuts'] },
-	{ slug: 'walnut', name: 'walnut', aliases: ['walnuts'], category: 'nut_seed', allergens: ['nuts'] },
-	{ slug: 'cashew', name: 'cashew', aliases: ['cashews'], category: 'nut_seed', allergens: ['nuts'] },
+	{ slug: 'almond', name: 'almond', aliases: ['almonds'], category: 'nut_seed' },
+	{ slug: 'walnut', name: 'walnut', aliases: ['walnuts'], category: 'nut_seed' },
+	{ slug: 'cashew', name: 'cashew', aliases: ['cashews'], category: 'nut_seed' },
 	{
 		slug: 'hazelnut',
 		name: 'hazelnut',
 		aliases: ['hazelnuts', 'filbert'],
-		category: 'nut_seed',
-		allergens: ['nuts'],
+		category: 'nut_seed'
 	},
-	{ slug: 'pistachio', name: 'pistachio', aliases: ['pistachios'], category: 'nut_seed', allergens: ['nuts'] },
-	{ slug: 'macadamia', name: 'macadamia', aliases: ['macadamias'], category: 'nut_seed', allergens: ['nuts'] },
-	{ slug: 'pecan', name: 'pecan', aliases: ['pecans'], category: 'nut_seed', allergens: ['nuts'] },
+	{ slug: 'pistachio', name: 'pistachio', aliases: ['pistachios'], category: 'nut_seed' },
+	{ slug: 'macadamia', name: 'macadamia', aliases: ['macadamias'], category: 'nut_seed' },
+	{ slug: 'pecan', name: 'pecan', aliases: ['pecans'], category: 'nut_seed' },
 	{
 		slug: 'brazil-nut',
 		name: 'brazil nut',
 		aliases: ['brazil nuts'],
-		category: 'nut_seed',
-		allergens: ['nuts'],
+		category: 'nut_seed'
 	},
 	{
 		slug: 'pine-nut',
 		name: 'pine nut',
 		aliases: ['pine nuts', 'pignoli'],
-		category: 'nut_seed',
-		allergens: ['nuts'],
+		category: 'nut_seed'
 	},
 	{
 		slug: 'mixed-nuts',
 		name: 'mixed nuts',
-		category: 'nut_seed',
-		allergens: ['nuts'],
-		allergen_uncertain: [{ code: 'peanuts', note: 'mixes sometimes include peanuts' }],
+		category: 'nut_seed'
 	},
 	{
 		slug: 'sesame',
 		name: 'sesame',
 		aliases: ['sesame seed', 'sesame seeds'],
-		category: 'nut_seed',
-		allergens: ['sesame'],
+		category: 'nut_seed'
 	},
-	{ slug: 'tahini', name: 'tahini', aliases: ['sesame paste'], category: 'nut_seed', allergens: ['sesame'] },
+	{ slug: 'tahini', name: 'tahini', aliases: ['sesame paste'], category: 'nut_seed' },
 	{ slug: 'chia', name: 'chia', aliases: ['chia seed', 'chia seeds'], category: 'nut_seed' },
 	{ slug: 'linseed', name: 'linseed', aliases: ['flaxseed', 'flax seed'], category: 'nut_seed' },
 	{
 		slug: 'pumpkin-seed',
 		name: 'pumpkin seed',
 		aliases: ['pepita', 'pumpkin seeds'],
-		category: 'nut_seed',
+		category: 'nut_seed'
 	},
 	{
 		slug: 'sunflower-seed',
 		name: 'sunflower seed',
 		aliases: ['sunflower seeds'],
-		category: 'nut_seed',
+		category: 'nut_seed'
 	},
 	{ slug: 'poppy-seed', name: 'poppy seed', aliases: ['poppy seeds'], category: 'nut_seed' },
 	{ slug: 'hemp-seed', name: 'hemp seed', aliases: ['hemp hearts'], category: 'nut_seed' },
@@ -1414,19 +943,19 @@ const specs = [
 		name: 'coriander',
 		aliases: ['cilantro', 'fresh coriander', 'coriander leaf', 'chinese parsley'],
 		category: 'herb_spice',
-		sources: ['off', 'usda', 'curated'],
+		sources: ['off', 'usda', 'curated']
 	},
 	{
 		slug: 'coriander-seed',
 		name: 'coriander seed',
 		aliases: ['coriander seeds', 'ground coriander'],
-		category: 'herb_spice',
+		category: 'herb_spice'
 	},
 	{
 		slug: 'parsley',
 		name: 'parsley',
 		aliases: ['flat leaf parsley', 'italian parsley', 'curly parsley'],
-		category: 'herb_spice',
+		category: 'herb_spice'
 	},
 	{ slug: 'basil', name: 'basil', aliases: ['fresh basil', 'sweet basil'], category: 'herb_spice' },
 	{ slug: 'mint', name: 'mint', aliases: ['fresh mint', 'spearmint'], category: 'herb_spice' },
@@ -1445,7 +974,7 @@ const specs = [
 		slug: 'kaffir-lime',
 		name: 'kaffir lime leaf',
 		aliases: ['makrut lime leaf', 'kaffir lime'],
-		category: 'herb_spice',
+		category: 'herb_spice'
 	},
 	{ slug: 'galangal', name: 'galangal', category: 'herb_spice' },
 	{ slug: 'pandan', name: 'pandan', aliases: ['pandan leaf'], category: 'herb_spice' },
@@ -1462,24 +991,19 @@ const specs = [
 		slug: 'mustard-seed',
 		name: 'mustard seed',
 		aliases: ['mustard seeds', 'yellow mustard seed'],
-		category: 'herb_spice',
-		allergens: ['mustard'],
+		category: 'herb_spice'
 	},
 	{
 		slug: 'chilli-flakes',
 		name: 'chilli flakes',
 		aliases: ['chili flakes', 'red pepper flakes', 'crushed chilli'],
-		category: 'herb_spice',
+		category: 'herb_spice'
 	},
 	{ slug: 'cayenne', name: 'cayenne', aliases: ['cayenne pepper'], category: 'herb_spice' },
 	{
 		slug: 'curry-powder',
 		name: 'curry powder',
-		category: 'herb_spice',
-		allergen_uncertain: [
-			{ code: 'mustard', note: 'many blends include mustard seed' },
-			{ code: 'gluten', note: 'rare fillers; check label' },
-		],
+		category: 'herb_spice'
 	},
 	{ slug: 'garam-masala', name: 'garam masala', category: 'herb_spice' },
 	{ slug: 'chinese-five-spice', name: 'chinese five spice', aliases: ['five spice'], category: 'herb_spice' },
@@ -1490,25 +1014,19 @@ const specs = [
 		slug: 'zaatar',
 		name: "za'atar",
 		aliases: ['zaatar'],
-		category: 'herb_spice',
-		allergens: ['sesame'],
-		allergen_uncertain: [
-			{ code: 'sesame', note: 'sesame-free blends exist; classic includes sesame' },
-		],
+		category: 'herb_spice'
 	},
 	{
 		slug: 'dukkah',
 		name: 'dukkah',
 		aliases: ['duqqa'],
-		category: 'herb_spice',
-		allergens: ['nuts', 'sesame'],
-		allergen_uncertain: [{ code: 'gluten', note: 'some blends include wheat' }],
+		category: 'herb_spice'
 	},
 	{
 		slug: 'vanilla',
 		name: 'vanilla',
 		aliases: ['vanilla extract', 'vanilla essence', 'vanilla bean'],
-		category: 'herb_spice',
+		category: 'herb_spice'
 	},
 	{ slug: 'garlic-powder', name: 'garlic powder', aliases: ['garlic granules'], category: 'herb_spice' },
 	{ slug: 'onion-powder', name: 'onion powder', category: 'herb_spice' },
@@ -1516,19 +1034,13 @@ const specs = [
 		slug: 'stock-powder',
 		name: 'stock powder',
 		aliases: ['stock cube', 'bouillon', 'oxo'],
-		category: 'herb_spice',
-		allergen_uncertain: [
-			{ code: 'celery', note: 'very common in stock powders' },
-			{ code: 'gluten', note: 'some cubes contain wheat' },
-			{ code: 'milk', note: 'some contain dairy' },
-			{ code: 'soybeans', note: 'some contain soy' },
-		],
+		category: 'herb_spice'
 	},
 	{
 		slug: 'italian-herbs',
 		name: 'italian herbs',
 		aliases: ['italian seasoning', 'mixed herbs'],
-		category: 'herb_spice',
+		category: 'herb_spice'
 	},
 	{ slug: 'elderflower', name: 'elderflower', aliases: ['elderflower cordial'], category: 'herb_spice' },
 	{ slug: 'lavender', name: 'lavender', category: 'herb_spice' },
@@ -1538,123 +1050,79 @@ const specs = [
 		slug: 'soy-sauce',
 		name: 'soy sauce',
 		aliases: ['soya sauce', 'soy', 'light soy', 'dark soy'],
-		category: 'condiment',
-		allergens: ['soybeans', 'gluten'],
-		allergen_uncertain: [
-			{
-				code: 'gluten',
-				note: 'tamari is often GF; standard soy sauce is wheat-based — fail closed gluten',
-			},
-		],
-		gluten_free: false,
+		category: 'condiment'
 	},
 	{
 		slug: 'tamari',
 		name: 'tamari',
 		aliases: ['gluten free soy sauce'],
-		category: 'condiment',
-		allergens: ['soybeans'],
-		allergen_uncertain: [{ code: 'gluten', note: 'most tamari is GF; confirm label' }],
-		gluten_free: true,
+		category: 'condiment'
 	},
 	{
 		slug: 'worcestershire',
 		name: 'worcestershire sauce',
 		aliases: ['worcestershire', 'worcester sauce'],
-		category: 'condiment',
-		allergen_uncertain: [
-			{ code: 'fish', note: 'classic recipe includes anchovy' },
-			{ code: 'gluten', note: 'some brands contain gluten' },
-			{ code: 'soybeans', note: 'some brands contain soy' },
-		],
-		vegan: false,
-		vegetarian: false,
+		category: 'condiment'
 	},
 	{
 		slug: 'tomato-sauce',
 		name: 'tomato sauce',
 		aliases: ['ketchup', 'tomato ketchup'],
-		category: 'condiment',
+		category: 'condiment'
 	},
 	{
 		slug: 'mayonnaise',
 		name: 'mayonnaise',
 		aliases: ['mayo', 'aioli'],
-		category: 'condiment',
-		allergens: ['eggs'],
-		allergen_uncertain: [{ code: 'mustard', note: 'many mayo recipes include mustard' }],
-		vegan: false,
-		vegetarian: true,
+		category: 'condiment'
 	},
 	{
 		slug: 'mustard',
 		name: 'mustard',
 		aliases: ['dijon', 'wholegrain mustard', 'yellow mustard'],
-		category: 'condiment',
-		allergens: ['mustard'],
+		category: 'condiment'
 	},
 	{ slug: 'vinegar', name: 'vinegar', aliases: ['white vinegar'], category: 'condiment' },
-	{ slug: 'malt-vinegar', name: 'malt vinegar', category: 'condiment', allergens: ['gluten'] },
+	{ slug: 'malt-vinegar', name: 'malt vinegar', category: 'condiment' },
 	{ slug: 'balsamic', name: 'balsamic vinegar', aliases: ['balsamic'], category: 'condiment' },
 	{
 		slug: 'apple-cider-vinegar',
 		name: 'apple cider vinegar',
 		aliases: ['acv', 'cider vinegar'],
-		category: 'condiment',
+		category: 'condiment'
 	},
 	{
 		slug: 'wine-vinegar',
 		name: 'wine vinegar',
 		aliases: ['red wine vinegar', 'white wine vinegar'],
-		category: 'condiment',
+		category: 'condiment'
 	},
 	{ slug: 'hot-sauce', name: 'hot sauce', aliases: ['tabasco', 'chilli sauce'], category: 'condiment' },
 	{
 		slug: 'sweet-chilli',
 		name: 'sweet chilli sauce',
 		aliases: ['sweet chili sauce'],
-		category: 'condiment',
+		category: 'condiment'
 	},
 	{
 		slug: 'oyster-sauce',
 		name: 'oyster sauce',
-		category: 'condiment',
-		allergens: ['molluscs'],
-		allergen_uncertain: [
-			{ code: 'gluten', note: 'often contains wheat' },
-			{ code: 'soybeans', note: 'often contains soy' },
-		],
-		vegan: false,
-		vegetarian: false,
+		category: 'condiment'
 	},
 	{
 		slug: 'hoisin',
 		name: 'hoisin sauce',
-		category: 'condiment',
-		allergens: ['soybeans'],
-		allergen_uncertain: [
-			{ code: 'gluten', note: 'often contains wheat' },
-			{ code: 'sesame', note: 'some brands contain sesame' },
-		],
+		category: 'condiment'
 	},
 	{
 		slug: 'teriyaki',
 		name: 'teriyaki sauce',
-		category: 'condiment',
-		allergens: ['soybeans', 'gluten'],
-		gluten_free: false,
+		category: 'condiment'
 	},
 	{
 		slug: 'pesto',
 		name: 'pesto',
-		category: 'condiment',
-		allergens: ['nuts', 'milk'],
-		allergen_uncertain: [
-			{ code: 'nuts', note: 'classic basil pesto uses pine nuts' },
-			{ code: 'milk', note: 'classic includes parmesan' },
-		],
-		vegan: false,
-		vegetarian: true,
+		category: 'condiment'
 	},
 	{ slug: 'relish', name: 'relish', aliases: ['tomato relish'], category: 'condiment' },
 	{ slug: 'chutney', name: 'chutney', aliases: ['mango chutney'], category: 'condiment' },
@@ -1663,9 +1131,7 @@ const specs = [
 		slug: 'honey',
 		name: 'honey',
 		aliases: ['manuka honey', 'mānuka honey'],
-		category: 'condiment',
-		vegan: false,
-		vegetarian: true,
+		category: 'condiment'
 	},
 	{ slug: 'maple-syrup', name: 'maple syrup', aliases: ['maple'], category: 'condiment' },
 	{ slug: 'golden-syrup', name: 'golden syrup', category: 'condiment' },
@@ -1674,29 +1140,26 @@ const specs = [
 		slug: 'sugar',
 		name: 'sugar',
 		aliases: ['white sugar', 'caster sugar', 'raw sugar'],
-		category: 'condiment',
+		category: 'condiment'
 	},
 	{ slug: 'brown-sugar', name: 'brown sugar', aliases: ['soft brown sugar'], category: 'condiment' },
 	{
 		slug: 'icing-sugar',
 		name: 'icing sugar',
 		aliases: ['powdered sugar', 'confectioners sugar'],
-		category: 'condiment',
+		category: 'condiment'
 	},
 	{ slug: 'coconut-sugar', name: 'coconut sugar', category: 'condiment' },
 	{
 		slug: 'baking-powder',
 		name: 'baking powder',
-		category: 'condiment',
-		allergen_uncertain: [
-			{ code: 'gluten', note: 'most NZ baking powder is GF; rare wheat starch — check if coeliac' },
-		],
+		category: 'condiment'
 	},
 	{
 		slug: 'baking-soda',
 		name: 'baking soda',
 		aliases: ['bicarbonate of soda', 'bicarb'],
-		category: 'condiment',
+		category: 'condiment'
 	},
 	{ slug: 'cream-of-tartar', name: 'cream of tartar', category: 'condiment', sources: ['usda', 'curated'] },
 	{ slug: 'yeast', name: 'yeast', aliases: ['instant yeast', 'active yeast', 'dried yeast'], category: 'condiment' },
@@ -1704,9 +1167,7 @@ const specs = [
 		slug: 'gelatine',
 		name: 'gelatine',
 		aliases: ['gelatin', 'gelatine leaves'],
-		category: 'condiment',
-		vegan: false,
-		vegetarian: false,
+		category: 'condiment'
 	},
 	{ slug: 'agar', name: 'agar', aliases: ['agar agar'], category: 'condiment' },
 	{ slug: 'cocoa', name: 'cocoa', aliases: ['cocoa powder', 'cacao'], category: 'condiment' },
@@ -1714,93 +1175,59 @@ const specs = [
 		slug: 'chocolate',
 		name: 'chocolate',
 		aliases: ['dark chocolate'],
-		category: 'condiment',
-		allergen_uncertain: [
-			{ code: 'milk', note: 'milk chocolate contains milk; dark may have traces' },
-			{ code: 'soybeans', note: 'lecithin often soy' },
-			{ code: 'nuts', note: 'may contain nuts' },
-		],
+		category: 'condiment'
 	},
 	{
 		slug: 'milk-chocolate',
 		name: 'milk chocolate',
-		category: 'condiment',
-		allergens: ['milk'],
-		allergen_uncertain: [
-			{ code: 'soybeans', note: 'lecithin often soy' },
-			{ code: 'nuts', note: 'may contain nuts' },
-		],
-		vegan: false,
-		vegetarian: true,
+		category: 'condiment'
 	},
 	{
 		slug: 'white-chocolate',
 		name: 'white chocolate',
-		category: 'condiment',
-		allergens: ['milk'],
-		allergen_uncertain: [{ code: 'soybeans', note: 'lecithin often soy' }],
-		vegan: false,
-		vegetarian: true,
+		category: 'condiment'
 	},
 	{
 		slug: 'peanut-sauce',
 		name: 'peanut sauce',
 		aliases: ['satay sauce'],
-		category: 'condiment',
-		allergens: ['peanuts'],
-		allergen_uncertain: [
-			{ code: 'soybeans', note: 'often contains soy' },
-			{ code: 'gluten', note: 'may contain wheat' },
-		],
+		category: 'condiment'
 	},
 	{
 		slug: 'miso',
 		name: 'miso',
 		aliases: ['miso paste'],
-		category: 'condiment',
-		allergens: ['soybeans'],
-		allergen_uncertain: [
-			{ code: 'gluten', note: 'some miso uses barley/wheat; rice/soy miso may be GF' },
-		],
+		category: 'condiment'
 	},
 	{
 		slug: 'wasabi',
 		name: 'wasabi',
-		category: 'condiment',
-		allergen_uncertain: [
-			{ code: 'mustard', note: 'imitation wasabi often horseradish; may include mustard — check' },
-		],
+		category: 'condiment'
 	},
 	{
 		slug: 'pickled-ginger',
 		name: 'pickled ginger',
 		aliases: ['gari'],
-		category: 'condiment',
-		allergen_uncertain: [{ code: 'sulphites', note: 'may contain sulphites' }],
+		category: 'condiment'
 	},
 	{
 		slug: 'mirin',
 		name: 'mirin',
 		aliases: ['sweet rice wine'],
-		category: 'condiment',
-		allergen_uncertain: [
-			{ code: 'gluten', note: 'hon-mirin usually GF; mirin-style seasoning may contain gluten' },
-		],
+		category: 'condiment'
 	},
 	{
 		slug: 'shaoxing',
 		name: 'shaoxing wine',
 		aliases: ['chinese cooking wine'],
-		category: 'condiment',
-		allergen_uncertain: [{ code: 'gluten', note: 'some brands contain wheat' }],
+		category: 'condiment'
 	},
 	{ slug: 'capers', name: 'capers', aliases: ['caper'], category: 'condiment' },
 	{ slug: 'sambal', name: 'sambal', aliases: ['sambal oelek'], category: 'condiment' },
 	{
 		slug: 'harissa',
 		name: 'harissa',
-		category: 'condiment',
-		allergen_uncertain: [{ code: 'gluten', note: 'check brand' }],
+		category: 'condiment'
 	},
 	{ slug: 'nutritional-yeast', name: 'nutritional yeast', aliases: ['nooch'], category: 'condiment' },
 
@@ -1809,28 +1236,26 @@ const specs = [
 		slug: 'olive-oil',
 		name: 'olive oil',
 		aliases: ['extra virgin olive oil', 'evoo', 'light olive oil'],
-		category: 'oil_fat',
+		category: 'oil_fat'
 	},
 	{
 		slug: 'vegetable-oil',
 		name: 'vegetable oil',
 		aliases: ['canola oil', 'rapeseed oil', 'sunflower oil'],
-		category: 'oil_fat',
+		category: 'oil_fat'
 	},
 	{
 		slug: 'sesame-oil',
 		name: 'sesame oil',
 		aliases: ['toasted sesame oil'],
-		category: 'oil_fat',
-		allergens: ['sesame'],
+		category: 'oil_fat'
 	},
 	{ slug: 'coconut-oil', name: 'coconut oil', category: 'oil_fat' },
 	{
 		slug: 'peanut-oil',
 		name: 'peanut oil',
 		aliases: ['groundnut oil'],
-		category: 'oil_fat',
-		allergens: ['peanuts'],
+		category: 'oil_fat'
 	},
 	{ slug: 'avocado-oil', name: 'avocado oil', category: 'oil_fat' },
 	{ slug: 'rice-bran-oil', name: 'rice bran oil', category: 'oil_fat' },
@@ -1838,29 +1263,20 @@ const specs = [
 		slug: 'ghee',
 		name: 'ghee',
 		aliases: ['clarified butter'],
-		category: 'oil_fat',
-		allergens: ['milk'],
-		vegan: false,
-		vegetarian: true,
+		category: 'oil_fat'
 	},
-	{ slug: 'lard', name: 'lard', aliases: ['pork fat'], category: 'oil_fat', vegan: false, vegetarian: false },
+	{ slug: 'lard', name: 'lard', aliases: ['pork fat'], category: 'oil_fat' },
 	{
 		slug: 'dripping',
 		name: 'dripping',
 		aliases: ['beef dripping'],
-		category: 'oil_fat',
-		vegan: false,
-		vegetarian: false,
+		category: 'oil_fat'
 	},
 	{
 		slug: 'margarine',
 		name: 'margarine',
 		aliases: ['spread'],
-		category: 'oil_fat',
-		allergen_uncertain: [
-			{ code: 'milk', note: 'some spreads contain milk' },
-			{ code: 'soybeans', note: 'often contains soy' },
-		],
+		category: 'oil_fat'
 	},
 
 	// Bakery
@@ -1868,68 +1284,41 @@ const specs = [
 		slug: 'puff-pastry',
 		name: 'puff pastry',
 		aliases: ['flaky pastry'],
-		category: 'bakery',
-		allergens: ['gluten'],
-		allergen_uncertain: [
-			{ code: 'milk', note: 'butter pastry contains milk; margarine versions may not' },
-		],
+		category: 'bakery'
 	},
 	{
 		slug: 'shortcrust',
 		name: 'shortcrust pastry',
 		aliases: ['pie pastry'],
-		category: 'bakery',
-		allergens: ['gluten'],
-		allergen_uncertain: [
-			{ code: 'milk', note: 'often contains butter' },
-			{ code: 'eggs', note: 'some recipes include egg' },
-		],
+		category: 'bakery'
 	},
-	{ slug: 'filo', name: 'filo pastry', aliases: ['phyllo'], category: 'bakery', allergens: ['gluten'] },
+	{ slug: 'filo', name: 'filo pastry', aliases: ['phyllo'], category: 'bakery' },
 	{
 		slug: 'pizza-base',
 		name: 'pizza base',
 		aliases: ['pizza base ready-made'],
-		category: 'bakery',
-		allergens: ['gluten'],
+		category: 'bakery'
 	},
 	{
 		slug: 'bagel',
 		name: 'bagel',
-		category: 'bakery',
-		allergens: ['gluten'],
-		allergen_uncertain: [{ code: 'sesame', note: 'often topped with sesame' }],
+		category: 'bakery'
 	},
 	{
 		slug: 'croissant',
 		name: 'croissant',
-		category: 'bakery',
-		allergens: ['gluten', 'milk'],
-		allergen_uncertain: [{ code: 'eggs', note: 'may contain egg' }],
-		vegan: false,
-		vegetarian: true,
+		category: 'bakery'
 	},
 	{
 		slug: 'muffin',
 		name: 'muffin',
-		category: 'bakery',
-		allergens: ['gluten'],
-		allergen_uncertain: [
-			{ code: 'eggs', note: 'usually contains egg' },
-			{ code: 'milk', note: 'usually contains milk' },
-		],
+		category: 'bakery'
 	},
 	{
 		slug: 'biscuit',
 		name: 'biscuit',
 		aliases: ['cookie', 'cookies'],
-		category: 'bakery',
-		allergens: ['gluten'],
-		allergen_uncertain: [
-			{ code: 'eggs', note: 'often' },
-			{ code: 'milk', note: 'often' },
-			{ code: 'nuts', note: 'variants' },
-		],
+		category: 'bakery'
 	},
 
 	// Beverages / stocks
@@ -1938,7 +1327,7 @@ const specs = [
 	{ slug: 'green-tea', name: 'green tea', category: 'beverage' },
 	{ slug: 'matcha', name: 'matcha', aliases: ['matcha powder'], category: 'beverage' },
 	{ slug: 'wine', name: 'wine', aliases: ['red wine', 'white wine', 'cooking wine'], category: 'beverage' },
-	{ slug: 'beer', name: 'beer', aliases: ['lager', 'ale'], category: 'beverage', allergens: ['gluten'] },
+	{ slug: 'beer', name: 'beer', aliases: ['lager', 'ale'], category: 'beverage' },
 	{ slug: 'orange-juice', name: 'orange juice', category: 'beverage', sources: ['curated'] },
 	{ slug: 'apple-juice', name: 'apple juice', category: 'beverage', sources: ['curated'] },
 	{ slug: 'tomato-juice', name: 'tomato juice', category: 'beverage', sources: ['curated'] },
@@ -1947,54 +1336,31 @@ const specs = [
 		name: 'soda water',
 		aliases: ['sparkling water', 'club soda'],
 		category: 'beverage',
-		sources: ['curated'],
+		sources: ['curated']
 	},
 	{
 		slug: 'stock',
 		name: 'stock',
 		aliases: ['broth'],
-		category: 'beverage',
-		allergen_uncertain: [
-			{ code: 'celery', note: 'commercial stock usually contains celery' },
-			{ code: 'gluten', note: 'check label' },
-			{ code: 'fish', note: 'fish stock variant' },
-		],
-		vegan: true,
-		vegetarian: true,
+		category: 'beverage'
 	},
 	{
 		slug: 'chicken-stock',
 		name: 'chicken stock',
 		aliases: ['chicken broth'],
-		category: 'beverage',
-		allergen_uncertain: [
-			{ code: 'celery', note: 'commercial usually contains celery' },
-			{ code: 'gluten', note: 'check label' },
-		],
-		vegan: false,
-		vegetarian: false,
+		category: 'beverage'
 	},
 	{
 		slug: 'beef-stock',
 		name: 'beef stock',
 		aliases: ['beef broth'],
-		category: 'beverage',
-		allergen_uncertain: [
-			{ code: 'celery', note: 'commercial usually contains celery' },
-			{ code: 'gluten', note: 'check label' },
-		],
-		vegan: false,
-		vegetarian: false,
+		category: 'beverage'
 	},
 	{
 		slug: 'vegetable-stock',
 		name: 'vegetable stock',
 		aliases: ['veg stock', 'vegetable broth'],
-		category: 'beverage',
-		allergen_uncertain: [
-			{ code: 'celery', note: 'commercial usually contains celery' },
-			{ code: 'gluten', note: 'check label' },
-		],
+		category: 'beverage'
 	},
 	{ slug: 'coconut-water', name: 'coconut water', category: 'beverage' },
 
@@ -2005,15 +1371,12 @@ const specs = [
 		slug: 'corn-chips',
 		name: 'corn chips',
 		aliases: ['tortilla chips'],
-		category: 'other',
-		allergen_uncertain: [
-			{ code: 'gluten', note: 'usually corn-based; check seasoning' },
-			{ code: 'milk', note: 'cheese flavours contain milk' },
-		],
+		category: 'other'
 	},
 	{ slug: 'cacao-nibs', name: 'cacao nibs', category: 'other', sources: ['usda', 'curated'] },
 	{ slug: 'popcorn', name: 'popcorn', category: 'other' },
 ]
+
 
 function build() {
 	const ingredients = specs.map(item)
@@ -2038,22 +1401,8 @@ function build() {
 
 	/** @type {{ slug: string, kind: string, detail: string }[]} */
 	const reviews = []
-	for (const row of ingredients) {
-		for (const u of row.allergen_uncertain) {
-			reviews.push({
-				slug: row.slug,
-				kind: 'allergen_uncertain',
-				detail: `${u.code}: ${u.note}`,
-			})
-		}
-		for (const u of row.diet_uncertain) {
-			reviews.push({
-				slug: row.slug,
-				kind: 'diet_uncertain',
-				detail: `${u.flag}: ${u.note}`,
-			})
-		}
-	}
+
+	// Commercial / identity ambiguity only (no curated allergen or keto/ halal/paleo rows).
 	const ambiguous = [
 		'chocolate',
 		'stock',
@@ -2075,12 +1424,15 @@ function build() {
 		if (bySlug.has(slug)) {
 			reviews.push({
 				slug,
-				kind: 'diet_or_identity_ambiguous',
-				detail: 'Ambiguous commercial product; diet/allergen flags need human confirm',
+				kind: 'identity_ambiguous',
+				detail:
+					'Ambiguous commercial product; confirm slug/aliases and intrinsic flags if needed',
 			})
 		}
 	}
-	for (const [label, slugs] of [...aliasMap.entries()].sort((a, b) => String(a[0]).localeCompare(String(b[0])))) {
+	for (const [label, slugs] of [...aliasMap.entries()].sort((a, b) =>
+		String(a[0]).localeCompare(String(b[0])),
+	)) {
 		if (slugs.size > 1) {
 			const ordered = [...slugs].sort((a, b) => String(a).localeCompare(String(b)))
 			reviews.push({
@@ -2090,6 +1442,12 @@ function build() {
 			})
 		}
 	}
+
+	reviews.sort(
+		(a, b) =>
+			String(a.kind).localeCompare(String(b.kind)) ||
+			String(a.slug).localeCompare(String(b.slug)),
+	)
 
 	const doc = {
 		version: 1,
@@ -2102,12 +1460,17 @@ function build() {
 				'On load into RECIPES_DB, each row also gets a ULID primary key (see docs/data.md). Slug stays UNIQUE.',
 			vectorize: 'Embed name + aliases; metadata includes slug (and ULID after D1 load).',
 		},
-		diet_flags: DIET_FLAGS,
+		avoid_model: {
+			summary:
+				'Cook lists ingredients to avoid. Code blocks chips whose slug or alias matches, and expands small parent links (e.g. dairy, wheat). UI tells Cooks they must check their own product labels — the seed is not a medical allergen database.',
+			parent_groups: ['dairy', 'wheat'],
+		},
+		intrinsic_flags: INTRINSIC_FLAGS,
+		intrinsic_flags_note:
+			'Composition flags only. vegan = none of the five; vegetarian = no meat/fish and no vegetarian-blocking animal_derived (gelatine, lard, …). Honey is animal_derived but vegetarian-OK. gluten_free / keto / halal / paleo are AI rules + label disclaimer — not per-item tags.',
+		diet_flags: ['vegan', 'vegetarian'],
 		diet_flags_note:
-			'v1 closed Diet flags (product.md): vegan | vegetarian | gluten_free | keto | halal | paleo. Former parked keto/halal/paleo are now v1. Unclear cases use diet_uncertain — never guess. Allergies always win over flags.',
-		allergen_codes: ALLERGENS,
-		allergen_codes_note:
-			'Aligned with Open Food Facts allergen taxonomy tags (en:*). Easy to hand-check. Uncertain cases use allergen_uncertain — never guess.',
+			'Derived from intrinsic flags. Other Diet preferences (gluten_free, keto, halal, paleo) are short rules for the AI plus the label disclaimer — not stored on pantry rows.',
 		categories: CATEGORIES,
 		ingredients,
 	}
@@ -2119,10 +1482,30 @@ function build() {
 		`${JSON.stringify({ count: reviews.length, items: reviews }, null, 2)}\n`,
 	)
 
+	const md = [
+		'# NZ pantry — manual review',
+		'',
+		`Generated by \`scripts/generate-nz-pantry.mjs\`. **${reviews.length}** item(s).`,
+		'',
+		'Curated allergens / may-contain and per-item gluten_free / keto / halal / paleo tags were **removed** (Coinnich). Remaining rows are identity / alias issues only.',
+		'',
+		'| Slug | Kind | Detail |',
+		'|---|---|---|',
+		...reviews.map(
+			(r) =>
+				`| \`${r.slug}\` | ${r.kind} | ${r.detail.replaceAll('|', '\\|')} |`,
+		),
+		'',
+	].join('\n')
+	writeFileSync(join(outDir, 'MANUAL_REVIEW.md'), md)
+
 	console.log(`ingredients: ${ingredients.length}`)
 	console.log(`review items: ${reviews.length}`)
 	console.log(
 		`alias clashes: ${reviews.filter((r) => r.kind === 'alias_clash').length}`,
+	)
+	console.log(
+		`identity_ambiguous: ${reviews.filter((r) => r.kind === 'identity_ambiguous').length}`,
 	)
 }
 
