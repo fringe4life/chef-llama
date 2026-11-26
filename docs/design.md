@@ -159,6 +159,20 @@ Do not polyfill custom dropdowns. Focus: `outline: 2px solid var(--ring); outlin
 
 ---
 
+## Numeric controls
+
+Servings and kcal are **ranges, not steppers or number inputs**: the value is exploratory and the shape of the scale carries information a text box cannot. Specimen: `T1 — Worktop pair` and `T1c — Handle and motion` on `.kombai/canvas/onboarding.canvas`; the surface is the Diet step. Numbers: [product.md § Diet](./product.md#diet).
+
+- **One native `<input type="range">`, restyled.** No custom slider and no JS drag handling: `appearance: none`, with the thumb drawn on `::-webkit-slider-thumb` and `::-moz-range-thumb`. Keyboard stepping and the browser's own click-to-seek on the track come for free.
+- **No typed entry and no stepper.** The value is a live `<output>` at `--text-2xl` in `mono`, `--leading-solid`, `tabular-nums`, above the track; the caps label sits on the row above it.
+- **Track: a 68px band around a 6px rule.** The band is the touch target, the rule is the line the value travels along. Tick marks sit under the rule and the band's prose labels (`Light` / `Standard` / `Hearty`) under those, at `--text-2xs` `mono`. A 14px `--pad` keeps the first and last marks on the fill's travel rather than under the thumb's overshoot.
+- **Handle: 22 × 56 brass, radius 3, gradient only** — no image, no icon file. A five-stop `linear-gradient(90deg)` mirrored about the centre line (cream at both edges, deep brass at the waist), a 1px cream `inset` cap on the top face and a 1px shadow cap on the bottom, a 2px cast at 14%, and a 1px ring at 8% so the edge holds against the fill. It is the tallest of the shapes explored because a finger has to land on it: 56px inside the 68px band, where a 14px strip and a 32px bead did not.
+- **States are CSS, never classes.** `:hover` lifts the handle 1px; `:active` sinks it 1px and grows it 4% taller while `:has(.rng:active)` puts a 3px `--primary` halo at 22% on the rail; `:focus-visible` draws `0 0 0 2px var(--ring)` with a 2px `--background` offset on both rail and handle. Press takes `--ease-squish`.
+- **The fill pours, it does not snap.** The filled portion is one absolutely positioned element masked at `--p`, a registered `<percentage>` (`@property`), which is what makes a gradient mask transitionable. `--p` runs 0 → value on first paint behind a still handle (`@starting-style`, `--duration-base`), and 40ms `linear` while dragging so the tip trails the handle. The pour is a one-shot fill reaching its value, so it takes **`--ease-arrive`**; a tap that moves the handle to a new station is a value travelling between two positions, so that takes **`--ease-glide`**. The 40ms is a **lag constant, not a duration token** — the ladder's smallest step stays `--duration-tick` 100ms. All of it collapses under `prefers-reduced-motion: reduce`.
+- **A track has no empty state.** Its left end is an amount, not an absence, so a value the user has not set cannot be represented by the control; that is why [product.md § Open](./product.md#open) still holds the question of what "no kcal target" means.
+
+---
+
 ## Selection controls
 
 One shell serves the Diet step's **Dietary requirements** and the devices field: eight marks, a name, a pocket, one wash. They differ only in what sits in the pocket. Board: `onboarding.canvas#var_9eb82776e647` (`Tile: one shell, tick and rank`). `Diet D` and `Diet D phone` on the same canvas and `Devices E` on `devices.canvas` carry it; the eight device glyphs and their states are [icons.md](./icons.md#the-eight-cooking-methods).
@@ -185,14 +199,14 @@ One aesthetic: **working kitchen, not generative-AI purple.**
 - Display serif for food names; practical sans for controls.
 - Hairline borders, linen-tinted wells, chips like masking-tape labels.
 - Photography: none required in v1. Optional later: real pantry grain, not 3D vegetables.
-- Motion: 120–180ms opacity/transform on popovers. No gradient mesh, no glow orbs.
+- Motion: the six easings and four durations of [theme.md § Motion](./theme.md#motion). `arrive`/`depart` on surfaces, `glide` on position changes; overshoot only where a finger or a landing is involved. No gradient mesh, no glow orbs.
 - Light is default (kitchen daylight). Dark is a closed cupboard: iron, oil-green, warm type — not neon.
 
 ---
 
 ## Local mock
 
-The mock is the canvases in `.kombai/canvas/` — `index`, `landing`, `account`, `chart`, `type`, split on 2026-11-17 from the single `chef-llama.canvas` that came over from the old `larder` workspace, plus `onboarding` (added 2026-11-23) for the Diet step and the [selection control](#selection-controls), and `devices` for the eight device marks with their states and motion. `index.canvas` lists the surface canvases and the node ids the docs cite; it does not carry `onboarding` or `devices` yet. **Fonts: system stacks only** ([theme.md](./theme.md#fonts)). **Not locked.**
+The mock is the canvases in `.kombai/canvas/` — `index`, `landing`, `account`, `chart`, `type`, split on 2026-11-17 from the single `chef-llama.canvas` that came over from the old `larder` workspace, plus `onboarding` (added 2026-11-23) for the Diet step, its [numeric controls](#numeric-controls) and the [selection control](#selection-controls), and `devices` for the eight device marks with their states and motion. `index.canvas` lists the surface canvases and the node ids the docs cite; it does not carry `onboarding` or `devices` yet. **Fonts: system stacks only** ([theme.md](./theme.md#fonts)). **Not locked.**
 
 ---
 

@@ -1,0 +1,1116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chef Llama — motion tokens</title>
+<!--
+  Motion token sticker. Values are copied from docs/theme.md § Motion, which owns them.
+  Curves: Easing Wizard MCP. Durations: ours (the generator's 250–3125 ms range is ignored).
+  Specimen, not product UI. Replay is on demand; nothing moves on load.
+-->
+<style>
+  :root {
+    color-scheme: light dark;
+    --background: light-dark(oklch(0.958 0.024 95), oklch(0.185 0.018 70));
+    --foreground: light-dark(oklch(0.255 0.055 62), oklch(0.945 0.022 92));
+    --card: light-dark(oklch(0.985 0.014 95), oklch(0.235 0.020 70));
+    --card-foreground: light-dark(oklch(0.255 0.055 62), oklch(0.945 0.022 92));
+    --popover: var(--card);
+    --popover-foreground: var(--card-foreground);
+    --secondary: light-dark(oklch(0.930 0.055 88), oklch(0.270 0.026 72));
+    --secondary-foreground: light-dark(oklch(0.255 0.055 62), oklch(0.945 0.022 92));
+    --muted: light-dark(oklch(0.926 0.045 90), oklch(0.265 0.024 72));
+    --muted-foreground: light-dark(oklch(0.465 0.045 64), oklch(0.745 0.028 88));
+    --primary: light-dark(oklch(0.812 0.160 82), oklch(0.845 0.160 84));
+    --primary-foreground: light-dark(oklch(0.235 0.048 70), oklch(0.210 0.045 70));
+    --accent: light-dark(oklch(0.545 0.150 140), oklch(0.800 0.125 140));
+    --accent-foreground: light-dark(oklch(0.985 0.012 140), oklch(0.200 0.045 140));
+    --border: light-dark(oklch(0.885 0.032 82), oklch(0.330 0.022 72));
+    --input: light-dark(oklch(0.865 0.034 82), oklch(0.350 0.024 72));
+    --ring: light-dark(oklch(0.500 0.110 65), oklch(0.845 0.160 84));
+    --destructive: light-dark(oklch(0.450 0.165 20), oklch(0.640 0.155 20));
+    --destructive-foreground: light-dark(oklch(0.985 0.014 95), oklch(0.190 0.045 20));
+
+    --radius: 0.5rem;
+    --radius-sm: calc(var(--radius) * 0.5);
+    --radius-md: var(--radius);
+    --radius-lg: calc(var(--radius) * 1.5);
+    --radius-xl: calc(var(--radius) * 2);
+    --border-width-thin: 1px;
+    --border-width-medium: 2px;
+
+    --font-display: Georgia, "Times New Roman", serif;
+    --font-sans: Seravek, "Gill Sans Nova", Ubuntu, Calibri, "Noto Sans", "DejaVu Sans", source-sans-pro, sans-serif;
+    --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+
+    --leading-solid: 1;
+    --leading-tight: 1.2;
+    --leading-ui: 1.45;
+    --leading-body: 1.55;
+    --tracking-tight: -0.01em;
+    --tracking-display: -0.02em;
+    --tracking-caps: 0.14em;
+
+    --spacing: 0.25rem;
+    --font-base: 1rem;
+    --text-2xs: calc(var(--font-base) * 0.625);
+    --text-xs: calc(var(--font-base) * 0.75);
+    --text-sm: calc(var(--font-base) * 0.875);
+    --text-base: calc(var(--font-base) * 1);
+    --text-lg: calc(var(--font-base) * 1.125);
+    --text-xl: calc(var(--font-base) * 1.5);
+    --text-2xl: calc(var(--font-base) * 1.875);
+    --text-4xl: calc(var(--font-base) * 2.5);
+    --space-1: calc(var(--spacing) * 1);
+    --space-2: calc(var(--spacing) * 2);
+    --space-3: calc(var(--spacing) * 3);
+    --space-4: calc(var(--spacing) * 4);
+    --space-5: calc(var(--spacing) * 5);
+    --space-6: calc(var(--spacing) * 6);
+    --space-8: calc(var(--spacing) * 8);
+    --space-10: calc(var(--spacing) * 10);
+    --space-12: calc(var(--spacing) * 12);
+    --space-16: calc(var(--spacing) * 16);
+    --space-20: calc(var(--spacing) * 20);
+    --space-page: var(--space-5);
+
+    --page-measure: 72rem;
+
+    /* ---- the motion tokens under audition ---- */
+    --ease-arrive: linear(0, 0.264 6.25%, 0.38 9.375%, 0.482 12.5%, 0.571 15.625%, 0.647 18.75%, 0.765 25%, 0.829 29.688%, 0.876 34.375%, 0.937 43.75%, 0.98 57.813%, 0.998 78.906%, 1);
+    --ease-depart: linear(0, 0.002 21.094%, 0.02 42.188%, 0.063 56.25%, 0.124 65.625%, 0.171 70.313%, 0.235 75%, 0.353 81.25%, 0.429 84.375%, 0.518 87.5%, 0.62 90.625%, 0.736 93.75%, 1);
+    --ease-glide: linear(0, 0.002 3.125%, 0.01 6.25%, 0.022 9.375%, 0.039 12.5%, 0.085 18.75%, 0.148 25%, 0.211 30.273%, 0.282 35.547%, 0.368 41.479%, 0.643 59.277%, 0.756 67.188%, 0.843 74.219%, 0.881 77.734%, 0.915 81.25%, 0.951 85.938%, 0.978 90.625%, 0.994 95.313%, 1);
+    --ease-squish: linear(0, 0.389 8.5%, 0.692 17.4%, 0.912 26.8%, 0.992 31.7%, 1.054 36.8%, 1.092 41.3%, 1.117 46%, 1.13 51%, 1.131 56.3%, 1.108 66%, 1.018 88.8%, 1);
+    --ease-anticipate: linear(0, -0.006 5.6%, -0.038 17.6%, -0.04 22.9%, -0.016 29%, 0.042 34.5%, 0.131 39.3%, 0.254 43.8%, 0.654 53.6%, 0.803 58.1%, 0.92 63.2%, 0.996 68.6%, 1.03 73.4%, 1.041 78.7%, 1);
+    --ease-linear: linear(0, 1);
+
+    --duration-tick: 100ms;
+    --duration-quick: 160ms;
+    --duration-base: 250ms;
+    --duration-slow: 400ms;
+  }
+
+  :root:has(> body[data-colorscheme="light"]) { color-scheme: light; }
+  :root:has(> body[data-colorscheme="dark"]) { color-scheme: dark; }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
+    font-synthesis: none;
+  }
+
+  .band { border-block-start: var(--border-width-thin) solid var(--border); }
+  .band:first-of-type { border-block-start: 0; }
+  .frame {
+    inline-size: 100%;
+    max-inline-size: calc(var(--page-measure) + var(--space-page) * 2);
+    margin-inline: auto;
+    padding-inline: var(--space-page);
+  }
+
+  /* ---------- type roles ---------- */
+  .wordmark {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 400;
+    line-height: var(--leading-solid);
+    letter-spacing: var(--tracking-display);
+    margin: 0;
+  }
+  .caps {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    line-height: var(--leading-ui);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+    margin: 0;
+  }
+  .caption {
+    font-size: var(--text-xs);
+    line-height: var(--leading-ui);
+    color: var(--muted-foreground);
+    margin: 0;
+  }
+  h1 {
+    font-size: var(--text-xl);
+    font-weight: 700;
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-display);
+    margin: 0;
+  }
+  h2 {
+    font-size: var(--text-base);
+    font-weight: 700;
+    line-height: var(--leading-body);
+    letter-spacing: var(--tracking-tight);
+    margin: 0;
+  }
+  .mono {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-ui);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------- controls ---------- */
+  button {
+    font: inherit;
+    font-size: var(--text-xs);
+    font-weight: 700;
+    line-height: var(--leading-ui);
+    color: var(--foreground);
+    background: var(--card);
+    border: var(--border-width-thin) solid var(--input);
+    border-radius: var(--radius-sm);
+    padding: var(--space-2) var(--space-3);
+    cursor: pointer;
+    transition: background-color var(--duration-tick) var(--ease-arrive), border-color var(--duration-tick) var(--ease-arrive);
+  }
+  button:hover { background: var(--secondary); }
+  button:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  button[aria-pressed="true"] { background: var(--secondary); border-color: var(--foreground); }
+  .btn--primary {
+    background: var(--primary);
+    color: var(--primary-foreground);
+    border-color: var(--primary);
+  }
+  .btn--primary:hover { background: var(--primary); filter: brightness(1.03); }
+  .btn--quiet { background: transparent; border-color: transparent; color: var(--muted-foreground); }
+  .btn--quiet:hover { background: var(--muted); color: var(--foreground); }
+
+  /* ---------- header ---------- */
+  .head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding-block: var(--space-4);
+  }
+  .head__label { margin-inline-start: auto; }
+  .head__rule { block-size: 1px; background: var(--border); flex: 1; }
+
+  /* ---------- title row ---------- */
+  .titlebar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: var(--space-4);
+    padding-block: var(--space-6) var(--space-5);
+  }
+  .titlebar__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    margin-inline-start: auto;
+  }
+  .titlebar__count {
+    margin-block-start: var(--space-1);
+  }
+
+  /* ---------- toolbar ---------- */
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+    padding-block: var(--space-3);
+    border-block: var(--border-width-thin) solid var(--border);
+  }
+  .toolbar__group { display: flex; align-items: center; gap: var(--space-2); }
+  .toolbar__group--end { margin-inline-start: auto; }
+  .segmented { display: flex; gap: 0; border: var(--border-width-thin) solid var(--input); border-radius: var(--radius-sm); overflow: hidden; }
+  .segmented label {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: var(--tracking-caps);
+    padding: var(--space-1) var(--space-3);
+    cursor: pointer;
+    color: var(--muted-foreground);
+    border-inline-start: var(--border-width-thin) solid var(--input);
+    transition: background-color var(--duration-tick) var(--ease-arrive), color var(--duration-tick) var(--ease-arrive);
+  }
+  .segmented label:first-of-type { border-inline-start: 0; }
+  .segmented input { position: absolute; opacity: 0; pointer-events: none; }
+  .segmented input:checked + span { color: var(--foreground); }
+  .segmented label:has(input:checked) { background: var(--secondary); color: var(--foreground); }
+  .segmented label:has(input:focus-visible) { outline: 2px solid var(--ring); outline-offset: -2px; }
+
+  .switch {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    cursor: pointer;
+  }
+  .switch input { appearance: none; inline-size: 30px; block-size: 16px; border-radius: 999px; background: var(--muted); border: var(--border-width-thin) solid var(--input); position: relative; cursor: pointer; transition: background-color var(--duration-tick) var(--ease-arrive); }
+  .switch input::after { content: ""; position: absolute; inset-block-start: 1px; inset-inline-start: 1px; inline-size: 12px; block-size: 12px; border-radius: 999px; background: var(--card); transition: translate var(--duration-quick) var(--ease-glide); }
+  .switch input:checked { background: var(--foreground); border-color: var(--foreground); }
+  .switch input:checked::after { translate: 14px 0; }
+  .switch input:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+  /* ---------- the register ---------- */
+  .register { --eval: var(--duration-base); }
+  .register__cols,
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 124px;
+    grid-template-areas:
+      "token curve"
+      "preview preview"
+      "value value";
+    align-items: center;
+    gap: var(--space-3) var(--space-4);
+  }
+  .register__cols { display: none; }
+  .row {
+    padding-block: var(--space-4);
+    border-block-start: var(--border-width-thin) solid var(--border);
+  }
+  .register__cols + .row { border-block-start: 0; }
+
+  .row__token { grid-area: token; min-inline-size: 0; }
+  .row__name {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-ui);
+    margin: 0;
+  }
+  .row__role { margin-block-start: var(--space-1); }
+
+  .row__curve { grid-area: curve; display: flex; align-items: center; gap: var(--space-2); }
+  .graph { position: relative; inline-size: 124px; block-size: 44px; padding-inline-end: 12px; }
+  .graph svg { display: block; inline-size: 100%; block-size: 100%; overflow: visible; }
+  .graph .rule { stroke: var(--border); stroke-width: 1; stroke-dasharray: 3 3; vector-effect: non-scaling-stroke; }
+  .graph .floor { stroke: var(--muted-foreground); stroke-width: 1; opacity: .5; vector-effect: non-scaling-stroke; }
+  .graph .curve { fill: none; stroke: var(--foreground); stroke-width: 1.5; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+  .graph .axis {
+    position: absolute;
+    inset-inline-end: 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    line-height: 1;
+    color: var(--muted-foreground);
+  }
+  .graph .axis--one { inset-block-start: calc(18.75% - 5px); }
+  .graph .axis--zero { inset-block-end: calc(18.75% - 5px); }
+  .graph__play {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    inline-size: 1px;
+    background: var(--foreground);
+    opacity: 0;
+  }
+
+  .row__preview { grid-area: preview; display: flex; align-items: center; gap: var(--space-3); }
+  .track {
+    --track-w: 264px;
+    position: relative;
+    inline-size: min(var(--track-w), 100%);
+    block-size: 16px;
+    border: var(--border-width-thin) solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--muted);
+    flex: none;
+  }
+  .track__end {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 0;
+    inline-size: var(--border-width-thin);
+    background: var(--border);
+  }
+  .track__dot {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    inline-size: 14px;
+    block-size: 14px;
+    border-radius: 2px;
+    background: var(--primary);
+    translate: 0 0;
+  }
+  .row--arrive { --ease: var(--ease-arrive); }
+  .row--depart { --ease: var(--ease-depart); }
+  .row--glide { --ease: var(--ease-glide); }
+  .row--squish { --ease: var(--ease-squish); }
+  .row--anticipate { --ease: var(--ease-anticipate); }
+  .row--linear { --ease: var(--ease-linear); }
+
+  @keyframes travel { from { translate: 0 0; } to { translate: calc(var(--track-w) - 16px) 0; } }
+  @keyframes sweep { from { inset-inline-start: 0; opacity: .35; } to { inset-inline-start: calc(100% - 12px); opacity: .35; } }
+
+  .row.is-playing .track__dot { animation: travel var(--eval) var(--ease) forwards; }
+  .row.is-playing .graph__play { animation: sweep var(--eval) linear forwards; }
+
+  .row__value { grid-area: value; display: flex; align-items: start; gap: var(--space-2); min-inline-size: 0; }
+  .row__css {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    line-height: var(--leading-ui);
+    color: var(--muted-foreground);
+    margin: 0;
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .row__copy { flex: none; }
+
+  /* ---------- duration ladder ---------- */
+  .ladder { padding-block: var(--space-6); }
+  .ladder__head { display: flex; align-items: baseline; gap: var(--space-3); margin-block-end: var(--space-4); }
+  .ladder__rows { display: grid; }
+  .ladder__row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "label value"
+      "meter meter"
+      "note note";
+    align-items: baseline;
+    gap: var(--space-2) var(--space-4);
+    padding-block: var(--space-3);
+    border-block-start: var(--border-width-thin) solid var(--border);
+  }
+  .ladder__row:first-child { border-block-start: 0; }
+  .ladder__label { grid-area: label; }
+  .ladder__value { grid-area: value; }
+  .ladder__note { grid-area: note; }
+  .ladder__meter { grid-area: meter; block-size: 6px; background: var(--muted); border-radius: 1px; }
+  .ladder__bar { display: block; block-size: 100%; background: var(--primary); border-radius: 1px; }
+  .ladder__bar--tick { inline-size: 25%; }
+  .ladder__bar--quick { inline-size: 40%; }
+  .ladder__bar--base { inline-size: 62.5%; }
+  .ladder__bar--slow { inline-size: 100%; }
+
+  /* ---------- the bench ---------- */
+  .bench { padding-block: var(--space-6) var(--space-8); }
+  .bench__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-3); margin-block-end: var(--space-5); }
+  .bench__head .caption { margin-inline-start: auto; }
+  .bench__grid { display: grid; gap: var(--space-6); }
+
+  .moment { display: grid; gap: var(--space-3); }
+  .moment__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2) var(--space-3); }
+  .moment__bind { flex-basis: 100%; color: var(--muted-foreground); }
+  .moment__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+  .moment__stage {
+    border: var(--border-width-thin) solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--muted);
+    padding: var(--space-4);
+    display: grid;
+    place-items: center;
+    min-block-size: 168px;
+  }
+
+  /* dialog */
+  .sheet {
+    inline-size: min(280px, 100%);
+    background: var(--popover);
+    color: var(--popover-foreground);
+    border: var(--border-width-thin) solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-4);
+    opacity: 0;
+    translate: 0 6px;
+    scale: .98;
+    /* the leaving state carries the exit timing */
+    transition:
+      opacity var(--duration-quick) var(--ease-depart),
+      translate var(--duration-quick) var(--ease-depart),
+      scale var(--duration-quick) var(--ease-depart);
+  }
+  .stage.is-in .sheet {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+    /* the arriving state carries the entry timing */
+    transition:
+      opacity var(--duration-base) var(--ease-arrive),
+      translate var(--duration-base) var(--ease-arrive),
+      scale var(--duration-base) var(--ease-arrive);
+  }
+  .sheet__title { font-size: var(--text-sm); font-weight: 700; line-height: var(--leading-tight); margin: 0; }
+  .sheet__body { font-size: var(--text-xs); line-height: var(--leading-body); color: var(--muted-foreground); margin: var(--space-2) 0 var(--space-4); }
+  .sheet__acts { display: flex; gap: var(--space-2); justify-content: end; }
+
+  /* arrow rail */
+  .rail {
+    position: relative;
+    inline-size: min(320px, 100%);
+    block-size: 48px;
+  }
+  .rail__line { position: absolute; inset-block-start: 23px; inset-inline: 0; block-size: 1px; background: var(--border); }
+  .rail__slot {
+    position: absolute;
+    inset-block-start: 17px;
+    inline-size: 13px;
+    block-size: 13px;
+    border-radius: 999px;
+    border: var(--border-width-thin) solid var(--input);
+    background: var(--card);
+  }
+  .rail__slot--a { inset-inline-start: 2px; }
+  .rail__slot--b { inset-inline-start: calc(50% - 6.5px); }
+  .rail__slot--c { inset-inline-start: calc(100% - 15px); }
+  .rail__arrow {
+    position: absolute;
+    inset-block-start: 12px;
+    inset-inline-start: 2px;
+    inline-size: 22px;
+    block-size: 22px;
+    color: var(--primary);
+    transition: inset-inline-start var(--duration-base) var(--ease-glide);
+  }
+  .rail__arrow svg { display: block; inline-size: 100%; block-size: 100%; }
+  .rail[data-pos="1"] .rail__arrow { inset-inline-start: calc(50% - 11px); }
+  .rail[data-pos="2"] .rail__arrow { inset-inline-start: calc(100% - 24px); }
+
+  /* press + rotate */
+  .press-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--space-6); }
+  .press {
+    scale: 1;
+    /* release carries the squish */
+    transition: scale var(--duration-quick) var(--ease-squish);
+    touch-action: manipulation;
+  }
+  .press.is-down {
+    scale: .94;
+    /* press-in is faster and monotone */
+    transition: scale var(--duration-tick) var(--ease-arrive);
+  }
+  .chev {
+    inline-size: 28px;
+    block-size: 28px;
+    color: var(--foreground);
+    rotate: 0deg;
+    transition: rotate var(--duration-base) var(--ease-glide);
+  }
+  .chev svg { display: block; inline-size: 100%; block-size: 100%; }
+  .bench.is-flipped .chev { rotate: 180deg; }
+
+  /* meter */
+  .meter {
+    inline-size: min(320px, 100%);
+    block-size: 14px;
+    border: var(--border-width-thin) solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--card);
+    overflow: hidden;
+  }
+  .meter__fill {
+    block-size: 100%;
+    inline-size: 0%;
+    background: var(--primary);
+    transition: inline-size var(--duration-slow) var(--ease-arrive);
+  }
+  .meter.is-full .meter__fill { inline-size: 68%; }
+  .meter__readout { display: flex; justify-content: space-between; margin-block-start: var(--space-2); }
+
+  /* ---------- footer ---------- */
+  .foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-5);
+    padding-block: var(--space-5);
+  }
+  .scheme { display: flex; align-items: center; gap: var(--space-3); margin-inline-start: auto; }
+  .scheme label { display: inline-flex; align-items: center; gap: var(--space-1); font-family: var(--font-mono); font-size: var(--text-2xs); letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--muted-foreground); cursor: pointer; }
+  .scheme input { appearance: none; inline-size: 11px; block-size: 11px; border-radius: 999px; border: var(--border-width-thin) solid var(--input); background: var(--card); cursor: pointer; }
+  .scheme input:checked { background: var(--primary); border-color: var(--primary); }
+  .scheme input:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+  dialog {
+    border: var(--border-width-thin) solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--popover);
+    color: var(--popover-foreground);
+    padding: var(--space-5);
+    max-inline-size: min(46rem, calc(100vw - var(--space-page) * 2));
+  }
+  dialog::backdrop { background: color-mix(in oklab, var(--foreground) 40%, transparent); }
+  dialog pre {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    line-height: var(--leading-body);
+    white-space: pre-wrap;
+    word-break: break-word;
+    background: var(--muted);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    margin: var(--space-4) 0 0;
+    max-block-size: 46vh;
+    overflow: auto;
+  }
+  dialog h2 { margin-block-end: var(--space-2); }
+  .export__acts { display: flex; justify-content: end; margin-block-start: var(--space-4); }
+
+  /* ---------- reduced motion: resolve to the end state, keep opacity ---------- */
+  [data-motion="reduced"] .row.is-playing .track__dot { animation: none; translate: calc(var(--track-w) - 16px) 0; }
+  [data-motion="reduced"] .row.is-playing .graph__play { animation: none; opacity: 0; }
+  [data-motion="reduced"] .rail__arrow,
+  [data-motion="reduced"] .press,
+  [data-motion="reduced"] .chev { transition: none; }
+  [data-motion="reduced"] .meter__fill { transition: none; }
+  [data-motion="reduced"] .sheet,
+  [data-motion="reduced"] .stage.is-in .sheet { transition: opacity var(--duration-tick) var(--ease-linear); translate: 0 0; scale: 1; }
+
+  /* ---------- wide ---------- */
+  @media (width >= 48rem) {
+    :root { --space-page: var(--space-8); }
+    .register__cols,
+    .row {
+      grid-template-columns: 200px 168px 292px minmax(0, 1fr);
+      grid-template-areas: "token curve preview value";
+      gap: var(--space-5);
+    }
+    .register__cols {
+      display: grid;
+      padding-block: var(--space-2);
+      border-block-start: var(--border-width-thin) solid var(--border);
+    }
+    .register__cols span { font-family: var(--font-mono); font-size: var(--text-2xs); letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--muted-foreground); }
+    .row { padding-block: var(--space-4); }
+    .ladder__row {
+      grid-template-columns: 168px 84px minmax(96px, 1fr) minmax(0, 1.45fr);
+      grid-template-areas: "label value meter note";
+      align-items: center;
+    }
+    .bench__grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (width >= 64rem) {
+    .bench__grid { grid-template-columns: repeat(4, 1fr); }
+  }
+</style>
+</head>
+<body>
+<script>
+  // Blocking, first child of <body>: saved scheme, no cookie, no flash.
+  (function () {
+    try {
+      var saved = localStorage.getItem("chef-llama-scheme");
+      if (saved === "light" || saved === "dark") document.body.dataset.colorscheme = saved;
+    } catch (e) {}
+  })();
+</script>
+
+<header class="band">
+  <div class="frame head">
+    <p class="wordmark">Chef Llama</p>
+    <span class="head__rule" aria-hidden="true"></span>
+    <p class="caps head__label">Motion tokens</p>
+  </div>
+</header>
+
+<main>
+  <section class="band">
+    <div class="frame">
+      <div class="titlebar">
+        <div>
+          <h1>Six easings</h1>
+          <p class="caption titlebar__count">One square, the same 248&nbsp;px of travel, every curve started in the same frame.</p>
+        </div>
+        <div class="titlebar__actions">
+          <button type="button" id="replay">Replay all</button>
+          <button type="button" class="btn--primary" id="copy-tokens">Copy tokens</button>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="toolbar__group">
+          <p class="caps">Evaluation duration</p>
+          <div class="segmented" role="group" aria-label="Evaluation duration">
+            <label><input type="radio" name="eval" value="100"><span>100 ms</span></label>
+            <label><input type="radio" name="eval" value="160"><span>160 ms</span></label>
+            <label><input type="radio" name="eval" value="250" checked><span>250 ms</span></label>
+            <label><input type="radio" name="eval" value="400"><span>400 ms</span></label>
+          </div>
+        </div>
+        <div class="toolbar__group toolbar__group--end">
+          <label class="switch">
+            <input type="checkbox" id="reduced">
+            <span class="caps">Reduced motion</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="register" id="register">
+        <div class="register__cols" aria-hidden="true">
+          <span>Token</span><span>Curve</span><span>Preview</span><span>Value</span>
+        </div>
+
+        <!-- arrive -->
+        <div class="row row--arrive" data-row data-name="arrive">
+          <div class="row__token">
+            <p class="row__name">--ease-arrive</p>
+            <p class="caps row__role">Entering surfaces</p>
+          </div>
+          <div class="row__curve">
+            <div class="graph">
+              <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                <line class="floor" x1="0" y1="81.25" x2="100" y2="81.25"></line>
+                <line class="rule" x1="0" y1="18.75" x2="100" y2="18.75"></line>
+                <polyline class="curve" points="0,81.25 6.25,64.72 9.38,57.52 12.5,51.14 15.63,45.58 18.75,40.82 25,33.45 29.69,29.46 34.38,26.49 43.75,22.67 57.81,20 78.91,18.86 100,18.75"></polyline>
+              </svg>
+              <span class="axis axis--one">1</span>
+              <span class="axis axis--zero">0</span>
+              <span class="graph__play"></span>
+            </div>
+          </div>
+          <div class="row__preview">
+            <div class="track"><span class="track__end"></span><span class="track__dot"></span></div>
+          </div>
+          <div class="row__value">
+            <p class="row__css" data-css>linear(0, 0.264 6.25%, 0.38 9.375%, 0.482 12.5%, 0.571 15.625%, 0.647 18.75%, 0.765 25%, 0.829 29.688%, 0.876 34.375%, 0.937 43.75%, 0.98 57.813%, 0.998 78.906%, 1)</p>
+            <button type="button" class="btn--quiet row__copy" data-copy>Copy</button>
+          </div>
+        </div>
+
+        <!-- depart -->
+        <div class="row row--depart" data-row data-name="depart">
+          <div class="row__token">
+            <p class="row__name">--ease-depart</p>
+            <p class="caps row__role">Leaving surfaces</p>
+          </div>
+          <div class="row__curve">
+            <div class="graph">
+              <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                <line class="floor" x1="0" y1="81.25" x2="100" y2="81.25"></line>
+                <line class="rule" x1="0" y1="18.75" x2="100" y2="18.75"></line>
+                <polyline class="curve" points="0,81.25 21.09,81.14 42.19,80 56.25,77.33 65.63,73.51 70.31,70.54 75,66.55 81.25,59.18 84.38,54.42 87.5,48.86 90.63,42.48 93.75,35.28 100,18.75"></polyline>
+              </svg>
+              <span class="axis axis--one">1</span>
+              <span class="axis axis--zero">0</span>
+              <span class="graph__play"></span>
+            </div>
+          </div>
+          <div class="row__preview">
+            <div class="track"><span class="track__end"></span><span class="track__dot"></span></div>
+          </div>
+          <div class="row__value">
+            <p class="row__css" data-css>linear(0, 0.002 21.094%, 0.02 42.188%, 0.063 56.25%, 0.124 65.625%, 0.171 70.313%, 0.235 75%, 0.353 81.25%, 0.429 84.375%, 0.518 87.5%, 0.62 90.625%, 0.736 93.75%, 1)</p>
+            <button type="button" class="btn--quiet row__copy" data-copy>Copy</button>
+          </div>
+        </div>
+
+        <!-- glide -->
+        <div class="row row--glide" data-row data-name="glide">
+          <div class="row__token">
+            <p class="row__name">--ease-glide</p>
+            <p class="caps row__role">Position changes</p>
+          </div>
+          <div class="row__curve">
+            <div class="graph">
+              <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                <line class="floor" x1="0" y1="81.25" x2="100" y2="81.25"></line>
+                <line class="rule" x1="0" y1="18.75" x2="100" y2="18.75"></line>
+                <polyline class="curve" points="0,81.25 3.13,81.09 6.25,80.63 9.38,79.87 12.5,78.82 18.75,75.91 25,72.01 30.27,68.07 35.55,63.64 41.48,58.22 59.28,41.07 67.19,34.01 74.22,28.54 77.73,26.17 81.25,24.09 85.94,21.81 90.63,20.13 95.31,19.1 100,18.75"></polyline>
+              </svg>
+              <span class="axis axis--one">1</span>
+              <span class="axis axis--zero">0</span>
+              <span class="graph__play"></span>
+            </div>
+          </div>
+          <div class="row__preview">
+            <div class="track"><span class="track__end"></span><span class="track__dot"></span></div>
+          </div>
+          <div class="row__value">
+            <p class="row__css" data-css>linear(0, 0.002 3.125%, 0.01 6.25%, 0.022 9.375%, 0.039 12.5%, 0.085 18.75%, 0.148 25%, 0.211 30.273%, 0.282 35.547%, 0.368 41.479%, 0.643 59.277%, 0.756 67.188%, 0.843 74.219%, 0.881 77.734%, 0.915 81.25%, 0.951 85.938%, 0.978 90.625%, 0.994 95.313%, 1)</p>
+            <button type="button" class="btn--quiet row__copy" data-copy>Copy</button>
+          </div>
+        </div>
+
+        <!-- squish -->
+        <div class="row row--squish" data-row data-name="squish">
+          <div class="row__token">
+            <p class="row__name">--ease-squish</p>
+            <p class="caps row__role">Press, scale, landing</p>
+          </div>
+          <div class="row__curve">
+            <div class="graph">
+              <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                <line class="floor" x1="0" y1="81.25" x2="100" y2="81.25"></line>
+                <line class="rule" x1="0" y1="18.75" x2="100" y2="18.75"></line>
+                <polyline class="curve" points="0,81.25 8.5,56.94 17.4,38 26.8,24.25 31.7,19.25 36.8,15.38 41.3,13 46,11.44 51,10.63 56.3,10.56 66,12 88.8,17.63 100,18.75"></polyline>
+              </svg>
+              <span class="axis axis--one">1</span>
+              <span class="axis axis--zero">0</span>
+              <span class="graph__play"></span>
+            </div>
+          </div>
+          <div class="row__preview">
+            <div class="track"><span class="track__end"></span><span class="track__dot"></span></div>
+          </div>
+          <div class="row__value">
+            <p class="row__css" data-css>linear(0, 0.389 8.5%, 0.692 17.4%, 0.912 26.8%, 0.992 31.7%, 1.054 36.8%, 1.092 41.3%, 1.117 46%, 1.13 51%, 1.131 56.3%, 1.108 66%, 1.018 88.8%, 1)</p>
+            <button type="button" class="btn--quiet row__copy" data-copy>Copy</button>
+          </div>
+        </div>
+
+        <!-- anticipate -->
+        <div class="row row--anticipate" data-row data-name="anticipate">
+          <div class="row__token">
+            <p class="row__name">--ease-anticipate</p>
+            <p class="caps row__role">Deliberate action, once</p>
+          </div>
+          <div class="row__curve">
+            <div class="graph">
+              <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                <line class="floor" x1="0" y1="81.25" x2="100" y2="81.25"></line>
+                <line class="rule" x1="0" y1="18.75" x2="100" y2="18.75"></line>
+                <polyline class="curve" points="0,81.25 5.6,81.63 17.6,83.63 22.9,83.75 29,82.25 34.5,78.63 39.3,73.06 43.8,65.38 53.6,40.38 58.1,31.06 63.2,23.75 68.6,19 73.4,16.88 78.7,16.19 100,18.75"></polyline>
+              </svg>
+              <span class="axis axis--one">1</span>
+              <span class="axis axis--zero">0</span>
+              <span class="graph__play"></span>
+            </div>
+          </div>
+          <div class="row__preview">
+            <div class="track"><span class="track__end"></span><span class="track__dot"></span></div>
+          </div>
+          <div class="row__value">
+            <p class="row__css" data-css>linear(0, -0.006 5.6%, -0.038 17.6%, -0.04 22.9%, -0.016 29%, 0.042 34.5%, 0.131 39.3%, 0.254 43.8%, 0.654 53.6%, 0.803 58.1%, 0.92 63.2%, 0.996 68.6%, 1.03 73.4%, 1.041 78.7%, 1)</p>
+            <button type="button" class="btn--quiet row__copy" data-copy>Copy</button>
+          </div>
+        </div>
+
+        <!-- linear -->
+        <div class="row row--linear" data-row data-name="linear">
+          <div class="row__token">
+            <p class="row__name">--ease-linear</p>
+            <p class="caps row__role">Rates and loops</p>
+          </div>
+          <div class="row__curve">
+            <div class="graph">
+              <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                <line class="floor" x1="0" y1="81.25" x2="100" y2="81.25"></line>
+                <line class="rule" x1="0" y1="18.75" x2="100" y2="18.75"></line>
+                <polyline class="curve" points="0,81.25 100,18.75"></polyline>
+              </svg>
+              <span class="axis axis--one">1</span>
+              <span class="axis axis--zero">0</span>
+              <span class="graph__play"></span>
+            </div>
+          </div>
+          <div class="row__preview">
+            <div class="track"><span class="track__end"></span><span class="track__dot"></span></div>
+          </div>
+          <div class="row__value">
+            <p class="row__css" data-css>linear(0, 1)</p>
+            <button type="button" class="btn--quiet row__copy" data-copy>Copy</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="frame ladder">
+      <div class="ladder__head">
+        <h2>Durations</h2>
+        <p class="caption">Generator suggestions run 250–3125&nbsp;ms per curve. The ladder is 100–400.</p>
+      </div>
+      <div class="ladder__rows">
+        <div class="ladder__row">
+          <p class="mono ladder__label">--duration-tick</p>
+          <p class="mono ladder__value">100ms</p>
+          <div class="ladder__meter"><span class="ladder__bar ladder__bar--tick"></span></div>
+          <p class="caption ladder__note">Hover, focus, colour, opacity — anything with no travel</p>
+        </div>
+        <div class="ladder__row">
+          <p class="mono ladder__label">--duration-quick</p>
+          <p class="mono ladder__value">160ms</p>
+          <div class="ladder__meter"><span class="ladder__bar ladder__bar--quick"></span></div>
+          <p class="caption ladder__note">Chip popover, menu, toast, a press</p>
+        </div>
+        <div class="ladder__row">
+          <p class="mono ladder__label">--duration-base</p>
+          <p class="mono ladder__value">250ms</p>
+          <div class="ladder__meter"><span class="ladder__bar ladder__bar--base"></span></div>
+          <p class="caption ladder__note">Dialog, sheet, card menu, a view transition</p>
+        </div>
+        <div class="ladder__row">
+          <p class="mono ladder__label">--duration-slow</p>
+          <p class="mono ladder__value">400ms</p>
+          <div class="ladder__meter"><span class="ladder__bar ladder__bar--slow"></span></div>
+          <p class="caption ladder__note">A panel collapsing, a large surface arriving</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="frame bench" id="bench">
+      <div class="bench__head">
+        <h2>The moments these are for</h2>
+        <p class="caption">An exit always takes the step below its entry.</p>
+      </div>
+      <div class="bench__grid">
+        <div class="moment moment--dialog">
+          <div class="moment__head">
+            <h2>Dialog</h2>
+          </div>
+          <div class="moment__stage stage is-in" id="stage">
+            <div class="sheet">
+              <p class="sheet__title">Credits used up</p>
+              <p class="sheet__body">Top up to cook another recipe. Nothing in the pantry is lost.</p>
+              <div class="sheet__acts">
+                <button type="button" class="btn--quiet">Later</button>
+                <button type="button" class="btn--primary">Top up</button>
+              </div>
+            </div>
+          </div>
+          <div class="moment__actions">
+            <button type="button" id="dialog-in">Arrive</button>
+            <button type="button" id="dialog-out">Leave</button>
+            <p class="mono moment__bind">arrive 250, depart 160</p>
+          </div>
+        </div>
+
+        <div class="moment">
+          <div class="moment__head">
+            <h2>Arrow</h2>
+          </div>
+          <div class="moment__stage">
+            <div class="rail" id="rail" data-pos="0">
+              <span class="rail__line" aria-hidden="true"></span>
+              <span class="rail__slot rail__slot--a" aria-hidden="true"></span>
+              <span class="rail__slot rail__slot--b" aria-hidden="true"></span>
+              <span class="rail__slot rail__slot--c" aria-hidden="true"></span>
+              <span class="rail__arrow" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h13"></path><path d="M13 6l6 6-6 6"></path>
+                </svg>
+              </span>
+            </div>
+          </div>
+          <div class="moment__actions" role="group" aria-label="Arrow destination">
+            <button type="button" data-dest="0" aria-pressed="true">Pantry</button>
+            <button type="button" data-dest="1" aria-pressed="false">Saved</button>
+            <button type="button" data-dest="2" aria-pressed="false">Popular</button>
+            <p class="mono moment__bind">glide 250</p>
+          </div>
+        </div>
+
+        <div class="moment">
+          <div class="moment__head">
+            <h2>Press and rotate</h2>
+          </div>
+          <div class="moment__stage">
+            <div class="press-row">
+              <button type="button" class="btn--primary press" id="press">Save recipe</button>
+              <span class="chev" id="chev" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 9l6 6 6-6"></path>
+                </svg>
+              </span>
+            </div>
+          </div>
+          <div class="moment__actions">
+            <button type="button" id="rotate">Rotate 180°</button>
+            <p class="mono moment__bind">squish 160, glide 250</p>
+          </div>
+        </div>
+
+        <div class="moment">
+          <div class="moment__head">
+            <h2>Meter</h2>
+          </div>
+          <div class="moment__stage">
+            <div>
+              <div class="meter" id="meter">
+                <div class="meter__fill"></div>
+              </div>
+              <div class="meter__readout">
+                <p class="caps">Weekly cooks</p>
+                <p class="mono" id="meter-value">0 / 10</p>
+              </div>
+            </div>
+          </div>
+          <div class="moment__actions">
+            <button type="button" id="fill">Fill</button>
+            <button type="button" id="empty">Empty</button>
+            <p class="mono moment__bind">arrive 400</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="band">
+  <div class="frame foot">
+    <p class="mono">docs/theme.md § Motion</p>
+    <p class="caption">Curves: Easing Wizard MCP. Durations: set here.</p>
+    <div class="scheme">
+      <label><input type="radio" name="scheme" value="system" checked>System</label>
+      <label><input type="radio" name="scheme" value="light">Light</label>
+      <label><input type="radio" name="scheme" value="dark">Dark</label>
+    </div>
+  </div>
+</footer>
+
+<dialog id="export">
+  <h2>Motion tokens</h2>
+  <p class="caption">Goes in <span class="mono">src/lib/theme/motion.stylex.ts</span> when the app exists.</p>
+  <pre id="export-body"></pre>
+  <div class="export__acts">
+    <button type="button" data-close>Close</button>
+  </div>
+</dialog>
+
+<script>
+  const TOKENS = ["--ease-arrive", "--ease-depart", "--ease-glide", "--ease-squish", "--ease-anticipate", "--ease-linear"];
+
+  const DURATIONS = [
+    ["--duration-tick", "100ms"],
+    ["--duration-quick", "160ms"],
+    ["--duration-base", "250ms"],
+    ["--duration-slow", "400ms"],
+  ];
+
+  const css = () => {
+    const computed = getComputedStyle(document.documentElement);
+    const easings = TOKENS.map((name) => `${name}: ${computed.getPropertyValue(name).trim()};`).join("\n");
+    const durations = DURATIONS.map(([name, value]) => `${name}: ${value};`).join("\n");
+    return `${easings}\n${durations}`;
+  };
+
+  const register = document.getElementById("register");
+  const rows = [...register.querySelectorAll("[data-row]")];
+
+  function replay(row) {
+    row.classList.remove("is-playing");
+    void row.offsetWidth; // restart the keyframes in the same frame
+    row.classList.add("is-playing");
+  }
+
+  document.getElementById("replay").addEventListener("click", () => {
+    // one start for all six: the comparison is only honest if nothing is staggered
+    rows.forEach(replay);
+  });
+
+  document.querySelectorAll('input[name="eval"]').forEach((input) => {
+    input.addEventListener("change", () => {
+      register.style.setProperty("--eval", `${input.value}ms`);
+    });
+  });
+
+  // copy
+  async function copy(text, button) {
+    const label = button.textContent;
+    try {
+      await navigator.clipboard.writeText(text);
+      button.textContent = "Copied";
+    } catch (error) {
+      document.getElementById("export-body").textContent = text;
+      const dialog = document.getElementById("export");
+      if (typeof dialog.showModal === "function") dialog.showModal();
+      button.textContent = label;
+      return;
+    }
+    setTimeout(() => (button.textContent = label), 1200);
+  }
+
+  document.getElementById("copy-tokens").addEventListener("click", (event) => copy(css(), event.currentTarget));
+
+  register.querySelectorAll("[data-copy]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const row = button.closest("[data-row]");
+      const name = row.querySelector(".row__name").textContent;
+      const value = row.querySelector("[data-css]").textContent;
+      copy(`${name}: ${value};`, button);
+    });
+  });
+
+  document.querySelectorAll("[data-close]").forEach((button) => {
+    button.addEventListener("click", () => button.closest("dialog").close());
+  });
+
+  // reduced motion
+  const reduced = document.getElementById("reduced");
+  const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  function setReduced(on) {
+    document.documentElement.dataset.motion = on ? "reduced" : "full";
+    reduced.checked = on;
+  }
+  setReduced(motionQuery.matches);
+  reduced.addEventListener("change", () => setReduced(reduced.checked));
+
+  // scheme
+  document.querySelectorAll('input[name="scheme"]').forEach((input) => {
+    input.addEventListener("change", () => {
+      if (input.value === "system") {
+        document.body.removeAttribute("data-colorscheme");
+        try { localStorage.removeItem("chef-llama-scheme"); } catch (e) {}
+      } else {
+        document.body.dataset.colorscheme = input.value;
+        try { localStorage.setItem("chef-llama-scheme", input.value); } catch (e) {}
+      }
+    });
+  });
+  try {
+    const saved = localStorage.getItem("chef-llama-scheme");
+    if (saved) {
+      const input = document.querySelector(`input[name="scheme"][value="${saved}"]`);
+      if (input) input.checked = true;
+    }
+  } catch (e) {}
+
+  // dialog
+  const stage = document.getElementById("stage");
+  document.getElementById("dialog-in").addEventListener("click", () => stage.classList.add("is-in"));
+  document.getElementById("dialog-out").addEventListener("click", () => stage.classList.remove("is-in"));
+
+  // arrow
+  const rail = document.getElementById("rail");
+  const destinations = [...document.querySelectorAll("[data-dest]")];
+  destinations.forEach((button) => {
+    button.addEventListener("click", () => {
+      rail.dataset.pos = button.dataset.dest;
+      destinations.forEach((other) => other.setAttribute("aria-pressed", String(other === button)));
+    });
+  });
+
+  // press
+  const press = document.getElementById("press");
+  const down = () => press.classList.add("is-down");
+  const up = () => press.classList.remove("is-down");
+  press.addEventListener("pointerdown", down);
+  press.addEventListener("pointerup", up);
+  press.addEventListener("pointerleave", up);
+  press.addEventListener("pointercancel", up);
+  press.addEventListener("keydown", (event) => {
+    if (event.key === " " || event.key === "Enter") down();
+  });
+  press.addEventListener("keyup", up);
+
+  // rotate
+  const bench = document.getElementById("bench");
+  document.getElementById("rotate").addEventListener("click", () => bench.classList.toggle("is-flipped"));
+
+  // meter
+  const meter = document.getElementById("meter");
+  const readout = document.getElementById("meter-value");
+  document.getElementById("fill").addEventListener("click", () => {
+    meter.classList.add("is-full");
+    readout.textContent = "7 / 10";
+  });
+  document.getElementById("empty").addEventListener("click", () => {
+    meter.classList.remove("is-full");
+    readout.textContent = "0 / 10";
+  });
+</script>
+</body>
+</html>

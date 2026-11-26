@@ -179,7 +179,7 @@
 
 ### Token enforcement
 - Stay on ESLint 10, not Oxlint (Oxlint JS plugins are alpha and don't run on `.svelte`). `@stylexjs/eslint-plugin` **0.19.2 exports only `rules`**: there is no `configs.recommended`, so list rules explicitly. Pin it exactly (see [ci.md](./ci.md#dependencies)).
-- `@stylexjs/valid-styles` with **`propLimits`**: bans raw colours, lengths, durations and z-index on chosen properties.
+- `@stylexjs/valid-styles` with **`propLimits`**: bans raw colours, lengths, durations, easings and z-index on chosen properties ([Motion](#motion) names which properties).
 - Plus `chef/no-raw-stylex-values`: closes the `color-mix()` template hole and `import * as tokens`, and pins z-index to `zIndex.stylex.ts`.
 - Plus the official `enforce-extension`, `no-nonstandard-styles` and `no-lookahead-selectors` (warn). `no-conflicting-props` stays off.
 - `width`, `height`, `top`, `left`, `right` and `bottom` are **not** unrestricted: `propLimits` bans them in favour of the logical forms in [Logical properties](#logical-properties). `display` stays unrestricted, and `inline-size` / `block-size` are what a component should reach for.
@@ -193,7 +193,46 @@
 - **PLACEHOLDER** names `base`/`raised`/`sticky`/`header`/`toast` — not the Chef Llama scale.
 
 ### Motion
-- Only prose so far: 120–180 ms opacity/transform on popovers. The spike says to add shared duration/easing tokens before the motion `propLimits` are useful.
+- **Six easings, one shape each, and `linear()` is the only form.** Every easing in the set is a `linear()` stop list: no `cubic-bezier()`, no keyword, no `steps()`, so the motion `propLimits` has one form to reject rather than four. `--ease-linear` is `linear(0, 1)` rather than the `linear` keyword, so the whole set reads the same way and the literal allowlist carries no easing at all. `linear()` lands at Chrome 113 / WebKit 17.2 / Gecko 112, under every engine in [the browser floor](#browser-floor), so the form costs nothing at the floor. The six values total 1,027 bytes of raw CSS — 408 brotli, 442 with the durations — measured, so the CSS budget has a number.
+- **The shapes are orthogonal on purpose**: decelerate, its exact reverse, symmetric, overshoot, undershoot-then-overshoot, constant. Nothing in the set is a second way to say the same thing, which is the same test that retired the `chip` typography variant.
+
+  | Token | Shape | Stops | Use it for | Not for |
+  |---|---|---|---|---|
+  | `--ease-arrive` | decelerate, never past 1 | 13 | anything entering or being revealed: dialog, popover, sheet, toast, a view transition arriving, a one-shot fill reaching its value | a thing leaving, or a press |
+  | `--ease-depart` | accelerate, the exact reverse of `arrive` | 13 | anything leaving: dismissal, a collapse, a row being removed | a thing arriving |
+  | `--ease-glide` | symmetric, in then out | 19 | a value that travels between two positions: an indicator or arrow into a new slot, an underline, a 180° rotation, a reorder | a surface appearing or disappearing |
+  | `--ease-squish` | overshoot, peaking at 1.131 of the travel at 56% | 13 | a thing touched or landed as an object: press and release, scale up or down, a card settling into place | a dialog, a popover, page chrome, or a second time on one surface |
+  | `--ease-anticipate` | winds back to −0.040, overshoots to 1.041 | 15 | a deliberate action that should wind up before it goes: the Generate transition, a saved chip landing | anything incidental, or more than once on a surface |
+  | `--ease-linear` | constant | 2 | a rate, not a feel: spinners, indeterminate bars, scroll-driven reveals (scroll progress is already linear), a marquee | anything that starts and ends |
+
+- **`depart` is `arrive` played backwards, exactly.** The value is `1 − f(1 − t)` of the `arrive` stop list, so a dialog leaves on the path it came in and the pair can never drift. The consequence is a maintenance rule: `depart` has no value of its own to tune. Reversing a stop list is mechanical — mirror each time, invert each value — so change `arrive` and regenerate it rather than eyeballing a curve that looks like an exit.
+- **The values, until `src/` exists.** They go in `src/lib/theme/motion.stylex.ts` `defineVars` with the same `--` keys as the rest of the theme ([Tokens are the theme](#tokens-are-the-theme)); while the app is not there yet, this block and `.kombai/canvas/motion/motion-sheet.html` carry the identical strings, and the sheet is regenerated after a change rather than edited by hand.
+
+  ```css
+  --ease-arrive: linear(0, 0.264 6.25%, 0.38 9.375%, 0.482 12.5%, 0.571 15.625%, 0.647 18.75%, 0.765 25%, 0.829 29.688%, 0.876 34.375%, 0.937 43.75%, 0.98 57.813%, 0.998 78.906%, 1);
+  --ease-depart: linear(0, 0.002 21.094%, 0.02 42.188%, 0.063 56.25%, 0.124 65.625%, 0.171 70.313%, 0.235 75%, 0.353 81.25%, 0.429 84.375%, 0.518 87.5%, 0.62 90.625%, 0.736 93.75%, 1);
+  --ease-glide: linear(0, 0.002 3.125%, 0.01 6.25%, 0.022 9.375%, 0.039 12.5%, 0.085 18.75%, 0.148 25%, 0.211 30.273%, 0.282 35.547%, 0.368 41.479%, 0.643 59.277%, 0.756 67.188%, 0.843 74.219%, 0.881 77.734%, 0.915 81.25%, 0.951 85.938%, 0.978 90.625%, 0.994 95.313%, 1);
+  --ease-squish: linear(0, 0.389 8.5%, 0.692 17.4%, 0.912 26.8%, 0.992 31.7%, 1.054 36.8%, 1.092 41.3%, 1.117 46%, 1.13 51%, 1.131 56.3%, 1.108 66%, 1.018 88.8%, 1);
+  --ease-anticipate: linear(0, -0.006 5.6%, -0.038 17.6%, -0.04 22.9%, -0.016 29%, 0.042 34.5%, 0.131 39.3%, 0.254 43.8%, 0.654 53.6%, 0.803 58.1%, 0.92 63.2%, 0.996 68.6%, 1.03 73.4%, 1.041 78.7%, 1);
+  --ease-linear: linear(0, 1);
+  ```
+
+- **Four durations, and none of them is the generator's.** Easing Wizard derives a duration from the curve's physics and its ranges run 250–3,125 ms. At those lengths a dialog spends most of what you watch on its last 2% of travel, so the range is ignored by decision and the set is used at 100–400 ms:
+
+  | Token | Value | Use it for |
+  |---|---|---|
+  | `--duration-tick` | `100ms` | hover, focus, colour, opacity — anything with no travel |
+  | `--duration-quick` | `160ms` | a small element arriving or leaving: chip popover, menu, toast, a press |
+  | `--duration-base` | `250ms` | dialog, sheet, card menu, a view transition |
+  | `--duration-slow` | `400ms` | a structural move: a panel collapsing, a large surface arriving |
+
+- **An exit takes the step below its entry.** `arrive` at `--duration-base` leaves with `depart` at `--duration-quick`, and `arrive` at `quick` leaves at `tick`. Nothing in the UI exceeds 400 ms; anything longer is a keyframe sequence with its own timeline, not a token.
+- **The pairing, not the token, is the register.** `arrive` + `depart` are the default for every surface; `glide` whenever a value changes position; `squish` only where a finger or a landing is involved; `anticipate` at most once per surface; `linear` only where the motion is reporting a rate. **Overshoot is the fastest way to date a product** — a dialog that springs in reads as a 2017 landing page — so the two non-monotone curves never touch chrome, and a dialog is `arrive`, not `squish`.
+- **Where the values came from, and why not the tool's springs.** The set was chosen with the Easing Wizard MCP (`https://api.easingwizard.com/mcp`; `get_presets`, `create_*_curve`, `get_curve_by_id`). Its `SPRING` and `BOUNCE` families are sampled over their own settling time, so they cross 57% of the travel at 10% of the curve: at 250 ms that is a whip followed by a long crawl, which is precisely what the 600–3,150 ms durations exist to hide. The set is therefore drawn from its time-normalised families instead — the `OUT QUINT` and `IN_OUT SINE` beziers, adaptively sampled to stop lists at a 0.6% chord error (0.22% for `glide`), and its `OVERSHOOT` generator for the two non-monotone curves: `squish` is overshoot `OUT`, mass 2, damping 92, curve `0a4r1t2u92y21y`; `anticipate` is overshoot `IN_OUT`, mass 1, damping 90, curve `0a4r2t1u90y240`. A changed value is re-derived the same way, not nudged by eye.
+- **The literal the canvases already carry migrates with no visible change.** Five nodes set `cubic-bezier(0.23, 1, 0.32, 1)`; `arrive`'s source is `OUT QUINT` at `(0.22, 1, 0.36, 1)`, so both `y` coordinates are identical and the two `x` coordinates differ by 0.01 and 0.04. Those declarations become `var(--ease-arrive)` rather than being re-tuned.
+- **Reduced motion keeps the easing and drops the travel**: opacity survives, `transform` and `scale` resolve to their end state, and no specimen is allowed to oscillate.
+- **Enforcement.** `propLimits` gains `transitionTimingFunction`, `animationTimingFunction`, `transitionDuration` and `animationDuration` against the token modules; a literal `0` is the only permitted duration and no easing literal is permitted, `linear` included. The compiled-CSS backstop ([lint.md](./lint.md)) extends to `transition-timing-function` and `animation-timing-function` the way it already reads the typography properties.
+- **The sheet:** `.kombai/canvas/motion/motion-sheet.html` auditions all six — one square travelling the same 248 px in every row, every curve started in the same frame, so only the curve differs. Below it, the duration ladder and four groups of moments: a dialog arriving and leaving, an arrow gliding, a press and a 180° rotation, and a meter filling from empty. It is a specimen, not product UI.
 
 ### Browser floor
 - `package.json` `browserslist` is the machine-readable floor: `chrome >= 123`, `edge >= 123`, `and_chr >= 123`, `and_ff >= 128`, `samsung >= 27`, `opera >= 109`, `ios_saf >= 18.3`, `safari >= 18.3`, `firefox >= 128`. The floor is set by `light-dark()` in Chromium (123, which is Opera Android 82, the first release on Blink 124), popover light dismiss on iOS in WebKit (18.3) and `@property` in Gecko (128); WebKit is about 29% of NZ page views. Review 2027-05-06.
@@ -272,7 +311,7 @@ The `$effect` ban and the files-override are in [lint.md](./lint.md#effect-banne
 Prefer `gridTemplateAreas` (for example `"header" "content" "footer"` on small containers and `"header header" "sidebar content" "footer footer"` at a container query around 768 px, or the usage-chart rail in [chart.md](./chart.md)) over anonymous track grids and numeric line placement. Lint: `chef/prefer-named-grid-areas` plus numeric-line `no-restricted-syntax`, with a built-in exception for `repeat(auto-fill|auto-fit)` and minmax-only tracks (see [lint.md](./lint.md#stylex)).
 
 ### Icons
-- No icon libraries. Chrome pictograms are custom animated SVG (in-file CSS, `light-dark()`, `prefers-reduced-motion`). OAuth marks come from official brand kits only (Google in v1; any later provider likewise).
+- No icon libraries, no icon package and no sprite dependency: custom SVG only, animated with in-file CSS, `light-dark()` and `prefers-reduced-motion`. The eight cooking-method glyphs, their five parts, the form states and the size cuts are [icons.md](./icons.md).
 
 ### Design loop
 - Lock one repo CSS token file + one landing before any Kombai Code pass. Kombai Design mode, one `/` + token sticker, Variants 1, Passes 1. Paper MCP only after a frame is selected.
@@ -283,12 +322,11 @@ Prefer `gridTemplateAreas` (for example `"header" "content" "footer"` on small c
 
 ## Open
 - **Which palette.** Four oklch palettes are on `.kombai/canvas/landing.canvas` (paprika, beet, saffron, moss) and more may come. Until one is chosen, no doc carries a colour value — names and roles only ([Colour tokens](#colour-tokens-shadcn-style-semantic-names)), and the values that do exist live in the canvas nodes.
-- **Easing tokens, as a set.** [Motion](#motion) is prose only, so the canvas calls no easing name: five nodes carry `cubic-bezier(0.23, 1, 0.32, 1)` as a literal. One token will not do it — a `linear` plus two or three cubic-beziers for entry, move and exit — and durations probably ship in the same set, because the motion `propLimits` ([Token enforcement](#token-enforcement)) has nothing to hold until both exist. Count, names, and whether `linear` is a token at all are undecided; that last question is already in the literal allowlist below.
 - **Where px is still allowed.** All 22 nodes now read the spacing and type scales: 516 `font-size` declarations moved onto `--text-*` and 1032 `padding`/`margin`/`gap` declarations onto `--space-*`, with the ladder declared in every node's `:root`. What remains in px, deliberately: box sizes (`inline-size`, `block-size`, `min-inline-size`), grid tracks, the chart's mark geometry, and the 1–3 px optical spacings from the [allowlist](#radius-and-spacing). `max-inline-size` has left that list: the frame's cap is the [Page frame](#page-frame) token. The undecided part is whether `propLimits` should carry that allowlist as `spacing: [1, 2, 3]` or whether a raw px length is a review question instead — the same shape of question as colours and durations, which are already limited.
 - **Enforce the range syntax, and decide where.** Nothing stops the next node writing `@container (max-width: 800px)` again, and the two forms are indistinguishable on screen. `@stylexjs/valid-styles` only inspects StyleX props, so this needs a CSS-aware check: `@eslint/css` with a custom rule, or a `chef/` rule over at-rule preludes. Which one, and whether the logical-property ban is also enforced at the raw-CSS layer rather than only in `propLimits`, is undecided — the same question [lint.md](./lint.md) already faces for `tokens.css`.
 - **Georgia at display size on the dark ground.** Only the light plate has been built; check 44 px / 400 / −0.015em against the cast-iron `--background` dark value before locking `display`.
 - **Method line count across platforms.** If Calibri and Seravek break a long method into visibly different line counts, choose between extra slack, `font-size-adjust`, and a shorter measure — in that order.
-- Literal allowlist table (colour `transparent`/`currentColor`; spacing `0`/`auto`; radius `0`; duration `0`; easing: is `linear` allowed?; z-index `0`/`auto`).
+- Literal allowlist table (colour `transparent`/`currentColor`; spacing `0`/`auto`; radius `0`; duration `0`; easing: **nothing** — `--ease-linear` is the token for a constant rate; z-index `0`/`auto`).
 - Real z-index names and ranks; what to do if a non-modal `show()` sheet ships.
 - Allow in-component `color-mix` via the custom rule, or derived tokens only?
 - Ban `fontFamily` outside the typography file? Limit width/height later (recommendation: no)?
