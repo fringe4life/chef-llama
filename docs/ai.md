@@ -38,7 +38,7 @@
 - A Diet is not a `kind`; Diet restrictions show up as `flags`, skill, method/devices, and swaps (see [data.md](./data.md#diet-lives-in-a-durable-object)). Each Recipe records which Diet it was cooked for.
 
 ### Chips
-- In-process string canonicalizer in `src/shared/`: split, NFKC + lowercase, strip quantities, units and prep adjectives, a tiny closed NZ synonym map, dedupe, max 16 chips. Leftovers become `{ "name": "rice", "cooked": true }`. Sentence-like paste is rejected.
+- In-process string canonicalizer in `src/shared/`: split, NFKC + lowercase, strip quantities, units and prep adjectives, a tiny closed NZ synonym map, dedupe, max 16 chips. Generate requires **≥3 non-staple** pantry chips (staples do not count toward the minimum — see [product.md](./product.md#staples)). Leftovers become `{ "name": "rice", "cooked": true }`. Sentence-like paste is rejected.
 - Synonym map target: the committed NZ pantry seed (`data/ingredients/nz-pantry.json` — slugs, aliases, intrinsic flags, parent links, derived vegan/vegetarian). Wiring the seed into the canonicalizer is still Open in [data.md](./data.md#open); until then the tiny map stands.
 - **Dedupe vs staples:** after canonicalization (slug or alias via the NZ pantry seed), a chip that matches one of the Cook’s staples is **not** added to the pantry chip list. UI shows a short inline note (for example “Olive oil is already in your staples”) and clears the input — never blocks or scolds. Autocomplete hides staples or greys them with a **staple** tag. Server dedupes again so the prompt lists each ingredient only once. See [product.md](./product.md#staples).
 - No model rewrite, no embedding and no CRF parser for chips in v1. Clairic for sentence-like paste is v2/v3 (see [v2.md](./v2.md)).

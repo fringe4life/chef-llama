@@ -9,7 +9,7 @@
 - Domain: **`chefllama.nz`** (see [ops.md](./ops.md)). Production never ships on `*.workers.dev`.
 
 ### Job
-- Pantry (≥3 chips, max 16) → **one Recipe tonight**. Similar cards after it exists. Photo later. Solo Cook, about 1–4 people.
+- Pantry (**≥3 non-staple** chips, max 16) → **one Recipe tonight**. Similar cards after it exists. Photo later. Solo Cook, about 1–4 people. Staples do **not** count toward the minimum (see [Staples](#staples)).
 - Constraints: Diet flags and the avoid list are **hard**; kcal and time are **targets**; servings 1–12, default 2; kcal stamped. Staples are the Cook’s **user-chosen** on-hand list (not a fixed app set); up to 2 may be assumed via `need` if forgotten (see [Staples](#staples)).
 
 ### Site vs App
@@ -44,6 +44,7 @@
 
 ### Staples
 - Staples are **user-chosen and customisable**, not a fixed app list.
+- **Chip minimum:** Generate requires **≥3 non-staple** pantry chips. Staples do **not** count toward that minimum.
 - **Dedupe against pantry chips:** when a cook chip resolves (canonical name or alias via the NZ pantry seed) to one of the user’s staples, do **not** add a second chip. Show a short inline note (for example “Olive oil is already in your staples”) and clear the input. Never block or scold.
 - Autocomplete **hides** staples or **greys** them with a **staple** tag.
 - The **server also dedupes** so the AI prompt lists each ingredient only once.
@@ -75,7 +76,7 @@
 
 ### Try me
 - Curated starter pantries on **`/`** so a Cook can tap once, land on `/pantry` with chips prefilled, and still **Generate with their own Diet**. Complementary to Recent (Recent lists published recipes; Try me seeds pantries).
-- **Four meals**, one each for **breakfast**, **lunch**, **dinner**, and **dessert**. Each meal has **three tiered chip sets** — **common**, **moderately common**, and **uncommon** — each 3–5 chips (same `/pantry?i=` seed shape as before). Min chips on Generate stays **3**.
+- **Four meals**, one each for **breakfast**, **lunch**, **dinner**, and **dessert**. Each meal has **three tiered chip sets** — **common**, **moderately common**, and **uncommon** — each 3–5 chips (same `/pantry?i=` seed shape as before). Min chips on Generate stays **≥3 non-staple** (staples do not count).
 - **Static committed list** in the repo — no Generate counting, no canonical-ID ranking, no weekly cron, no KV snapshot. Chip strings below are display labels; canonical IDs / intrinsic flags / parent links come from the pantry seed when wired. Avoid-list matches still **swap conflicting pantry chips** as usual (see [Diet](#diet)).
 - **Common** (Coinnich-approved; default brochure seed):
 
@@ -179,7 +180,7 @@ Publish to Recent only when:
 - **Three scheduled Cursor Automations**: architecture hunt, **agent-friction retro every 3 days** (the third Automation) on Grok 4.6 medium, and the monthly deps review. **No slop cron**; `eslint-plugin-slop` runs in lint instead (see [lint.md](./lint.md)). Details: [factory.md](./factory.md); ops summary: [ops.md](./ops.md).
 
 ## Open
-- Generate do's and don'ts (proposed): a **collapsed** disclosure under the chip list, above the Generate button, titled "How to get the most out of Chef Llama" (not a dialog, not on `/`). Keep: Diet first; leftover chips; free cooks then Credits; one Recipe per Generate; ≥3 chips / max 16; Staples (user-chosen; customise); avoid list always wins; this-run toggles may change flags / servings / time / kcal / skill / method / devices but never drop an avoid entry; publish defaults; an AI-untested disclaimer; Save if you like it; metric and NZ names. Still to pick: always visible vs collapsed; whether a failed Generate refunds; a lawyer pass on the avoid-list / label-disclaimer wording.
+- Generate do's and don'ts (proposed): a **collapsed** disclosure under the chip list, above the Generate button, titled "How to get the most out of Chef Llama" (not a dialog, not on `/`). Keep: Diet first; leftover chips; free cooks then Credits; one Recipe per Generate; ≥3 non-staple chips / max 16; Staples (user-chosen; do not count toward minimum); avoid list always wins; this-run toggles may change flags / servings / time / kcal / skill / method / devices but never drop an avoid entry; publish defaults; an AI-untested disclaimer; Save if you like it; metric and NZ names. Still to pick: always visible vs collapsed; whether a failed Generate refunds; a lawyer pass on the avoid-list / label-disclaimer wording.
 - **Skill level labels:** the three closed levels (proposed: beginner | intermediate | advanced — not locked).
 - **Try me surfaces:** which tier(s) show on `/` by default (common only vs all three); whether dessert is required on `/`; brochure card copy for moderately common / uncommon.
 - **Staples edit UX:** how Cooks edit the staples list (onboarding only vs Diet settings); max length. (Staples are user-chosen — not a fixed app set; see [Staples](#staples).)

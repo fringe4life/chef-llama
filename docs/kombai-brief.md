@@ -27,7 +27,7 @@ Skip Paper MCP during exploration (**100 calls/week**). Do not Figma MCP. Do not
 | Site landing | `/` | Brochure + curated **Try me** starter pantries (breakfast / lunch / dinner / dessert; each meal has common / moderately common / uncommon tiers; SSR HTML, not an island). Tap → `/pantry?i=`. NZ chip lists in [product.md § Try me](./product.md#try-me). |
 | **Recent** | `/recent` | Date-sorted published recipes (SSR HTML). Short cache; no cron; no ranking. Free-tier publish by default. Privacy: recipe only — no profile / Diet / allergies. |
 | Terms / privacy | `/terms` `/privacy` | Long legal. Minimal chrome. |
-| Pantry | `/pantry` | Chips (≥3), Diet switcher + this-run toggles (flags / servings / time / kcal / skill / method / devices; allergies always win), generate, credits pill. Pending **stays here** (a draft placeholder exists in `pantry.canvas`; the final loading design is still to come), then goto recipe. No extra routes. No Code. |
+| Pantry | `/pantry` | Chips (≥3 non-staple), Diet switcher + this-run toggles (flags / servings / time / kcal / skill / method / devices; allergies always win), generate, credits pill. Pending **stays here** (a draft placeholder exists in `pantry.canvas`; the final loading design is still to come), then goto recipe. No extra routes. No Code. |
 | Recipe | `/recipes/[slug]` | Method, `kcal` + `kcal_over`, swaps if `kind: "swap"` (allergy or flag conflict; highlighted), which Diet it was cooked for, save. Servings scaling is v2. Narrow = same route as sheet. |
 | Saved | `/saved` | List. Empty state. |
 | **Onboarding** | `/onboarding` route | First-run Diet #1, devices owned (time / feasibility), staples customise, explain free-tier → Recent publish. Replaces blocking Diet dialog. |
