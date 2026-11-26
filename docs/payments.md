@@ -13,6 +13,7 @@
 
 ### Credits and free cooks
 - **No signup Credits.** Free cooks come first-come-first-served from the 10k Neurons/day gift via the **pool DO**, with a per-user free-cook cap of 3/day.
+- **Publish:** free-tier recipes are **published to Recent by default**; Cooks who have bought Credits / packs may **opt out** (private). Explain on `/onboarding` and cook pages ([product.md](./product.md#publish-and-privacy)).
 - **Daily limits reset at 00:00 UTC**: the gift, the per-user free-cook cap, and guest Generate if it is ever enabled. Pool DO day key and reset alarm at 00:00 UTC.
 - Charge: Credits are **held, then settled or released** (see [data.md](./data.md#write-path-v1)). 1 Credit = 1 Recipe once the gift is gone. Viewing and saving are free.
 - Credit DO ledger: idempotent on Stripe `event.id` / `jobId`, with materialized balances (see [data.md](./data.md#durable-objects)).

@@ -16,8 +16,8 @@
 src/
   routes/                       # Fallow "app" zone
     (static)/  about pricing how-to terms privacy  llms.txt/
-    (site)/    +page  popular/  popular/[type=popularType]/  recipes/[slug=slug]/  sitemap-popular.xml/  sitemap-index.xml/
-    (app)/     pantry/  saved/  account/{,usage,packs}/
+    (site)/    +page  recent/  recipes/[slug=slug]/  sitemap-index.xml/
+    (app)/     onboarding/  pantry/  saved/  account/{,usage,packs}/
     sign-in/  api/auth/[...all]/  robots.txt/
   features/
     diet/                       # v1 feature, Diet DO

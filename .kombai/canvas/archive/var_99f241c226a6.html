@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html><head>
+  <meta charset="utf-8">
+  <meta name="kombai-design-canvas" content="true">
+  
+  
+  
+  
+  
+  
+  <style>html, body { margin: 0; padding: 0; } #root { display: contents; }</style>
+</head><body>
+  <div id="root"><style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:oklch(0.968 0.026 88);
+  --card:oklch(0.994 0.008 88);
+  --tint:oklch(0.940 0.038 86);
+  --ink:oklch(0.255 0.045 45);
+  --ink-muted:oklch(0.470 0.040 48);
+  --ink-faint:oklch(0.545 0.032 50);
+  --rule:oklch(0.885 0.030 70);
+  --rule-hair:oklch(0.918 0.026 76);
+  --accent:oklch(0.505 0.180 32);
+  --font-ui:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --font-read:Seravek,"Gill Sans Nova",Ubuntu,Calibri,"Noto Sans","DejaVu Sans",source-sans-pro,sans-serif;
+  --font-name:Georgia,"Times New Roman",serif;
+  --font-fig:ui-monospace,"Cascadia Code","Source Code Pro",Menlo,Consolas,"DejaVu Sans Mono",monospace;
+  --font-hand:"Segoe Print","Bradley Hand",Chilanka,TSCu_Comic,casual,cursive;
+}
+html{color-scheme:light}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-ui);font-size:14px;line-height:1.45}
+.sheet{max-width:1160px;margin:0 auto;padding:40px 32px 72px}
+.title{font-size:25px;font-weight:600;letter-spacing:-.02em;margin:0}
+.headrule{height:1px;background:var(--ink);margin-top:16px}
+.mono{font-family:var(--font-fig);font-variant-numeric:tabular-nums;letter-spacing:0}
+
+/* stack declarations */
+.stack{display:grid;grid-template-columns:200px minmax(0,1fr) 168px;column-gap:28px;align-items:baseline;padding:18px 0;border-bottom:1px solid var(--rule-hair)}
+.stack:first-of-type{border-top:1px solid var(--rule-hair)}
+.stack__name{font-size:29px;line-height:1.05;letter-spacing:-.02em}
+.stack__decl{font-family:var(--font-fig);font-size:10.5px;line-height:1.6;color:var(--ink);word-break:break-word}
+.stack__where{font-size:12px;line-height:1.5;color:var(--ink-muted);margin-top:7px;max-width:52ch}
+.stack__weights{font-family:var(--font-fig);font-size:10px;line-height:1.75;color:var(--ink-muted);text-align:left}
+.stack__weights b{font-weight:400;color:var(--ink)}
+
+/* contested roles */
+.glabel{font-family:var(--font-fig);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-muted)}
+.matrix{margin-top:40px}
+.matrix__head{display:grid;grid-template-columns:164px repeat(4,minmax(0,1fr));column-gap:14px;padding:0 0 8px;border-bottom:1px solid var(--rule);align-items:end}
+.matrix__head span:not(:first-child){padding-left:2px}
+.matrix__row{display:grid;grid-template-columns:164px repeat(4,minmax(0,1fr));column-gap:14px;padding:16px 0 18px;border-bottom:1px solid var(--rule-hair);align-items:start}
+.matrix__role{font-size:12.5px;color:var(--ink-muted);padding-top:11px}
+.cell{padding:10px 12px 11px;border:1px solid transparent;border-radius:4px;line-height:1.24;min-height:100%}
+.cell--win{background:var(--card);border-color:var(--rule)}
+.cell__face{display:block;font-family:var(--font-fig);font-size:9px;letter-spacing:.05em;color:var(--ink-muted);margin-top:11px}
+
+/* resolved map */
+.map{margin-top:44px}
+.map__group{display:grid;grid-template-columns:164px minmax(0,1fr);column-gap:28px;align-items:center;margin-top:30px}
+.map__group:first-of-type{margin-top:0}
+.map__groupline{height:1px;background:var(--rule)}
+.map__row{display:grid;grid-template-columns:164px minmax(0,1fr) 150px;column-gap:28px;align-items:baseline;padding:8px 0 9px;border-bottom:1px solid var(--rule-hair)}
+.map__role{font-size:12.5px;color:var(--ink-muted)}
+.map__sample{min-width:0}
+.map__face{font-family:var(--font-fig);font-size:10px;color:var(--ink-faint);text-align:right}
+</style>
+<main class="sheet" data-kid="1" data-name="page content sheet container">
+<h1 class="title" data-kid="1-1" data-name="page main headline">Type roles</h1>
+<div class="headrule" data-kid="1-2" data-name="headline underline rule"></div>
+<section aria-label="Stack declarations" class="stacks" data-kid="1-3" data-name="font stack declarations section">
+<div class="stack" data-kid="1-3-1" data-name="font stack row for humanist">
+<div class="stack__name" data-kid="1-3-1-1" data-name="humanist face sample label" style="font-family:var(--font-read)">Humanist</div>
+<div data-kid="1-3-1-2" data-name="humanist stack detail container">
+<div class="stack__decl" data-kid="1-3-1-2-1" data-name="humanist font declaration list">Seravek, "Gill Sans Nova", Ubuntu, Calibri, "Noto Sans", "DejaVu Sans", source-sans-pro, sans-serif</div>
+<p class="stack__where" data-kid="1-3-1-2-2" data-name="humanist usage guidance text">Method text, headnote, empty states, help copy. Anything read past one line.</p>
+</div>
+<div class="stack__weights" data-kid="1-3-1-3" data-name="humanist weight notes column"><b data-kid="1-3-1-3-1" data-name="humanist available weights value">400 500 700</b><br data-kid="1-3-1-3-2" data-name="line break separator"/>no 600 on Seravek, Calibri or Ubuntu<br data-kid="1-3-1-3-3" data-name="humanist weight caveat note"/>Noto Sans inserted ahead of DejaVu</div>
+</div>
+<div class="stack" data-kid="1-3-2" data-name="font stack row for serif">
+<div class="stack__name" data-kid="1-3-2-1" data-name="serif face sample label" style="font-family:var(--font-name)">Serif</div>
+<div data-kid="1-3-2-2" data-name="serif stack detail container">
+<div class="stack__decl" data-kid="1-3-2-2-1" data-name="serif font declaration list">Georgia, "Times New Roman", serif</div>
+<p class="stack__where" data-kid="1-3-2-2-2" data-name="serif usage guidance text">Dish name, headnote, wordmark, footer brand. A name, never body copy.</p>
+</div>
+<div class="stack__weights" data-kid="1-3-2-3" data-name="serif weight notes column"><b data-kid="1-3-2-3-1" data-name="serif available weights value">400 700 + italic</b><br data-kid="1-3-2-3-2" data-name="line break separator"/>no 500 or 600<br data-kid="1-3-2-3-3" data-name="serif hierarchy note"/>hierarchy comes from size and italic</div>
+</div>
+<div class="stack" data-kid="1-3-3" data-name="font stack row for monospace">
+<div class="stack__name" data-kid="1-3-3-1" data-name="monospace face sample label" style="font-family:var(--font-fig)">Monospace</div>
+<div data-kid="1-3-3-2" data-name="monospace stack detail container">
+<div class="stack__decl" data-kid="1-3-3-2-1" data-name="monospace font declaration list">ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, "DejaVu Sans Mono", monospace</div>
+<p class="stack__where" data-kid="1-3-3-2-2" data-name="monospace usage guidance text">Every figure that has to line up: money, Credits, quantities, times, kcal, axis values, ledger columns.</p>
+</div>
+<div class="stack__weights" data-kid="1-3-3-3" data-name="monospace weight notes column"><b data-kid="1-3-3-3-1" data-name="monospace available weights value">400 700</b><br data-kid="1-3-3-3-2" data-name="line break separator"/>no 500 or 600<br data-kid="1-3-3-3-3" data-name="monospace platform note"/>ui-monospace resolves in Safari only</div>
+</div>
+<div class="stack" data-kid="1-3-4" data-name="font stack row for system UI">
+<div class="stack__name" data-kid="1-3-4-1" data-name="system UI face sample label" style="font-family:var(--font-ui)">System UI</div>
+<div data-kid="1-3-4-2" data-name="system UI stack detail container">
+<div class="stack__decl" data-kid="1-3-4-2-1" data-name="system UI font declaration list">system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif</div>
+<p class="stack__where" data-kid="1-3-4-2-2" data-name="system UI usage guidance text">Nav, buttons, controls, labels, headings, one-line status. Anything clicked or scanned once.</p>
+</div>
+<div class="stack__weights" data-kid="1-3-4-3" data-name="system UI weight notes column"><b data-kid="1-3-4-3-1" data-name="system UI available weights value">400–700</b><br data-kid="1-3-4-3-2" data-name="line break separator"/>600 snaps to 700 on Ubuntu and Cantarell<br data-kid="1-3-4-3-3" data-name="system UI snapping caveat"/>only stack with a full ladder</div>
+</div>
+<div class="stack" data-kid="1-3-5" data-name="font stack row for handwritten">
+<div class="stack__name" data-kid="1-3-5-1" data-name="handwritten face sample label" style="font-family:var(--font-hand)">Handwritten</div>
+<div data-kid="1-3-5-2" data-name="handwritten stack detail container">
+<div class="stack__decl" data-kid="1-3-5-2-1" data-name="handwritten font declaration list">"Segoe Print", "Bradley Hand", Chilanka, TSCu_Comic, casual, cursive</div>
+<p class="stack__where" data-kid="1-3-5-2-2" data-name="handwritten usage guidance text">Nothing structural. Carried into the method experiment only, to see what it does.</p>
+</div>
+<div class="stack__weights" data-kid="1-3-5-3" data-name="handwritten weight notes column"><b data-kid="1-3-5-3-1" data-name="handwritten available weights value">400 Windows · 700 Apple</b><br data-kid="1-3-5-3-2" data-name="line break separator"/>no face at all on Linux<br data-kid="1-3-5-3-3" data-name="handwritten platform note"/>one face per platform, never a choice</div>
+</div>
+</section>
+<section aria-labelledby="contested" class="matrix" data-kid="1-4" data-name="contested roles comparison section">
+<h2 class="glabel" data-kid="1-4-1" data-name="contested roles section heading" id="contested" style="margin:0 0 12px">Contested roles, same string in every face</h2>
+<div class="matrix__head" data-kid="1-4-2" data-name="comparison matrix header row">
+<span data-kid="1-4-2-1" data-name="header row corner spacer"></span>
+<span data-kid="1-4-2-2" data-name="serif column header label">Serif</span>
+<span data-kid="1-4-2-3" data-name="humanist column header label">Humanist</span>
+<span data-kid="1-4-2-4" data-name="monospace column header label">Monospace</span>
+<span data-kid="1-4-2-5" data-name="system UI column header label">System UI</span>
+</div>
+<div class="matrix__row" data-kid="1-4-3" data-name="comparison row for dish name">
+<div class="matrix__role" data-kid="1-4-3-1" data-name="dish name role label">Dish name</div>
+<div class="cell cell--win" data-kid="1-4-3-2" data-name="winning cell for dish name in serif">
+<span data-kid="1-4-3-2-1" data-name="dish name sample in serif" style="font-family:var(--font-name);font-size:20px;line-height:1.2;letter-spacing:-.01em">Kūmara, chickpea and silverbeet traybake</span>
+<span class="cell__face" data-kid="1-4-3-2-2" data-name="serif face attribution label">Georgia</span>
+</div>
+<div class="cell" data-kid="1-4-3-3" data-name="comparison cell for dish name in humanist">
+<span data-kid="1-4-3-3-1" data-name="dish name sample in humanist" style="font-family:var(--font-read);font-size:19px;line-height:1.2;letter-spacing:-.01em">Kūmara, chickpea and silverbeet traybake</span>
+<span class="cell__face" data-kid="1-4-3-3-2" data-name="humanist face attribution label">Humanist</span>
+</div>
+<div class="cell" data-kid="1-4-3-4" data-name="comparison cell for dish name in monospace">
+<span data-kid="1-4-3-4-1" data-name="dish name sample in monospace" style="font-family:var(--font-fig);font-size:14px;line-height:1.35">Kūmara, chickpea and silverbeet traybake</span>
+<span class="cell__face" data-kid="1-4-3-4-2" data-name="monospace face attribution label">Monospace</span>
+</div>
+<div class="cell" data-kid="1-4-3-5" data-name="comparison cell for dish name in system UI">
+<span data-kid="1-4-3-5-1" data-name="dish name sample in system UI" style="font-family:var(--font-ui);font-size:19px;font-weight:600;line-height:1.2;letter-spacing:-.01em">Kūmara, chickpea and silverbeet traybake</span>
+<span class="cell__face" data-kid="1-4-3-5-2" data-name="system UI face attribution label">System UI 600</span>
+</div>
+</div>
+<div class="matrix__row" data-kid="1-4-4" data-name="comparison row for method step">
+<div class="matrix__role" data-kid="1-4-4-1" data-name="method step role label">Method step</div>
+<div class="cell" data-kid="1-4-4-2" data-name="comparison cell for method step in serif">
+<span data-kid="1-4-4-2-1" data-name="method step sample in serif" style="font-family:var(--font-name);font-size:14px;line-height:1.55">Fold the torn leaves through in handfuls; they wilt in the residual heat.</span>
+<span class="cell__face" data-kid="1-4-4-2-2" data-name="serif face attribution label">Georgia</span>
+</div>
+<div class="cell cell--win" data-kid="1-4-4-3" data-name="winning cell for method step in humanist">
+<span data-kid="1-4-4-3-1" data-name="method step sample in humanist" style="font-family:var(--font-read);font-size:15px;line-height:1.55">Fold the torn leaves through in handfuls; they wilt in the residual heat.</span>
+<span class="cell__face" data-kid="1-4-4-3-2" data-name="humanist face attribution label">Humanist</span>
+</div>
+<div class="cell" data-kid="1-4-4-4" data-name="comparison cell for method step in monospace">
+<span data-kid="1-4-4-4-1" data-name="method step sample in monospace" style="font-family:var(--font-fig);font-size:11.5px;line-height:1.6">Fold the torn leaves through in handfuls; they wilt in the residual heat.</span>
+<span class="cell__face" data-kid="1-4-4-4-2" data-name="monospace face attribution label">Monospace</span>
+</div>
+<div class="cell" data-kid="1-4-4-5" data-name="comparison cell for method step in system UI">
+<span data-kid="1-4-4-5-1" data-name="method step sample in system UI" style="font-family:var(--font-ui);font-size:14px;line-height:1.5">Fold the torn leaves through in handfuls; they wilt in the residual heat.</span>
+<span class="cell__face" data-kid="1-4-4-5-2" data-name="system UI face attribution label">System UI</span>
+</div>
+</div>
+<div class="matrix__row" data-kid="1-4-5" data-name="comparison row for quantity and unit">
+<div class="matrix__role" data-kid="1-4-5-1" data-name="quantity and unit role label">Quantity and unit</div>
+<div class="cell" data-kid="1-4-5-2" data-name="comparison cell for quantity in serif">
+<span data-kid="1-4-5-2-1" data-name="quantity sample in serif" style="font-family:var(--font-name);font-size:18px">800 g · 2 tbsp</span>
+<span class="cell__face" data-kid="1-4-5-2-2" data-name="serif face attribution label">Georgia, old-style figures</span>
+</div>
+<div class="cell" data-kid="1-4-5-3" data-name="comparison cell for quantity in humanist">
+<span data-kid="1-4-5-3-1" data-name="quantity sample in humanist" style="font-family:var(--font-read);font-size:18px">800 g · 2 tbsp</span>
+<span class="cell__face" data-kid="1-4-5-3-2" data-name="humanist face attribution label">Humanist</span>
+</div>
+<div class="cell cell--win" data-kid="1-4-5-4" data-name="winning cell for quantity in monospace">
+<span data-kid="1-4-5-4-1" data-name="quantity sample in monospace" style="font-family:var(--font-fig);font-size:16px">800 g · 2 tbsp</span>
+<span class="cell__face" data-kid="1-4-5-4-2" data-name="monospace face attribution label">Monospace, fixed width</span>
+</div>
+<div class="cell" data-kid="1-4-5-5" data-name="comparison cell for quantity in system UI">
+<span data-kid="1-4-5-5-1" data-name="quantity sample in system UI" style="font-family:var(--font-ui);font-size:18px;font-variant-numeric:tabular-nums">800 g · 2 tbsp</span>
+<span class="cell__face" data-kid="1-4-5-5-2" data-name="system UI face attribution label">System UI, tabular</span>
+</div>
+</div>
+<div class="matrix__row" data-kid="1-4-6" data-name="comparison row for credits balance">
+<div class="matrix__role" data-kid="1-4-6-1" data-name="credits balance role label">Credits balance</div>
+<div class="cell" data-kid="1-4-6-2" data-name="comparison cell for credits in serif">
+<span data-kid="1-4-6-2-1" data-name="credits sample in serif" style="font-family:var(--font-name);font-size:30px">143</span>
+<span class="cell__face" data-kid="1-4-6-2-2" data-name="serif face attribution label">Georgia, proportional</span>
+</div>
+<div class="cell" data-kid="1-4-6-3" data-name="comparison cell for credits in humanist">
+<span data-kid="1-4-6-3-1" data-name="credits sample in humanist" style="font-family:var(--font-read);font-size:30px">143</span>
+<span class="cell__face" data-kid="1-4-6-3-2" data-name="humanist face attribution label">Humanist</span>
+</div>
+<div class="cell cell--win" data-kid="1-4-6-4" data-name="winning cell for credits in monospace">
+<span data-kid="1-4-6-4-1" data-name="credits sample in monospace" style="font-family:var(--font-fig);font-size:27px">143</span>
+<span class="cell__face" data-kid="1-4-6-4-2" data-name="monospace face attribution label">Monospace</span>
+</div>
+<div class="cell" data-kid="1-4-6-5" data-name="comparison cell for credits in system UI">
+<span data-kid="1-4-6-5-1" data-name="credits sample in system UI" style="font-family:var(--font-ui);font-size:30px;font-variant-numeric:tabular-nums">143</span>
+<span class="cell__face" data-kid="1-4-6-5-2" data-name="system UI face attribution label">System UI, tabular</span>
+</div>
+</div>
+</section>
+<section aria-label="Resolved face per role" class="map" data-kid="1-5" data-name="resolved face map section" style="border-top:1px solid var(--ink);padding-top:26px">
+<div class="map__group" data-kid="1-5-1" data-name="recipe group header row"><span class="glabel" data-kid="1-5-1-1" data-name="recipe group label">Recipe</span><span class="map__groupline" data-kid="1-5-1-2" data-name="recipe group rule line"></span></div>
+<div class="map__row" data-kid="1-5-2" data-name="resolved row for recipe dish name">
+<span class="map__role" data-kid="1-5-2-1" data-name="role name label for dish name">Dish name</span>
+<span class="map__sample" data-kid="1-5-2-2" data-name="dish name sample in resolved face" style="font-family:var(--font-name);font-size:20px;letter-spacing:-.01em">Kūmara, chickpea and silverbeet traybake</span>
+<span class="map__face" data-kid="1-5-2-3" data-name="face weight attribution">Georgia 400</span>
+</div>
+<div class="map__row" data-kid="1-5-3" data-name="resolved row for headnote">
+<span class="map__role" data-kid="1-5-3-1" data-name="role name label for headnote">Headnote</span>
+<span class="map__sample" data-kid="1-5-3-2" data-name="headnote sample in italic serif" style="font-family:var(--font-name);font-style:italic;font-size:15px;color:var(--ink-muted)">One tray, 200 °C, and the silverbeet goes in at the end so it keeps its bite.</span>
+<span class="map__face" data-kid="1-5-3-3" data-name="face attribution for headnote">Georgia italic</span>
+</div>
+<div class="map__row" data-kid="1-5-4" data-name="resolved row for ingredient item">
+<span class="map__role" data-kid="1-5-4-1" data-name="role name label for ingredient item">Ingredient item</span>
+<span class="map__sample" data-kid="1-5-4-2" data-name="ingredient item sample" style="font-family:var(--font-read);font-size:15.5px">silverbeet, stems sliced, leaves torn</span>
+<span class="map__face" data-kid="1-5-4-3" data-name="face attribution for ingredient">Humanist 400</span>
+</div>
+<div class="map__row" data-kid="1-5-5" data-name="resolved row for quantity unit">
+<span class="map__role" data-kid="1-5-5-1" data-name="role name label for quantity unit">Quantity and unit</span>
+<span class="map__sample" data-kid="1-5-5-2" data-name="quantity unit sample" style="font-family:var(--font-fig);font-size:14.5px">800 g　　2 tbsp　　120 g</span>
+<span class="map__face" data-kid="1-5-5-3" data-name="face attribution for quantity">Mono 400</span>
+</div>
+<div class="map__row" data-kid="1-5-6" data-name="resolved row for step number">
+<span class="map__role" data-kid="1-5-6-1" data-name="role name label for step number">Step number</span>
+<span class="map__sample" data-kid="1-5-6-2" data-name="step number sample" style="font-family:var(--font-fig);font-size:13px">04</span>
+<span class="map__face" data-kid="1-5-6-3" data-name="face attribution for step number">Mono 400</span>
+</div>
+<div class="map__row" data-kid="1-5-7" data-name="resolved row for step text">
+<span class="map__role" data-kid="1-5-7-1" data-name="role name label for step text">Step text</span>
+<span class="map__sample" data-kid="1-5-7-2" data-name="step text sample" style="font-family:var(--font-read);font-size:16px">Fold the torn leaves through in handfuls; they wilt in the residual heat.</span>
+<span class="map__face" data-kid="1-5-7-3" data-name="face attribution for step text">Humanist 400</span>
+</div>
+<div class="map__row" data-kid="1-5-8" data-name="resolved row for cook time kcal servings">
+<span class="map__role" data-kid="1-5-8-1" data-name="role name label for cook time and kcal">Cook time, kcal, servings</span>
+<span class="map__sample" data-kid="1-5-8-2" data-name="cook time kcal sample" style="font-family:var(--font-fig);font-size:14px">40 min　　620 kcal　　4</span>
+<span class="map__face" data-kid="1-5-8-3" data-name="face attribution for stats">Mono 400</span>
+</div>
+<div class="map__row" data-kid="1-5-9" data-name="resolved row for diet and allergen tags">
+<span class="map__role" data-kid="1-5-9-1" data-name="role name label for diet tags">Diet and allergen tags</span>
+<span class="map__sample" data-kid="1-5-9-2" data-name="diet and allergen tags sample" style="font-family:var(--font-ui);font-size:12px;font-weight:500">vegetarian　contains dairy　no nuts</span>
+<span class="map__face" data-kid="1-5-9-3" data-name="face attribution for tags">System UI 500</span>
+</div>
+<div class="map__row" data-kid="1-5-10" data-name="resolved row for buttons">
+<span class="map__role" data-kid="1-5-10-1" data-name="role name label for action buttons">Save, Change an ingredient</span>
+<span class="map__sample" data-kid="1-5-10-2" data-name="action button label sample" style="font-family:var(--font-ui);font-size:13px;font-weight:600">Save recipe</span>
+<span class="map__face" data-kid="1-5-10-3" data-name="face attribution for button">System UI 600</span>
+</div>
+<div class="map__group" data-kid="1-5-11" data-name="account group header row"><span class="glabel" data-kid="1-5-11-1" data-name="account group label">Account</span><span class="map__groupline" data-kid="1-5-11-2" data-name="account group rule line"></span></div>
+<div class="map__row" data-kid="1-5-12" data-name="resolved row for credits balance">
+<span class="map__role" data-kid="1-5-12-1" data-name="role name label for credits balance">Credits balance</span>
+<span class="map__sample" data-kid="1-5-12-2" data-name="credits balance sample" style="font-family:var(--font-fig);font-size:22px">143</span>
+<span class="map__face" data-kid="1-5-12-3" data-name="face attribution for credits">Mono 400</span>
+</div>
+<div class="map__row" data-kid="1-5-13" data-name="resolved row for unit and note">
+<span class="map__role" data-kid="1-5-13-1" data-name="role name label for unit note">Unit and one-line note</span>
+<span class="map__sample" data-kid="1-5-13-2" data-name="unit and note sample" style="font-family:var(--font-ui);font-size:13px">Credits. One Credit per cook.</span>
+<span class="map__face" data-kid="1-5-13-3" data-name="face attribution for note">System UI 400</span>
+</div>
+<div class="map__row" data-kid="1-5-14" data-name="resolved row for ledger amount">
+<span class="map__role" data-kid="1-5-14-1" data-name="role name label for ledger amount">Ledger amount</span>
+<span class="map__sample" data-kid="1-5-14-2" data-name="ledger amount sample" style="font-family:var(--font-fig);font-size:14px">NZ$32.00</span>
+<span class="map__face" data-kid="1-5-14-3" data-name="face attribution for ledger">Mono 400</span>
+</div>
+<div class="map__row" data-kid="1-5-15" data-name="resolved row for ledger date">
+<span class="map__role" data-kid="1-5-15-1" data-name="role name label for ledger date">Ledger date</span>
+<span class="map__sample" data-kid="1-5-15-2" data-name="ledger date sample" style="font-family:var(--font-fig);font-size:13.5px">21 October 2026</span>
+<span class="map__face" data-kid="1-5-15-3" data-name="face attribution for date">Mono 400</span>
+</div>
+<div class="map__row" data-kid="1-5-16" data-name="resolved row for credits bought">
+<span class="map__role" data-kid="1-5-16-1" data-name="role name label for credits pack">Credits bought, left in pack</span>
+<span class="map__sample" data-kid="1-5-16-2" data-name="credits pack figure sample" style="font-family:var(--font-fig);font-size:14px">120　　23　　0</span>
+<span class="map__face" data-kid="1-5-16-3" data-name="face attribution for figures">Mono 400</span>
+</div>
+<div class="map__row" data-kid="1-5-17" data-name="resolved row for free cook count">
+<span class="map__role" data-kid="1-5-17-1" data-name="role name label for free cook count">Free-cook count</span>
+<span class="map__sample" data-kid="1-5-17-2" data-name="free cook count sample" style="font-family:var(--font-fig);font-size:15px">3</span>
+<span class="map__face" data-kid="1-5-17-3" data-name="face attribution for count">Mono 400</span>
+</div>
+<div class="map__row" data-kid="1-5-18" data-name="resolved row for reset time">
+<span class="map__role" data-kid="1-5-18-1" data-name="role name label for reset time">Reset time</span>
+<span class="map__sample" data-kid="1-5-18-2" data-name="reset time sample" style="font-family:var(--font-fig);font-size:13.5px">5:00 am</span>
+<span class="map__face" data-kid="1-5-18-3" data-name="face attribution for time">Mono 400</span>
+</div>
+<div class="map__row" data-kid="1-5-19" data-name="resolved row for cooks axis">
+<span class="map__role" data-kid="1-5-19-1" data-name="role name label for cooks axis">Cooks axis, totals, difference</span>
+<span class="map__sample" data-kid="1-5-19-2" data-name="cooks axis figure sample" style="font-family:var(--font-fig);font-size:14px">33　　22　　+11　　+50%</span>
+<span class="map__face" data-kid="1-5-19-3" data-name="face attribution for axis">Mono 400</span>
+</div>
+<div class="map__row" data-kid="1-5-20" data-name="resolved row for legend control">
+<span class="map__role" data-kid="1-5-20-1" data-name="role name label for legend control">Legend and range control</span>
+<span class="map__sample" data-kid="1-5-20-2" data-name="legend range control sample" style="font-family:var(--font-ui);font-size:12.5px;font-weight:500">1 week　1 month　1 year</span>
+<span class="map__face" data-kid="1-5-20-3" data-name="face attribution for control">System UI 500</span>
+</div>
+<div class="map__row" data-kid="1-5-21" data-name="resolved row for section headings">
+<span class="map__role" data-kid="1-5-21-1" data-name="role name label for section headings">Section headings</span>
+<span class="map__sample" data-kid="1-5-21-2" data-name="section heading sample" style="font-family:var(--font-ui);font-size:15.5px;font-weight:600">Cooks　Purchases</span>
+<span class="map__face" data-kid="1-5-21-3" data-name="face attribution for headings">System UI 600</span>
+</div>
+<div class="map__group" data-kid="1-5-22" data-name="interface group header row"><span class="glabel" data-kid="1-5-22-1" data-name="interface group label">Interface</span><span class="map__groupline" data-kid="1-5-22-2" data-name="interface group rule line"></span></div>
+<div class="map__row" data-kid="1-5-23" data-name="resolved row for wordmark and nav">
+<span class="map__role" data-kid="1-5-23-1" data-name="role name label for wordmark nav">Wordmark and nav links</span>
+<span class="map__sample" data-kid="1-5-23-2" data-name="wordmark and nav sample container"><span data-kid="1-5-23-2-1" data-name="wordmark sample text" style="font-family:var(--font-name);font-size:17px;font-weight:700;letter-spacing:-.02em">Chef Llama</span>　<span data-kid="1-5-23-2-2" data-name="nav link sample text" style="font-family:var(--font-ui);font-size:13px">Pantry　Recipes　Saved　Billing</span></span>
+<span class="map__face" data-kid="1-5-23-3" data-name="face attribution for nav">Georgia 700 · UI 400</span>
+</div>
+<div class="map__row" data-kid="1-5-24" data-name="resolved row for page title">
+<span class="map__role" data-kid="1-5-24-1" data-name="role name label for page title">Page title</span>
+<span class="map__sample" data-kid="1-5-24-2" data-name="page title sample" style="font-family:var(--font-ui);font-size:24px;font-weight:600;letter-spacing:-.015em">Dashboard</span>
+<span class="map__face" data-kid="1-5-24-3" data-name="face attribution for page title">System UI 600</span>
+</div>
+<div class="map__row" data-kid="1-5-25" data-name="resolved row for field label hint">
+<span class="map__role" data-kid="1-5-25-1" data-name="role name label for field label">Field label and hint</span>
+<span class="map__sample" data-kid="1-5-25-2" data-name="field label and hint sample container"><span data-kid="1-5-25-2-1" data-name="field label sample text" style="font-family:var(--font-ui);font-size:12.5px">Email</span>　<span data-kid="1-5-25-2-2" data-name="field hint sample text" style="font-family:var(--font-ui);font-size:12px;color:var(--ink-muted)">We send the receipt here.</span></span>
+<span class="map__face" data-kid="1-5-25-3" data-name="face attribution for field">System UI 400</span>
+</div>
+<div class="map__row" data-kid="1-5-26" data-name="resolved row for error status">
+<span class="map__role" data-kid="1-5-26-1" data-name="role name label for error status">Error and status line</span>
+<span class="map__sample" data-kid="1-5-26-2" data-name="error status line sample" style="font-family:var(--font-ui);font-size:13px">The free pool has run out. Use 1 Credit?</span>
+<span class="map__face" data-kid="1-5-26-3" data-name="face attribution for status">System UI 400</span>
+</div>
+<div class="map__row" data-kid="1-5-27" data-name="resolved row for empty state">
+<span class="map__role" data-kid="1-5-27-1" data-name="role name label for empty state">Empty-state body</span>
+<span class="map__sample" data-kid="1-5-27-2" data-name="empty state body sample" style="font-family:var(--font-read);font-size:15px">Add what is in the fridge and Chef Llama writes the first recipe from it.</span>
+<span class="map__face" data-kid="1-5-27-3" data-name="face attribution for empty state">Humanist 400</span>
+</div>
+<div class="map__row" data-kid="1-5-28" data-name="resolved row for timestamp">
+<span class="map__role" data-kid="1-5-28-1" data-name="role name label for timestamp">Timestamp</span>
+<span class="map__sample" data-kid="1-5-28-2" data-name="timestamp sample" style="font-family:var(--font-fig);font-size:12.5px">17 Nov 2026, 9:41 am</span>
+<span class="map__face" data-kid="1-5-28-3" data-name="face attribution for timestamp">Mono 400</span>
+</div>
+<div class="map__group" data-kid="1-5-29" data-name="landing group header row"><span class="glabel" data-kid="1-5-29-1" data-name="landing group label">Landing</span><span class="map__groupline" data-kid="1-5-29-2" data-name="landing group rule line"></span></div>
+<div class="map__row" data-kid="1-5-30" data-name="resolved row for hero headline">
+<span class="map__role" data-kid="1-5-30-1" data-name="role name label for hero headline">Hero headline</span>
+<span class="map__sample" data-kid="1-5-30-2" data-name="hero headline sample" style="font-family:var(--font-ui);font-size:24px;font-weight:600;letter-spacing:-.025em">You've got the Pantry.</span>
+<span class="map__face" data-kid="1-5-30-3" data-name="face attribution for hero headline">System UI 600</span>
+</div>
+<div class="map__row" data-kid="1-5-31" data-name="resolved row for body copy">
+<span class="map__role" data-kid="1-5-31-1" data-name="role name label for body copy">Body copy</span>
+<span class="map__sample" data-kid="1-5-31-2" data-name="body copy sample" style="font-family:var(--font-read);font-size:15.5px">Tell it what is in the fridge and it writes the recipe around it.</span>
+<span class="map__face" data-kid="1-5-31-3" data-name="face attribution for body copy">Humanist 400</span>
+</div>
+<div class="map__row" data-kid="1-5-32" data-name="resolved row for price pack">
+<span class="map__role" data-kid="1-5-32-1" data-name="role name label for price figures">Price and pack figures</span>
+<span class="map__sample" data-kid="1-5-32-2" data-name="price and pack figure sample" style="font-family:var(--font-fig);font-size:15px">NZ$32.00　　120 Credits</span>
+<span class="map__face" data-kid="1-5-32-3" data-name="face attribution for price">Mono 400</span>
+</div>
+<div class="map__row" data-kid="1-5-33" data-name="resolved row for primary button">
+<span class="map__role" data-kid="1-5-33-1" data-name="role name label for primary button">Primary button</span>
+<span class="map__sample" data-kid="1-5-33-2" data-name="primary button label sample" style="font-family:var(--font-ui);font-size:14px;font-weight:600">Cook from the pantry</span>
+<span class="map__face" data-kid="1-5-33-3" data-name="face attribution for button">System UI 600</span>
+</div>
+</section>
+</main>
+</div>
+</body></html>
