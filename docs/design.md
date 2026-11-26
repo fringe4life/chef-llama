@@ -1,8 +1,8 @@
 # AI chef site — design system
 
-Working visual name for tokens and mock: **Larder**. Product/repo name is still open.
+Product, repo and token-set name: **Chef Llama**. **Larder** was the pre-rename repo and the old working name; nothing user-facing uses it.
 
-This file is the v1 design contract: toolchain, tokens, IA, native UI. **Working draft (not locked, not Code):** the 28 Oct 2026 Kombai `/` + sticker, better than `01`–`03` and [`design-mock.html`](./design-mock.html) — [04-landing.html](./designs/04-landing.html) · [04-landing-dark.html](./designs/04-landing-dark.html) · [05-token-sticker.html](./designs/05-token-sticker.html) · [05-token-sticker-dark.html](./designs/05-token-sticker-dark.html). Improve in place. No Figma.
+This file is the v1 design contract: toolchain, IA, native UI. **Working draft (not locked, not Code):** the 28 Oct 2026 Kombai `/` + sticker round, improved in place on the canvases in [`.kombai/canvas/`](../.kombai/canvas/) — `index`, `landing`, `account`, `chart`, `type`. The `docs/designs/` HTML mocks and `design-mock.html` no longer exist; do not cite them. No Figma.
 
 ## Recommended toolchain
 
@@ -18,13 +18,13 @@ This file is the v1 design contract: toolchain, tokens, IA, native UI. **Working
 
 ### Practical pipeline (v1)
 
-1. **Lock Larder tokens** in CSS (this doc + mock). Kombai and Paper must reuse these names, not invent a purple system.
+1. **Lock the tokens** in CSS, per [theme.md](./theme.md#tokens-are-the-theme). Kombai and Paper must reuse these names, not invent a purple system.
 2. **Explore a screen in Kombai Design mode** (or Pencil). Export / copy HTML+CSS. Do not ask Kombai to invent a new palette.
 3. **Optional Paper pass** only for a token sticker sheet or one selected frame (`get_computed_styles` / `get_jsx`). Budget ~5–15 MCP calls per screen. Stop before the weekly 100 is gone.
 4. **Implement in SvelteKit** against native `<dialog>` and Popover API (no CSS anchor positioning; see [theme.md](./theme.md#native-overlays)). StyleX `stylex.attrs` for component styles; CSS variables for theme.
 5. **Verify** in the browser (light, dark, empty pantry, one recipe, saved list).
 
-Kombai is the UI-generation engine. Paper is optional. The **working draft** is the Kombai `/` + sticker HTML in [`docs/designs/`](./designs/README.md). [`design-mock.html`](./design-mock.html) is an earlier sketch. Do not Code-design until Coinnich accepts.
+Kombai is the UI-generation engine. Paper is optional. The **working draft** is the canvas nodes in [`.kombai/canvas/`](../.kombai/canvas/). Do not Code-design until Coinnich accepts.
 
 ---
 
@@ -132,80 +132,19 @@ Do not install third-party login proxies. CLI `paper mcp` (stdio) is already on 
 
 ---
 
-## Larder tokens (shadcn-compatible)
+## Tokens
 
-StyleX-on-Svelte is **viable**, not a poor fit: official SvelteKit install (`@stylexjs/unplugin`) and `stylex.attrs` (class, not `className`). Native `<dialog>` / `[popover]` still need **real CSS custom properties** for UA-drawn parts (backdrop, ::backdrop, form controls). So:
+All tokens — colour, radius, type, spacing and the light/dark switch — are [theme.md](./theme.md#tokens-are-the-theme), including the two chart marks ([§ Chart marks](./theme.md#chart-marks)). That file owns the names, the roles, where values live and how the scheme is chosen; this file carries no token inventory, no values, and no theme override.
 
-**Source of truth:** shadcn **named** CSS variables (`--foreground`, `--primary`, `--background`, …). Those names **are** the theme. **Not** the shadcn / shadcn-svelte / bits-ui component pack.
+StyleX-on-Svelte is **viable**, not a poor fit: official SvelteKit install (`@stylexjs/unplugin`) and `stylex.attrs` (class, not `className`), per [theme.md § StyleX dev runtime](./theme.md#stylex-dev-runtime).
 
-**StyleX:** `defineVars` with `--` keys so StyleX emits the **same** names (no hashed vars). Native Dialog/Popover consume the variables. Light/dark is **`light-dark()`** + `color-scheme` on `html`, not a StyleX `createTheme` subtree. **No** `.dark` fallback.
-
-Token set name: **Larder**. Groups: `color`, `radius`, `type`, `spacing`.
-
-### color
-
-HSL channels (shadcn pattern: `hsl(var(--background))`).
-
-| Token | Light | Dark | Role |
-| --- | --- | --- | --- |
-| `--background` | `38 42% 96%` parchment | `30 12% 8%` cast iron | Page |
-| `--foreground` | `25 20% 14%` | `38 30% 94%` | Body text |
-| `--card` | `40 45% 99%` flour | `30 10% 11%` | Surfaces |
-| `--card-foreground` | same as foreground | same | |
-| `--popover` / `--popover-foreground` | match card | match card | Popover/dialog |
-| `--primary` | `82 28% 28%` olive oil | `82 22% 48%` | Actions |
-| `--primary-foreground` | `40 45% 97%` | `30 12% 8%` | |
-| `--secondary` | `32 38% 90%` linen | `30 10% 16%` | Quiet chrome |
-| `--secondary-foreground` | `25 20% 18%` | `38 25% 90%` | |
-| `--muted` | `36 24% 90%` | `30 8% 15%` | Wells, chips idle |
-| `--muted-foreground` | `25 10% 38%` | `35 12% 68%` | Helper text |
-| `--accent` | `14 58% 42%` paprika | `14 52% 52%` | Highlights, saved |
-| `--accent-foreground` | `40 45% 97%` | `30 12% 8%` | |
-| `--destructive` | `4 72% 42%` | `4 65% 55%` | Remove chip |
-| `--border` | `32 22% 82%` | `30 8% 20%` | |
-| `--input` | `32 22% 82%` | `30 8% 22%` | |
-| `--ring` | `82 28% 28%` | `82 22% 55%` | Focus |
-| `--larder-herb` | `150 25% 32%` | `150 22% 46%` | Vegetarian tag |
-| `--larder-flame` | `22 70% 42%` | `22 62% 52%` | Time / heat |
-
-Also map shadcn `--chart-1`…`--chart-5` to olive, paprika, herb, flame, linen so future usage graphs match.
-
-### radius
-
-| Token | Value | Use |
-| --- | --- | --- |
-| `--radius` | `0.5rem` | Root (shadcn `--radius`) |
-| `--radius-sm` | `calc(var(--radius) - 4px)` | Chips, icon buttons |
-| `--radius-md` | `var(--radius)` | Inputs, menus |
-| `--radius-lg` | `calc(var(--radius) + 4px)` | Cards |
-| `--radius-xl` | `1rem` | Dialogs, detail sheet |
-
-Slightly squared — enamelware, not iOS pills.
-
-### type
-
-| Token | Value |
-| --- | --- |
-| `--font-display` | `"Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif` |
-| `--font-sans` | `ui-sans-serif, system-ui, "Segoe UI", sans-serif` |
-| `--font-mono` | `ui-monospace, "Cascadia Code", monospace` (credits, IDs) |
-| `--text-xs` … `--text-2xl` | `0.75rem` / `0.875` / `1` / `1.125` / `1.5` / `1.875rem` |
-| `--leading-tight` / `--leading-body` | `1.2` / `1.55` |
-| `--tracking-display` | `-0.02em` |
-
-Display only on wordmark, recipe titles, empty-state headlines. UI chrome stays sans. **This system stack is v1** — no later Fontsource / Fraunces pass (see [theme.md](./theme.md)).
-
-### spacing
-
-4px grid: `--space-1` `0.25rem` … `--space-16` `4rem`. Layout: `--space-page` `1.25rem` (mobile) / `2rem` (desktop). Chip gap `--space-2`. Card padding `--space-5`.
-
-Light/dark override: see [theme.md § Light and dark](./theme.md#light-and-dark) (localStorage, `data-colorscheme` on `<body>`, no cookie).
+One design consequence worth keeping: neither the vegetarian tag nor the time / heat group has a colour token of its own — the tag takes the action colour, and heat is plain figures under a hairline divider.
 
 ---
 
 ## Native browser components
 
-Prefer these over shadcn JS overlays. Style with Larder variables.
+Prefer these over shadcn JS overlays. Style with the theme's named variables ([theme.md](./theme.md)).
 
 | Primitive | Where | Behavior |
 | --- | --- | --- |
@@ -218,7 +157,39 @@ Prefer these over shadcn JS overlays. Style with Larder variables.
 | **`<dialog>`** (non-modal, optional) | Recipe detail on small screens as a sheet | If Popover overlay is enough, skip. Prefer a route on desktop, `dialog` sheet on narrow. |
 | **Invokers** (`commandfor` / `popovertarget`) | All of the above | No extra click JS when the browser supports it; small Svelte fallback. |
 
-Do not polyfill custom dropdowns. Focus: `outline: 2px solid hsl(var(--ring)); outline-offset: 2px`.
+Do not polyfill custom dropdowns. Focus: `outline: 2px solid var(--ring); outline-offset: 2px`.
+
+---
+
+## Numeric controls
+
+Servings and kcal are **ranges, not steppers or number inputs**: the value is exploratory and the shape of the scale carries information a text box cannot. Specimen: `T1 — Worktop pair` and `T1c — Handle and motion` on `.kombai/canvas/onboarding.canvas`; the surface is the Diet step. Numbers: [product.md § Diet](./product.md#diet).
+
+- **One native `<input type="range">`, restyled.** No custom slider and no JS drag handling: `appearance: none`, with the thumb drawn on `::-webkit-slider-thumb` and `::-moz-range-thumb`. Keyboard stepping and the browser's own click-to-seek on the track come for free.
+- **No typed entry and no stepper.** The value is a live `<output>` at `--text-2xl` in `mono`, `--leading-solid`, `tabular-nums`, above the track; the caps label sits on the row above it.
+- **Track: a 68px band around a 6px rule.** The band is the touch target, the rule is the line the value travels along. Tick marks sit under the rule and the band's prose labels (`Light` / `Standard` / `Hearty`) under those, at `--text-2xs` `mono`. A 14px `--pad` keeps the first and last marks on the fill's travel rather than under the thumb's overshoot.
+- **Handle: 22 × 56 brass, radius 3, gradient only** — no image, no icon file. A five-stop `linear-gradient(90deg)` mirrored about the centre line (cream at both edges, deep brass at the waist), a 1px cream `inset` cap on the top face and a 1px shadow cap on the bottom, a 2px cast at 14%, and a 1px ring at 8% so the edge holds against the fill. It is the tallest of the shapes explored because a finger has to land on it: 56px inside the 68px band, where a 14px strip and a 32px bead did not.
+- **States are CSS, never classes.** `:hover` lifts the handle 1px; `:active` sinks it 1px and grows it 4% taller while `:has(.rng:active)` puts a 3px `--primary` halo at 22% on the rail; `:focus-visible` draws `0 0 0 2px var(--ring)` with a 2px `--background` offset on both rail and handle. Press takes `--ease-squish`.
+- **The fill pours, it does not snap.** The filled portion is one absolutely positioned element masked at `--p`, a registered `<percentage>` (`@property`), which is what makes a gradient mask transitionable. `--p` runs 0 → value on first paint behind a still handle (`@starting-style`, `--duration-base`), and 40ms `linear` while dragging so the tip trails the handle. The pour is a one-shot fill reaching its value, so it takes **`--ease-arrive`**; a tap that moves the handle to a new station is a value travelling between two positions, so that takes **`--ease-glide`**. The 40ms is a **lag constant, not a duration token** — the ladder's smallest step stays `--duration-tick` 100ms. All of it collapses under `prefers-reduced-motion: reduce`.
+- **A track has no empty state.** Its left end is an amount, not an absence, so a value the user has not set cannot be represented by the control; that is why [product.md § Open](./product.md#open) still holds the question of what "no kcal target" means.
+
+---
+
+## Selection controls
+
+One shell serves the Diet step's **Dietary requirements** and the devices field: eight marks, a name, a pocket, one wash. They differ only in what sits in the pocket. Board: `onboarding.canvas#var_9eb82776e647` (`Tile: one shell, tick and rank`). `Diet D` and `Diet D phone` on the same canvas and `Devices E` on `devices.canvas` carry it; the eight device glyphs and their states are [icons.md](./icons.md#the-eight-cooking-methods).
+
+- **A `<label>` around a visually hidden `<input type="checkbox">`.** One real input per tile, so the field is a `role="group"` of checkboxes with no ARIA invented on top. The canvases read state from `:has(input:checked)`; in StyleX the same state arrives as a composed style on the label, because a StyleX style selects only the element it is applied to. Six states, all the shell's: rest, hover, focus-visible, filling, checked, at limit. No indication adds one.
+- **One box, one wash.** `--card` on a hairline `--border`, `--radius-sm` 4px, `min-block-size: 92px` (96 at two across), `--space-3 --space-2` padding, content centred. The wash is a single `::before` filled `--primary`: `clip-path: circle(0% at var(--fill-x) var(--fill-y))` at rest, `circle(150% …)` checked, arriving on `--ease-arrive` at `--duration-base` and leaving on `--ease-depart` at `--duration-quick`.
+- **The origin is the pocket, in both fields.** `--slot: 20px` at `--slot-inset: var(--space-2)` gives `--fill-x: calc(100% - var(--slot-inset) - var(--slot) / 2)` and the matching `--fill-y`, so moving the slot moves the fill and no second number exists to drift. From a corner the wash needs **150%**: at eight across the far corner is 141 px away against a 117 px reference radius, so the 110% that sufficed from the centre of the mark would stop 12 px short.
+- **The pocket is drawn at rest, for the tick as well as the rank.** A keyline (`--input` 74% toward `--foreground`) with `--surface` inside, clipped to the same slightly-off polygon as the chip's. That empty slot is what says where the mark will land; without it the tick appears from nothing and the two fields stop reading as one control.
+- **Checked is a fill, and each indication answers differently.** The tick is 11 px with no frame of its own: the pocket clears and the tick draws over it (`stroke-dasharray: 17`, `--ease-arrive` at `--duration-quick`, delayed `--duration-tick`). The rank inverts the pocket to `--primary-foreground` on `--ease-squish` and seals the numeral in on the same delayed `--ease-arrive`. Over the fill, text is `--primary-foreground` and the name goes 700.
+- **The numeral is data.** It is the index of the app's own selected array, not a CSS counter over the DOM, because a Cook may pick in any order and removing one closes the gap, so the numbers always run 1..n.
+- **The bank owns the cap and the order; a tile knows neither.** Diet passes no cap. The devices field caps at three, and the first is the primary method. At the cap the rest draw dashed with a cold mark ([icons.md](./icons.md#the-states-for-the-form-only)); whether a press there swaps rank 3 or does nothing is still open in that file, and the component forces neither.
+- **The count gives way, never the tile.** Eight across at ≥64 rem of the bank's own width, four at ≥30 rem, two below, as container queries on a wrapper — a container cannot query itself, so the wrapper carries `container-type` and the bank reflows inside it. A tile keeps its shape and its 96 px block size at two across, and the mark steps 40 → 48 rather than the tile shrinking.
+- **Paint is the shell's; the mark consumes it.** The shell publishes `--surface`, `--food`, `--leaf`, `--steam`, `--sw` and `--mark-size`; a mark declares no colour of its own, which is what lets sixteen glyphs share one shell with no per-glyph checked rules. Steam is a third layer of the mark, not a feature of the tile.
+- **The chip is the same idea at thumb size.** 32 px tall, a 14 px slot, the same pocket, the same tick draw, the same clear-on-check and the same 4 px corner; only the slot and the label placement differ. That is why the pocket is drawn on the tile too — the smaller version already promised it.
+- **Focus** is `outline: 2px solid var(--ring)` at `outline-offset: 2px`; **press** is `translateY(1px)` on `--ease-squish`; **hover** moves surface, border and pocket on `--ease-linear` at `--duration-tick`. Everything that travels collapses under `prefers-reduced-motion: reduce`; the colour change stays.
 
 ---
 
@@ -230,21 +201,26 @@ One aesthetic: **working kitchen, not generative-AI purple.**
 - Display serif for food names; practical sans for controls.
 - Hairline borders, linen-tinted wells, chips like masking-tape labels.
 - Photography: none required in v1. Optional later: real pantry grain, not 3D vegetables.
-- Motion: 120–180ms opacity/transform on popovers. No gradient mesh, no glow orbs.
+- Motion: the six easings and four durations of [theme.md § Motion](./theme.md#motion). `arrive`/`depart` on surfaces, `glide` on position changes; overshoot only where a finger or a landing is involved. No gradient mesh, no glow orbs.
 - Light is default (kitchen daylight). Dark is a closed cupboard: iron, oil-green, warm type — not neon.
 
 ---
 
 ## Local mock
 
-**Working draft:** [`docs/designs/04-landing.html`](./designs/04-landing.html) (parchment) and [`04-landing-dark.html`](./designs/04-landing-dark.html) (cast iron), plus token stickers `05-*`. File preview: Tailwind CDN + `color-scheme` on the **same** `:root` rule as `light-dark()` tokens. Canvas: `.kombai/canvas/larder-site.canvas`. **Fonts: system stack only** (`--font-display` / `--font-sans` / `--font-mono` above). No Fontsource pass. **Not locked.**
-
-Earlier sketch: [`design-mock.html`](./design-mock.html) (pantry/results/detail in one file). Keep for chip/dialog notes; do not treat as the current look.
+The mock is the canvases in `.kombai/canvas/` — `index`, `landing`, `account`, `chart`, `type`, split on 2026-11-17 from the single `chef-llama.canvas` that came over from the old `larder` workspace, plus `onboarding` (added 2026-11-23) for the Diet step, its [numeric controls](#numeric-controls) and the [selection control](#selection-controls), and `devices` for the eight device marks with their states and motion. `index.canvas` lists the surface canvases and the node ids the docs cite; it does not carry `onboarding` or `devices` yet. **Fonts: system stacks only** ([theme.md](./theme.md#fonts)). **Not locked.**
 
 ---
 
 ## Implementation notes for the Svelte app (not done here)
 
-- Put tokens in `src/lib/theme/larder.css` and `*.stylex.ts` with `--` keys.
-- Components: `IngredientChip`, `RecipeCard`, `AccountMenu` wrapping native popover/dialog.
+- Put tokens in `*.stylex.ts` `defineVars` with `--` keys, and the non-StyleX raw CSS in `src/lib/theme/tokens.css` ([theme.md](./theme.md#native-overlays)).
+- Components: `IngredientChip`, `RecipeCard`, `AccountMenu` wrapping native popover/dialog, and `SelectionTile` / `SelectionBank` for the two fields ([§ Selection controls](#selection-controls)).
+- The bank's reflow and the fill's origin are container queries and derived custom properties, neither of which StyleX can express against an ancestor, so they live in the raw-CSS companion beside the component ([theme.md](./theme.md#native-overlays)).
 - Do not introduce Radix/shadcn JS. Compatible **tokens only**.
+
+---
+
+## Open
+
+- **Whether the pocket carries a graphite underdrawing of the tick.** The chip was meant to hold a faint copy of the same path at about 18% ink, so a rest state reads as "a tick will be drawn here" rather than a plain box, with the ink tick tracing over it on check. Neither the chip nor the tile has that rule in its current CSS — the clear-on-check behaviour arrived without it. One decision covers both sizes, and the two must not diverge.

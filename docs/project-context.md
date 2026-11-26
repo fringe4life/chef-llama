@@ -29,7 +29,7 @@ Photo → ingredients, WebMCP chat, production payments scale.
 
 ## Design direction
 
-See [`docs/design.md`](./design.md) and local mock [`docs/design-mock.html`](./design-mock.html). Working visual name **Larder** (product name still open).
+See [`docs/design.md`](./design.md) and the canvases in `.kombai/canvas/`, which are the local mock — the old `docs/design-mock.html` is gone. Visual name **Chef Llama**, renamed from `Larder`.
 
 - Pipeline: Kombai (free 300 credits/mo) generates UI; implement from HTML/CSS in-repo. Paper Desktop local MCP (`paper mcp`) is optional and still costs **100 MCP calls/week** on free — it does not bypass Paper’s meter. Skip Figma MCP. If Paper quota is too tight, use Pencil (`@pencil.dev/cli`) next.
 - Theme: shadcn **named CSS tokens** (`--foreground`, `--primary`, `--background`, …) consumed by StyleX `defineVars` with `--` keys; resolve with `light-dark()` + `color-scheme`. Token set **Larder**: parchment/olive/paprika/cast-iron; native Dialog and Popover (no CSS anchor positioning). **No** shadcn / shadcn-svelte / bits-ui components.
