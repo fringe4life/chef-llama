@@ -8,7 +8,7 @@ Short note for the canonical list in `nz-pantry.json`. Method and regeneration: 
 2. Prefer **NZ display names** and aliases (capsicum, kumara, courgette, coriander, mince, spring onion, silverbeet, kiwifruit, feijoa, pāua, tarakihi, …).
 3. Store **names + aliases** only for matching. No curated allergen codes, no `may contain` rows.
 4. Attach **intrinsic composition flags**: `meat` | `fish` | `dairy` | `egg` | `animal_derived`. Derive `diets.vegan` / `diets.vegetarian` from those (see below). Do **not** store per-item `gluten_free`, `keto`, `halal`, or `paleo`.
-5. **Avoid model:** the Cook lists ingredients to avoid. Code blocks chips whose `slug` or alias matches, and expands a **small** set of parent links (e.g. butter / cheese / yoghurt → `dairy`; flour → `wheat`). The UI tells Cooks they are responsible for checking their own product labels — this seed is not a medical allergen database.
+5. **Avoid model:** the Cook lists ingredients **or group chips** (`dairy`, `wheat`) to avoid. Code blocks chips whose `slug` or alias matches. Group chips expand via `parent` (`wheat` → `parent===wheat`; `dairy` → `parent===dairy` or `intrinsic.dairy`). The UI tells Cooks they are responsible for checking their own product labels — this seed is not a medical allergen database.
 6. Hand-review list: `MANUAL_REVIEW.json` (+ summary in `MANUAL_REVIEW.md`) — identity / alias issues only.
 7. Other Diet preferences (`gluten_free`, `keto`, `halal`, `paleo`) are **short rules given to the AI** plus the same label disclaimer — not pantry tags.
 
@@ -25,11 +25,14 @@ Short note for the canonical list in `nz-pantry.json`. Method and regeneration: 
 - **`vegan`** = none of the five flags.
 - **`vegetarian`** = no `meat`, no `fish`, and no vegetarian-blocking `animal_derived` (gelatine, lard, dripping, worcestershire, fish sauce, oyster sauce, …). **Honey** is `animal_derived` but vegetarian-OK. Dairy and egg remain vegetarian.
 
-## Parent links (obvious only)
+## Parent links + avoid groups
 
-Parent group ids (not necessarily ingredient slugs): `dairy`, `wheat`.
+Selectable avoid-list **group chips** (not ingredient slugs): `dairy`, `wheat`.
 
-Examples: butter, cheese, yoghurt, milk, cream, … → `dairy`; flour, self-raising flour → `wheat`. Avoiding a parent group blocks every chip that carries that `parent`.
+- `wheat` matches rows with `parent: "wheat"` (bread, pasta, flour, wheat noodles, pastry, … — not rice noodles / corn tortillas).
+- `dairy` matches `parent: "dairy"` **or** `intrinsic.dairy` (so croissant with wheat parent + dairy flag is covered).
+
+Examples: butter / cheese / yoghurt / milk chocolate → dairy; flour / bread / pasta → wheat.
 
 ## Sources used
 
@@ -67,7 +70,7 @@ Valibot field sketch (to land under `#lib/schemas/*` with app code):
 ```ts
 ingredient: {
   slug, name, aliases[], category,
-  parent?: 'dairy' | 'wheat',
+  parent?: 'dairy' | 'wheat', // group expansion; dairy avoid also uses intrinsic.dairy
   intrinsic: { meat, fish, dairy, egg, animal_derived },
   diets: { vegan, vegetarian }, // derived
   sources[]

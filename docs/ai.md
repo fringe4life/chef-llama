@@ -34,7 +34,7 @@
 - **Publish gates** (moderation / quality) run after a valid decode before a row is listed on Recent — see [product.md](./product.md#moderation-approach). Public HTML never includes Diet / avoid-list / profile fields.
 - `swaps: { from, to }[]` is a sibling of `steps`, present **only** on `kind: "swap"`, where it must be non-empty. `kind: "plain"` has **no** `swaps` key (never an empty array). The prompt includes swaps only when a swap happened.
 - `have` lists the replacement (`to`), never the forbidden chip. The UI lists swaps above the method and highlights them.
-- **Avoid list always wins:** a pantry Chip that matches the Cook’s avoid list (slug/alias or parent expansion) must become a Swap; this-run toggles never drop or ignore avoid entries. Remaining diet-flag conflicts after this-run toggles also Swap. Preference flags such as gluten_free / keto / halal / paleo are short AI rules + label disclaimer, not seed tags. See [product.md](./product.md#diet).
+- **Avoid list always wins:** a pantry Chip that matches the Cook’s avoid list (slug/alias, or `dairy` / `wheat` group expansion) must become a Swap; this-run toggles never drop or ignore avoid entries. Remaining diet-flag conflicts after this-run toggles also Swap. Preference flags such as gluten_free / keto / halal / paleo are short AI rules + label disclaimer, not seed tags. See [product.md](./product.md#diet).
 - A Diet is not a `kind`; Diet restrictions show up as `flags`, skill, method/devices, and swaps (see [data.md](./data.md#diet-lives-in-a-durable-object)). Each Recipe records which Diet it was cooked for.
 
 ### Chips

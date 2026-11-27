@@ -20,86 +20,18 @@ import { writeFileSync, mkdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import {
+	ANIMAL_DERIVED,
+	CATEGORIES,
+	INTRINSIC_FLAGS,
+	PARENT_BY_SLUG,
+	PARENT_GROUPS,
+	deriveDiets,
+} from './lib/nz-pantry-shared.mjs'
+
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = join(__dirname, '..')
 const outDir = join(root, 'data', 'ingredients')
-
-const CATEGORIES = [
-	'staple',
-	'vegetable',
-	'fruit',
-	'meat',
-	'seafood',
-	'dairy',
-	'egg',
-	'grain',
-	'legume',
-	'nut_seed',
-	'herb_spice',
-	'condiment',
-	'oil_fat',
-	'bakery',
-	'beverage',
-	'other',
-]
-
-/** Intrinsic composition flags (seed). vegan / vegetarian are derived. */
-const INTRINSIC_FLAGS = ['meat', 'fish', 'dairy', 'egg', 'animal_derived']
-
-/**
- * Obvious parent links only — expand user avoid-list.
- * Values are parent group ids (not necessarily ingredient slugs).
- * @type {Record<string, 'dairy' | 'wheat'>}
- */
-const PARENT_BY_SLUG = {
-	butter: 'dairy',
-	ghee: 'dairy',
-	milk: 'dairy',
-	cream: 'dairy',
-	'sour-cream': 'dairy',
-	'cream-cheese': 'dairy',
-	buttermilk: 'dairy',
-	yoghurt: 'dairy',
-	cheese: 'dairy',
-	mozzarella: 'dairy',
-	parmesan: 'dairy',
-	feta: 'dairy',
-	ricotta: 'dairy',
-	'cottage-cheese': 'dairy',
-	brie: 'dairy',
-	'blue-cheese': 'dairy',
-	halloumi: 'dairy',
-	mascarpone: 'dairy',
-	'condensed-milk': 'dairy',
-	'evaporated-milk': 'dairy',
-	'ice-cream': 'dairy',
-	custard: 'dairy',
-	flour: 'wheat',
-	'self-raising-flour': 'wheat',
-}
-
-/** Animal-derived beyond meat/fish/dairy/egg (blocks vegan). */
-const ANIMAL_DERIVED = new Set([
-	'honey',
-	'gelatine',
-	'lard',
-	'dripping',
-	'worcestershire', // typically anchovy
-	'fish-sauce',
-	'oyster-sauce',
-	'bone-broth',
-])
-
-/** animal_derived that also block lacto-ovo vegetarian (not honey). */
-const VEGETARIAN_BLOCKING_ANIMAL = new Set([
-	'gelatine',
-	'lard',
-	'dripping',
-	'worcestershire',
-	'fish-sauce',
-	'oyster-sauce',
-	'bone-broth',
-])
 
 /** @typedef {{
  *   slug: string,
@@ -145,11 +77,17 @@ function item(spec) {
 	if (category === 'dairy') dairy = true
 	if (category === 'egg') egg = true
 
-	const vegan = !meat && !fish && !dairy && !egg && !animal_derived
-	const vegetarian =
-		!meat &&
-		!fish &&
-		!(animal_derived && VEGETARIAN_BLOCKING_ANIMAL.has(slug))
+	const diets = deriveDiets(
+		{
+			meat: Boolean(meat),
+			fish: Boolean(fish),
+			dairy: Boolean(dairy),
+			egg: Boolean(egg),
+			animal_derived: Boolean(animal_derived),
+		},
+		slug,
+	)
+	const { vegan, vegetarian } = diets
 
 	const parent =
 		spec.parent ??
@@ -181,7 +119,7 @@ function item(spec) {
 
 /** @type {Spec[]} */
 const specs = [
-	// Staples (product closed defaults)
+	// Staples (user-chosen; seed examples only)
 	{ slug: 'water', name: 'water', aliases: ['tap water'], category: 'staple', sources: ['curated'] },
 	{ slug: 'salt', name: 'salt', aliases: ['table salt', 'sea salt'], category: 'staple' },
 	{ slug: 'pepper', name: 'pepper', aliases: ['black pepper', 'peppercorns'], category: 'staple' },
@@ -393,7 +331,7 @@ const specs = [
 		{ slug: 'condensed-milk', name: 'condensed milk', aliases: ['sweetened condensed milk'], category: 'dairy' },
 	{ slug: 'evaporated-milk', name: 'evaporated milk', category: 'dairy' },
 		{ slug: 'ice-cream', name: 'ice cream', aliases: ['icecream'], category: 'dairy' },
-		{ slug: 'custard', name: 'custard', category: 'dairy' },
+		{ slug: 'custard', name: 'custard', category: 'dairy', egg: true },
 
 	// Eggs
 		{ slug: 'egg', name: 'egg', aliases: ['eggs', 'free range egg', 'whole egg'], category: 'egg' },
@@ -410,7 +348,8 @@ const specs = [
 		{ slug: 'corn-tortilla', name: 'corn tortilla', category: 'bakery' },
 		{ slug: 'pasta', name: 'pasta', aliases: ['spaghetti', 'penne', 'fettuccine'], category: 'grain' },
 		{ slug: 'lasagna-sheet', name: 'lasagna sheet', aliases: ['lasagne sheet'], category: 'grain' },
-		{ slug: 'noodles', name: 'noodles', aliases: ['egg noodles', 'wheat noodles'], category: 'grain' },
+		{ slug: 'noodles', name: 'noodles', aliases: ['wheat noodles'], category: 'grain' },
+		{ slug: 'egg-noodles', name: 'egg noodles', aliases: ['egg noodle'], category: 'grain', egg: true },
 		{ slug: 'rice-noodles', name: 'rice noodles', aliases: ['pad thai noodles', 'vermicelli rice'], category: 'grain' },
 	{ slug: 'udon', name: 'udon', aliases: ['udon noodles'], category: 'grain' },
 		{ slug: 'soba', name: 'soba', aliases: ['soba noodles', 'buckwheat noodles'], category: 'grain' },
@@ -517,7 +456,7 @@ const specs = [
 		{ slug: 'vanilla', name: 'vanilla', aliases: ['vanilla extract', 'vanilla essence', 'vanilla bean'], category: 'herb_spice' },
 	{ slug: 'garlic-powder', name: 'garlic powder', aliases: ['garlic granules'], category: 'herb_spice' },
 	{ slug: 'onion-powder', name: 'onion powder', category: 'herb_spice' },
-		{ slug: 'stock-powder', name: 'stock powder', aliases: ['stock cube', 'bouillon', 'oxo'], category: 'herb_spice' },
+		{ slug: 'stock-powder', name: 'stock powder', aliases: ['stock cube', 'bouillon', 'oxo'], category: 'herb_spice', meat: true },
 		{ slug: 'italian-herbs', name: 'italian herbs', aliases: ['italian seasoning', 'mixed herbs'], category: 'herb_spice' },
 	{ slug: 'elderflower', name: 'elderflower', aliases: ['elderflower cordial'], category: 'herb_spice' },
 	{ slug: 'lavender', name: 'lavender', category: 'herb_spice' },
@@ -527,7 +466,7 @@ const specs = [
 		{ slug: 'tamari', name: 'tamari', aliases: ['gluten free soy sauce'], category: 'condiment' },
 		{ slug: 'worcestershire', name: 'worcestershire sauce', aliases: ['worcestershire', 'worcester sauce'], category: 'condiment' },
 		{ slug: 'tomato-sauce', name: 'tomato sauce', aliases: ['ketchup', 'tomato ketchup'], category: 'condiment' },
-		{ slug: 'mayonnaise', name: 'mayonnaise', aliases: ['mayo', 'aioli'], category: 'condiment' },
+		{ slug: 'mayonnaise', name: 'mayonnaise', aliases: ['mayo', 'aioli'], category: 'condiment', egg: true },
 		{ slug: 'mustard', name: 'mustard', aliases: ['dijon', 'wholegrain mustard', 'yellow mustard'], category: 'condiment' },
 	{ slug: 'vinegar', name: 'vinegar', aliases: ['white vinegar'], category: 'condiment' },
 	{ slug: 'malt-vinegar', name: 'malt vinegar', category: 'condiment' },
@@ -539,7 +478,7 @@ const specs = [
 		{ slug: 'oyster-sauce', name: 'oyster sauce', category: 'condiment' },
 		{ slug: 'hoisin', name: 'hoisin sauce', category: 'condiment' },
 		{ slug: 'teriyaki', name: 'teriyaki sauce', category: 'condiment' },
-		{ slug: 'pesto', name: 'pesto', category: 'condiment' },
+		{ slug: 'pesto', name: 'pesto', category: 'condiment', dairy: true },
 	{ slug: 'relish', name: 'relish', aliases: ['tomato relish'], category: 'condiment' },
 	{ slug: 'chutney', name: 'chutney', aliases: ['mango chutney'], category: 'condiment' },
 	{ slug: 'jam', name: 'jam', aliases: ['jelly', 'marmalade', 'conserve'], category: 'condiment' },
@@ -559,8 +498,8 @@ const specs = [
 	{ slug: 'agar', name: 'agar', aliases: ['agar agar'], category: 'condiment' },
 	{ slug: 'cocoa', name: 'cocoa', aliases: ['cocoa powder', 'cacao'], category: 'condiment' },
 		{ slug: 'chocolate', name: 'chocolate', aliases: ['dark chocolate'], category: 'condiment' },
-		{ slug: 'milk-chocolate', name: 'milk chocolate', category: 'condiment' },
-		{ slug: 'white-chocolate', name: 'white chocolate', category: 'condiment' },
+		{ slug: 'milk-chocolate', name: 'milk chocolate', category: 'condiment', dairy: true },
+		{ slug: 'white-chocolate', name: 'white chocolate', category: 'condiment', dairy: true },
 		{ slug: 'peanut-sauce', name: 'peanut sauce', aliases: ['satay sauce'], category: 'condiment' },
 		{ slug: 'miso', name: 'miso', aliases: ['miso paste'], category: 'condiment' },
 		{ slug: 'wasabi', name: 'wasabi', category: 'condiment' },
@@ -581,19 +520,19 @@ const specs = [
 	{ slug: 'avocado-oil', name: 'avocado oil', category: 'oil_fat' },
 	{ slug: 'rice-bran-oil', name: 'rice bran oil', category: 'oil_fat' },
 		{ slug: 'ghee', name: 'ghee', aliases: ['clarified butter'], category: 'oil_fat' },
-	{ slug: 'lard', name: 'lard', aliases: ['pork fat'], category: 'oil_fat' },
-		{ slug: 'dripping', name: 'dripping', aliases: ['beef dripping'], category: 'oil_fat' },
+	{ slug: 'lard', name: 'lard', aliases: ['pork fat'], category: 'oil_fat', meat: true },
+		{ slug: 'dripping', name: 'dripping', aliases: ['beef dripping'], category: 'oil_fat', meat: true },
 		{ slug: 'margarine', name: 'margarine', aliases: ['spread'], category: 'oil_fat' },
 
 	// Bakery
-		{ slug: 'puff-pastry', name: 'puff pastry', aliases: ['flaky pastry'], category: 'bakery' },
-		{ slug: 'shortcrust', name: 'shortcrust pastry', aliases: ['pie pastry'], category: 'bakery' },
+		{ slug: 'puff-pastry', name: 'puff pastry', aliases: ['flaky pastry'], category: 'bakery', dairy: true },
+		{ slug: 'shortcrust', name: 'shortcrust pastry', aliases: ['pie pastry'], category: 'bakery', dairy: true },
 	{ slug: 'filo', name: 'filo pastry', aliases: ['phyllo'], category: 'bakery' },
 		{ slug: 'pizza-base', name: 'pizza base', aliases: ['pizza base ready-made'], category: 'bakery' },
 		{ slug: 'bagel', name: 'bagel', category: 'bakery' },
-		{ slug: 'croissant', name: 'croissant', category: 'bakery' },
-		{ slug: 'muffin', name: 'muffin', category: 'bakery' },
-		{ slug: 'biscuit', name: 'biscuit', aliases: ['cookie', 'cookies'], category: 'bakery' },
+		{ slug: 'croissant', name: 'croissant', category: 'bakery', dairy: true, egg: true },
+		{ slug: 'muffin', name: 'muffin', category: 'bakery', dairy: true, egg: true },
+		{ slug: 'biscuit', name: 'biscuit', aliases: ['cookie', 'cookies'], category: 'bakery', dairy: true, egg: true },
 
 	// Beverages / stocks
 	{ slug: 'coffee', name: 'coffee', aliases: ['espresso', 'instant coffee'], category: 'beverage' },
@@ -606,9 +545,9 @@ const specs = [
 	{ slug: 'apple-juice', name: 'apple juice', category: 'beverage', sources: ['curated'] },
 	{ slug: 'tomato-juice', name: 'tomato juice', category: 'beverage', sources: ['curated'] },
 		{ slug: 'soda-water', name: 'soda water', aliases: ['sparkling water', 'club soda'], category: 'beverage', sources: ['curated'] },
-		{ slug: 'stock', name: 'stock', aliases: ['broth'], category: 'beverage' },
-		{ slug: 'chicken-stock', name: 'chicken stock', aliases: ['chicken broth'], category: 'beverage' },
-		{ slug: 'beef-stock', name: 'beef stock', aliases: ['beef broth'], category: 'beverage' },
+		{ slug: 'stock', name: 'stock', aliases: ['broth'], category: 'beverage', meat: true },
+		{ slug: 'chicken-stock', name: 'chicken stock', aliases: ['chicken broth'], category: 'beverage', meat: true },
+		{ slug: 'beef-stock', name: 'beef stock', aliases: ['beef broth'], category: 'beverage', meat: true },
 		{ slug: 'vegetable-stock', name: 'vegetable stock', aliases: ['veg stock', 'vegetable broth'], category: 'beverage' },
 	{ slug: 'coconut-water', name: 'coconut water', category: 'beverage' },
 
@@ -705,8 +644,10 @@ function build() {
 		},
 		avoid_model: {
 			summary:
-				'Cook lists ingredients to avoid. Code blocks chips whose slug or alias matches, and expands small parent links (e.g. dairy, wheat). UI tells Cooks they must check their own product labels — the seed is not a medical allergen database.',
-			parent_groups: ['dairy', 'wheat'],
+				'Cook lists ingredients or selectable group chips (dairy, wheat) to avoid. Code blocks chips whose slug or alias matches; group chips expand via parent links (and dairy also via intrinsic.dairy). UI tells Cooks they must check their own product labels — the seed is not a medical allergen database.',
+			parent_groups: PARENT_GROUPS,
+			parent_groups_note:
+				'dairy and wheat are selectable avoid-list group chips (not ingredient slugs). Matching: wheat → parent===wheat; dairy → parent===dairy OR intrinsic.dairy.',
 		},
 		intrinsic_flags: INTRINSIC_FLAGS,
 		intrinsic_flags_note:

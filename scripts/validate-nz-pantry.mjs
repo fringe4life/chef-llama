@@ -8,26 +8,20 @@
 import { readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import {
+	INTRINSIC_FLAGS,
+	PARENT_GROUPS,
+	deriveDiets,
+	heuristicIntrinsicHints,
+} from './lib/nz-pantry-shared.mjs'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const path = join(root, 'data', 'ingredients', 'nz-pantry.json')
 const doc = JSON.parse(readFileSync(path, 'utf8'))
 
 const CATEGORIES = new Set(doc.categories)
-const INTRINSIC = ['meat', 'fish', 'dairy', 'egg', 'animal_derived']
-const PARENTS = new Set(['dairy', 'wheat'])
+const PARENTS = new Set(PARENT_GROUPS)
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
-
-/** animal_derived that also block lacto-ovo vegetarian (not honey). */
-const VEGETARIAN_BLOCKING_ANIMAL = new Set([
-	'gelatine',
-	'lard',
-	'dripping',
-	'worcestershire',
-	'fish-sauce',
-	'oyster-sauce',
-	'bone-broth',
-])
 
 const errors = []
 
@@ -41,10 +35,19 @@ if (n < 300 || n > 500) errors.push(`ingredient count ${n} outside 300–500`)
 if (!Array.isArray(doc.diet_flags) || doc.diet_flags.join() !== 'vegan,vegetarian') {
 	errors.push('diet_flags must be vegan|vegetarian (derived only)')
 }
-if (!Array.isArray(doc.intrinsic_flags) || doc.intrinsic_flags.join() !== INTRINSIC.join()) {
-	errors.push(`intrinsic_flags must be ${INTRINSIC.join('|')}`)
+if (
+	!Array.isArray(doc.intrinsic_flags) ||
+	doc.intrinsic_flags.join() !== INTRINSIC_FLAGS.join()
+) {
+	errors.push(`intrinsic_flags must be ${INTRINSIC_FLAGS.join('|')}`)
 }
 if (doc.allergen_codes != null) errors.push('allergen_codes must be removed from seed')
+if (
+	!doc.avoid_model?.parent_groups ||
+	doc.avoid_model.parent_groups.join() !== PARENT_GROUPS.join()
+) {
+	errors.push('avoid_model.parent_groups must be dairy|wheat')
+}
 
 const slugs = new Set()
 const labels = new Map()
@@ -81,7 +84,7 @@ for (const [idx, row] of (doc.ingredients ?? []).entries()) {
 	if (!intr || typeof intr !== 'object') {
 		errors.push(`${where}: intrinsic missing`)
 	} else {
-		for (const f of INTRINSIC) {
+		for (const f of INTRINSIC_FLAGS) {
 			if (typeof intr[f] !== 'boolean') {
 				errors.push(`${where}: intrinsic.${f} must be boolean`)
 			}
@@ -99,12 +102,22 @@ for (const [idx, row] of (doc.ingredients ?? []).entries()) {
 			errors.push(`${where}: egg category requires intrinsic.egg`)
 		}
 
-		const vegan =
-			!intr.meat && !intr.fish && !intr.dairy && !intr.egg && !intr.animal_derived
-		const vegetarian =
-			!intr.meat &&
-			!intr.fish &&
-			!(intr.animal_derived && VEGETARIAN_BLOCKING_ANIMAL.has(row.slug))
+		const hints = heuristicIntrinsicHints(row.slug, row.name, row.aliases ?? [])
+		if (hints.meat && !intr.meat) {
+			errors.push(`${where}: name/alias heuristic expects intrinsic.meat`)
+		}
+		if (hints.egg && !intr.egg) {
+			errors.push(`${where}: name/alias heuristic expects intrinsic.egg`)
+		}
+		if (hints.dairy && !intr.dairy) {
+			errors.push(`${where}: name/alias heuristic expects intrinsic.dairy`)
+		}
+
+		if (row.parent === 'wheat' && /\brice\b|\bcorn\b/.test(row.slug) && !/flour-tortilla|wrap/.test(row.slug)) {
+			errors.push(`${where}: unexpected wheat parent on rice/corn product`)
+		}
+
+		const { vegan, vegetarian } = deriveDiets(intr, row.slug)
 
 		if (!row.diets || typeof row.diets !== 'object') {
 			errors.push(`${where}: diets missing`)

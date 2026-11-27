@@ -8,11 +8,12 @@
     "vectorize": "Embed name + aliases; metadata includes slug (and ULID after D1 load)."
   },
   "avoid_model": {
-    "summary": "Cook lists ingredients to avoid. Code blocks chips whose slug or alias matches, and expands small parent links (e.g. dairy, wheat). UI tells Cooks they must check their own product labels — the seed is not a medical allergen database.",
+    "summary": "Cook lists ingredients or selectable group chips (dairy, wheat) to avoid. Code blocks chips whose slug or alias matches; group chips expand via parent links (and dairy also via intrinsic.dairy). UI tells Cooks they must check their own product labels — the seed is not a medical allergen database.",
     "parent_groups": [
       "dairy",
       "wheat"
-    ]
+    ],
+    "parent_groups_note": "dairy and wheat are selectable avoid-list group chips (not ingredient slugs). Matching: wheat → parent===wheat; dairy → parent===dairy OR intrinsic.dairy."
   },
   "intrinsic_flags": [
     "meat",
@@ -65,7 +66,8 @@
       "sources": [
         "curated",
         "off"
-      ]
+      ],
+      "parent": "wheat"
     },
     {
       "slug": "biscuit",
@@ -78,18 +80,19 @@
       "intrinsic": {
         "meat": false,
         "fish": false,
-        "dairy": false,
-        "egg": false,
+        "dairy": true,
+        "egg": true,
         "animal_derived": false
       },
       "diets": {
-        "vegan": true,
+        "vegan": false,
         "vegetarian": true
       },
       "sources": [
         "curated",
         "off"
-      ]
+      ],
+      "parent": "wheat"
     },
     {
       "slug": "corn-tortilla",
@@ -120,18 +123,19 @@
       "intrinsic": {
         "meat": false,
         "fish": false,
-        "dairy": false,
-        "egg": false,
+        "dairy": true,
+        "egg": true,
         "animal_derived": false
       },
       "diets": {
-        "vegan": true,
+        "vegan": false,
         "vegetarian": true
       },
       "sources": [
         "curated",
         "off"
-      ]
+      ],
+      "parent": "wheat"
     },
     {
       "slug": "filo",
@@ -154,7 +158,8 @@
       "sources": [
         "curated",
         "off"
-      ]
+      ],
+      "parent": "wheat"
     },
     {
       "slug": "flour-tortilla",
@@ -175,7 +180,8 @@
       "sources": [
         "curated",
         "off"
-      ]
+      ],
+      "parent": "wheat"
     },
     {
       "slug": "muffin",
@@ -185,18 +191,19 @@
       "intrinsic": {
         "meat": false,
         "fish": false,
-        "dairy": false,
-        "egg": false,
+        "dairy": true,
+        "egg": true,
         "animal_derived": false
       },
       "diets": {
-        "vegan": true,
+        "vegan": false,
         "vegetarian": true
       },
       "sources": [
         "curated",
         "off"
-      ]
+      ],
+      "parent": "wheat"
     },
     {
       "slug": "pizza-base",
@@ -219,7 +226,8 @@
       "sources": [
         "curated",
         "off"
-      ]
+      ],
+      "parent": "wheat"
     },
     {
       "slug": "puff-pastry",
@@ -231,18 +239,19 @@
       "intrinsic": {
         "meat": false,
         "fish": false,
-        "dairy": false,
+        "dairy": true,
         "egg": false,
         "animal_derived": false
       },
       "diets": {
-        "vegan": true,
+        "vegan": false,
         "vegetarian": true
       },
       "sources": [
         "curated",
         "off"
-      ]
+      ],
+      "parent": "wheat"
     },
     {
       "slug": "shortcrust",
@@ -254,18 +263,19 @@
       "intrinsic": {
         "meat": false,
         "fish": false,
-        "dairy": false,
+        "dairy": true,
         "egg": false,
         "animal_derived": false
       },
       "diets": {
-        "vegan": true,
+        "vegan": false,
         "vegetarian": true
       },
       "sources": [
         "curated",
         "off"
-      ]
+      ],
+      "parent": "wheat"
     },
     {
       "slug": "apple-juice",
@@ -295,15 +305,15 @@
       ],
       "category": "beverage",
       "intrinsic": {
-        "meat": false,
+        "meat": true,
         "fish": false,
         "dairy": false,
         "egg": false,
         "animal_derived": false
       },
       "diets": {
-        "vegan": true,
-        "vegetarian": true
+        "vegan": false,
+        "vegetarian": false
       },
       "sources": [
         "curated",
@@ -342,15 +352,15 @@
       ],
       "category": "beverage",
       "intrinsic": {
-        "meat": false,
+        "meat": true,
         "fish": false,
         "dairy": false,
         "egg": false,
         "animal_derived": false
       },
       "diets": {
-        "vegan": true,
-        "vegetarian": true
+        "vegan": false,
+        "vegetarian": false
       },
       "sources": [
         "curated",
@@ -497,15 +507,15 @@
       ],
       "category": "beverage",
       "intrinsic": {
-        "meat": false,
+        "meat": true,
         "fish": false,
         "dairy": false,
         "egg": false,
         "animal_derived": false
       },
       "diets": {
-        "vegan": true,
-        "vegetarian": true
+        "vegan": false,
+        "vegetarian": false
       },
       "sources": [
         "curated",
@@ -1118,11 +1128,11 @@
         "meat": false,
         "fish": false,
         "dairy": false,
-        "egg": false,
+        "egg": true,
         "animal_derived": false
       },
       "diets": {
-        "vegan": true,
+        "vegan": false,
         "vegetarian": true
       },
       "sources": [
@@ -1138,18 +1148,19 @@
       "intrinsic": {
         "meat": false,
         "fish": false,
-        "dairy": false,
+        "dairy": true,
         "egg": false,
         "animal_derived": false
       },
       "diets": {
-        "vegan": true,
+        "vegan": false,
         "vegetarian": true
       },
       "sources": [
         "curated",
         "off"
-      ]
+      ],
+      "parent": "dairy"
     },
     {
       "slug": "mirin",
@@ -1297,18 +1308,19 @@
       "intrinsic": {
         "meat": false,
         "fish": false,
-        "dairy": false,
+        "dairy": true,
         "egg": false,
         "animal_derived": false
       },
       "diets": {
-        "vegan": true,
+        "vegan": false,
         "vegetarian": true
       },
       "sources": [
         "curated",
         "off"
-      ]
+      ],
+      "parent": "dairy"
     },
     {
       "slug": "pickled-ginger",
@@ -1619,18 +1631,19 @@
       "intrinsic": {
         "meat": false,
         "fish": false,
-        "dairy": false,
+        "dairy": true,
         "egg": false,
         "animal_derived": false
       },
       "diets": {
-        "vegan": true,
+        "vegan": false,
         "vegetarian": true
       },
       "sources": [
         "curated",
         "off"
-      ]
+      ],
+      "parent": "dairy"
     },
     {
       "slug": "wine-vinegar",
@@ -1908,7 +1921,7 @@
         "meat": false,
         "fish": false,
         "dairy": true,
-        "egg": false,
+        "egg": true,
         "animal_derived": false
       },
       "diets": {
@@ -3513,7 +3526,8 @@
       "sources": [
         "curated",
         "off"
-      ]
+      ],
+      "parent": "wheat"
     },
     {
       "slug": "breadcrumbs",
@@ -3536,7 +3550,8 @@
       "sources": [
         "curated",
         "off"
-      ]
+      ],
+      "parent": "wheat"
     },
     {
       "slug": "brown-rice",
@@ -3581,7 +3596,8 @@
       "sources": [
         "curated",
         "off"
-      ]
+      ],
+      "parent": "wheat"
     },
     {
       "slug": "cereal",
@@ -3649,7 +3665,8 @@
       "sources": [
         "curated",
         "off"
-      ]
+      ],
+      "parent": "wheat"
     },
     {
       "slug": "cracker",
@@ -3673,7 +3690,32 @@
       "sources": [
         "curated",
         "off"
-      ]
+      ],
+      "parent": "wheat"
+    },
+    {
+      "slug": "egg-noodles",
+      "name": "egg noodles",
+      "aliases": [
+        "egg noodle"
+      ],
+      "category": "grain",
+      "intrinsic": {
+        "meat": false,
+        "fish": false,
+        "dairy": false,
+        "egg": true,
+        "animal_derived": false
+      },
+      "diets": {
+        "vegan": false,
+        "vegetarian": true
+      },
+      "sources": [
+        "curated",
+        "off"
+      ],
+      "parent": "wheat"
     },
     {
       "slug": "flour",
@@ -3722,13 +3764,13 @@
       "sources": [
         "curated",
         "off"
-      ]
+      ],
+      "parent": "wheat"
     },
     {
       "slug": "noodles",
       "name": "noodles",
       "aliases": [
-        "egg noodles",
         "wheat noodles"
       ],
       "category": "grain",
@@ -3746,7 +3788,8 @@
       "sources": [
         "curated",
         "off"
-      ]
+      ],
+      "parent": "wheat"
     },
     {
       "slug": "oats",
@@ -3796,7 +3839,8 @@
       "sources": [
         "curated",
         "off"
-      ]
+      ],
+      "parent": "wheat"
     },
     {
       "slug": "polenta",
@@ -3864,7 +3908,8 @@
       "sources": [
         "curated",
         "off"
-      ]
+      ],
+      "parent": "wheat"
     },
     {
       "slug": "rice",
@@ -4030,7 +4075,8 @@
       "sources": [
         "curated",
         "off"
-      ]
+      ],
+      "parent": "wheat"
     },
     {
       "slug": "soba",
@@ -4054,7 +4100,8 @@
       "sources": [
         "curated",
         "off"
-      ]
+      ],
+      "parent": "wheat"
     },
     {
       "slug": "sourdough",
@@ -4077,7 +4124,8 @@
       "sources": [
         "curated",
         "off"
-      ]
+      ],
+      "parent": "wheat"
     },
     {
       "slug": "spelt",
@@ -4100,7 +4148,8 @@
       "sources": [
         "curated",
         "off"
-      ]
+      ],
+      "parent": "wheat"
     },
     {
       "slug": "sushi-rice",
@@ -4144,7 +4193,8 @@
       "sources": [
         "curated",
         "off"
-      ]
+      ],
+      "parent": "wheat"
     },
     {
       "slug": "vermicelli",
@@ -4191,7 +4241,8 @@
       },
       "sources": [
         "curated"
-      ]
+      ],
+      "parent": "wheat"
     },
     {
       "slug": "wonton-wrapper",
@@ -4214,7 +4265,8 @@
       "sources": [
         "curated",
         "off"
-      ]
+      ],
+      "parent": "wheat"
     },
     {
       "slug": "wrap",
@@ -4239,7 +4291,8 @@
       "sources": [
         "curated",
         "off"
-      ]
+      ],
+      "parent": "wheat"
     },
     {
       "slug": "allspice",
@@ -5139,15 +5192,15 @@
       ],
       "category": "herb_spice",
       "intrinsic": {
-        "meat": false,
+        "meat": true,
         "fish": false,
         "dairy": false,
         "egg": false,
         "animal_derived": false
       },
       "diets": {
-        "vegan": true,
-        "vegetarian": true
+        "vegan": false,
+        "vegetarian": false
       },
       "sources": [
         "curated",
@@ -6666,7 +6719,7 @@
       ],
       "category": "oil_fat",
       "intrinsic": {
-        "meat": false,
+        "meat": true,
         "fish": false,
         "dairy": false,
         "egg": false,
@@ -6713,7 +6766,7 @@
       ],
       "category": "oil_fat",
       "intrinsic": {
-        "meat": false,
+        "meat": true,
         "fish": false,
         "dairy": false,
         "egg": false,

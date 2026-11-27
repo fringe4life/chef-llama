@@ -53,7 +53,7 @@
 - **Recent** must stay edge SSR (D1 date query). Short TTL keeps new publishes visible without a purge cron; optional purge of tag `recent` on publish is Open.
 - Public layouts never import auth, and `getSession` never runs on public routes. The shared `Nav.svelte` has a plain Sign in link.
 - Do not add ogygia or `OGYGIA_SECRET`. Measured: the ogygia runtime is about 22 KB brotli, against about 0.5–0.8 KB HTML + about 0.6 KB CSS for a 0-JS page.
-- Public bodies are byte-identical with and without a session cookie. Published recipe HTML never includes Diet / allergy / profile fields ([product.md](./product.md#publish-and-privacy)).
+- Public bodies are byte-identical with and without a session cookie. Published recipe HTML never includes Diet / avoid-list / profile fields ([product.md](./product.md#publish-and-privacy)).
 
 ### Cache purge route
 - **Why a service binding:** Workers Cache belongs to the Worker that filled it. Only code running in the **Site Worker's** default entrypoint can purge it; another Worker can't, and a zone purge (dashboard or API) doesn't touch it. The Site Worker runs `cache.purge({ tags })` (imported from `cloudflare:workers`) when called over a service binding. The cache is shared across every way the Worker is invoked, so a purge run inside a binding request clears what public requests cached.
