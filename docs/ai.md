@@ -25,20 +25,22 @@
   ```
 
   Primary `method`, plus optionally a second device (schema allows up to three in `devices`). Steps and `minutes` must fit those devices and the Cook’s time target (publish quality gate in [product.md](./product.md#quality-publish-gates)).
-- **Staples** in the prompt come from the Cook’s active staples list (defaults water / salt / pepper / oil / butter; customisable — see [product.md](./product.md#onboarding)).
+- **Staples** in the prompt come from the Cook’s active staples list (**user-chosen / customisable**, not a fixed app set — see [product.md](./product.md#staples)). The prompt lists each ingredient once (server dedupes pantry chips that resolve to a staple).
 
 ### Recipe JSON
 - JSON + Valibot. A decode failure → tagged error, no Recipe row, and the Credit hold is **released**. Do not import `effect/Schema` on Generate.
 - `kind: "plain" | "swap"` (a tagged union, not optional-key soup).
 - Fields: `title` ≤80, `minutes`, `servings`, `kcal`, `kcal_over` (boolean: over the Diet or this run's kcal cap; it is **not** token overflow), `have` ≤16, `need` ≤2 (Staples only), `steps` 6–8, `flags` (≤8, omitted when empty).
-- **Publish gates** (moderation / quality) run after a valid decode before a row is listed on Recent — see [product.md](./product.md#moderation-approach). Public HTML never includes Diet / allergy / profile fields.
+- **Publish gates** (moderation / quality) run after a valid decode before a row is listed on Recent — see [product.md](./product.md#moderation-approach). Public HTML never includes Diet / avoid-list / profile fields.
 - `swaps: { from, to }[]` is a sibling of `steps`, present **only** on `kind: "swap"`, where it must be non-empty. `kind: "plain"` has **no** `swaps` key (never an empty array). The prompt includes swaps only when a swap happened.
 - `have` lists the replacement (`to`), never the forbidden chip. The UI lists swaps above the method and highlights them.
-- **Allergies always win:** a pantry Chip that conflicts with an allergy must become a Swap; this-run toggles never drop or ignore allergies. Remaining diet-flag conflicts after this-run toggles also Swap. See [product.md](./product.md#diet).
+- **Avoid list always wins:** a pantry Chip that matches the Cook’s avoid list (slug/alias, or `dairy` / `wheat` group expansion) must become a Swap; this-run toggles never drop or ignore avoid entries. Remaining diet-flag conflicts after this-run toggles also Swap. Preference flags such as gluten_free / keto / halal / paleo are short AI rules + label disclaimer, not seed tags. See [product.md](./product.md#diet).
 - A Diet is not a `kind`; Diet restrictions show up as `flags`, skill, method/devices, and swaps (see [data.md](./data.md#diet-lives-in-a-durable-object)). Each Recipe records which Diet it was cooked for.
 
 ### Chips
-- In-process string canonicalizer in `src/shared/`: split, NFKC + lowercase, strip quantities, units and prep adjectives, a tiny closed NZ synonym map, dedupe, max 16 chips. Leftovers become `{ "name": "rice", "cooked": true }`. Sentence-like paste is rejected.
+- In-process string canonicalizer in `src/shared/`: split, NFKC + lowercase, strip quantities, units and prep adjectives, a tiny closed NZ synonym map, dedupe, max 16 chips. Generate requires **≥3 non-staple** pantry chips (staples do not count toward the minimum — see [product.md](./product.md#staples)). Leftovers become `{ "name": "rice", "cooked": true }`. Sentence-like paste is rejected.
+- Synonym map target: the committed NZ pantry seed (`data/ingredients/nz-pantry.json` — slugs, aliases, intrinsic flags, parent links, derived vegan/vegetarian). Wiring the seed into the canonicalizer is still Open in [data.md](./data.md#open); until then the tiny map stands.
+- **Dedupe vs staples:** after canonicalization (slug or alias via the NZ pantry seed), a chip that matches one of the Cook’s staples is **not** added to the pantry chip list. UI shows a short inline note (for example “Olive oil is already in your staples”) and clears the input — never blocks or scolds. Autocomplete hides staples or greys them with a **staple** tag. Server dedupes again so the prompt lists each ingredient only once. See [product.md](./product.md#staples).
 - No model rewrite, no embedding and no CRF parser for chips in v1. Clairic for sentence-like paste is v2/v3 (see [v2.md](./v2.md)).
 
 ### Cancel and pending

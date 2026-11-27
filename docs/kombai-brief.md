@@ -25,13 +25,13 @@ Skip Paper MCP during exploration (**100 calls/week**). Do not Figma MCP. Do not
 | Surface | URL today | Design as |
 |---|---|---|
 | Site landing | `/` | Brochure + curated **Try me** starter pantries (breakfast / lunch / dinner / dessert; each meal has common / moderately common / uncommon tiers; SSR HTML, not an island). Tap → `/pantry?i=`. NZ chip lists in [product.md § Try me](./product.md#try-me). |
-| **Recent** | `/recent` | Date-sorted published recipes (SSR HTML). Short cache; no cron; no ranking. Free-tier publish by default. Privacy: recipe only — no profile / Diet / allergies. |
+| **Recent** | `/recent` | Date-sorted published recipes (SSR HTML). Short cache; no cron; no ranking. Free-tier publish by default. Privacy: recipe only — no profile / Diet / avoid list. |
 | Terms / privacy | `/terms` `/privacy` | Long legal. Minimal chrome. |
-| Pantry | `/pantry` | Chips (≥3), Diet switcher + this-run toggles (flags / servings / time / kcal / skill / method / devices; allergies always win), generate, credits pill. Pending **stays here** (a draft placeholder exists in `pantry.canvas`; the final loading design is still to come), then goto recipe. No extra routes. No Code. |
-| Recipe | `/recipes/[slug]` | Method, `kcal` + `kcal_over`, swaps if `kind: "swap"` (allergy or flag conflict; highlighted), which Diet it was cooked for, save. Servings scaling is v2. Narrow = same route as sheet. |
+| Pantry | `/pantry` | Chips (≥3 non-staple), Diet switcher + this-run toggles (flags / servings / time / kcal / skill / method / devices; avoid list always wins), generate, credits pill. Pending **stays here** (a draft placeholder exists in `pantry.canvas`; the final loading design is still to come), then goto recipe. No extra routes. No Code. |
+| Recipe | `/recipes/[slug]` | Method, `kcal` + `kcal_over`, swaps if `kind: "swap"` (avoid-list or flag conflict; highlighted), which Diet it was cooked for, save. Servings scaling is v2. Narrow = same route as sheet. |
 | Saved | `/saved` | List. Empty state. |
 | **Onboarding** | `/onboarding` route | First-run Diet #1, devices owned (time / feasibility), staples customise, explain free-tier → Recent publish. Replaces blocking Diet dialog. |
-| **Diet** | switcher on `/pantry` (+ edit UI) | Name, flags, allergies, optional kcal, servings default 2, optional max time, skill (three levels), method + optional devices. Not `/kitchen`. **v1 multi-Diet:** switcher sets active Diet before Generate; add / rename / edit / delete; delete-active falls back to another Diet. |
+| **Diet** | switcher on `/pantry` (+ edit UI) | Name, flags, avoid list (ingredients + dairy/wheat group chips), optional kcal, servings default 2, optional max time, skill (three levels), method + optional devices. Not `/kitchen`. **v1 multi-Diet:** switcher sets active Diet before Generate; add / rename / edit / delete; delete-active falls back to another Diet. |
 | **Sign-in** | `/sign-in` | Google + email OTP only. Last-used badge. Chef Llama chrome around Better Auth. Passkeys later. |
 | **Exhausted / topup** | dialog then Checkout | Pack SKUs **NZD $8 / $16 / $32** → 20 / 50 / 120 Credits. No card fields. Return to `/pantry`. |
 | **404** | `+error.svelte` | Site vs `(app)` chrome. Try me hole uses boundary, not this. |
@@ -63,7 +63,7 @@ Radios `#scheme-system` `#scheme-light` `#scheme-dark`. The mechanism — blocki
 
 ## Copy / stress ([break-ui](https://github.com/emilkowalski/skills/tree/main/skills/break-ui))
 
-Long allergy string, one-letter names, 12 chips, 0 Credits, `kcal_over: true`, `need` of 2 Staples, Try me uncommon tier (e.g. whitebait / pāua), 404 from a shared recipe URL.
+Long avoid-list string, one-letter names, 12 chips, 0 Credits, `kcal_over: true`, `need` of 2 Staples, Try me uncommon tier (e.g. whitebait / pāua), 404 from a shared recipe URL.
 
 ## Out of scope this pass
 

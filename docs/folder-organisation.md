@@ -39,6 +39,10 @@ src/
 routes.manifest.ts              # route → group/cache/csr contract
 .env.schema                     # Varlock schema (see security.md)
 scripts/synthetic-check.mjs     # synthetic check
+scripts/generate-nz-pantry.mjs  # regenerate NZ pantry seed JSON
+scripts/validate-nz-pantry.mjs  # shape check for the seed
+scripts/lib/nz-pantry-shared.mjs  # shared constants + diet derivation
+data/ingredients/               # NZ pantry seed (JSON + sources + review)
 alchemy.run.ts                  # IaC
 .cursor/hooks.json  .cursor/hooks/   # agent hooks (see cursor-hooks.md)
 .husky/pre-commit  .husky/pre-push  # Git hooks (see lint.md)

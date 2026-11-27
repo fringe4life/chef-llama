@@ -44,18 +44,27 @@
 
 ### Diet lives in a Durable Object
 - "Diet" is the canonical term (not Kitchen, not Profile, which collides with auth, and not Pantry prefs, since Pantry is the chips).
-- Per-user **Diet** SQLite DO, `getByName(userId)`. It holds the Diet rows (name, flags, allergies, default kcal, servings, **skill**, **method**, optional **devices**) and `active_diet_id`. There is **no** D1 `kitchens`/`diets` table and **no** `cooks.active_diet_id`. Diet is not on the Credit DO.
+- Per-user **Diet** SQLite DO, `getByName(userId)`. It holds the Diet rows (name, flags, avoid list, **user-chosen staples**, default kcal, servings, **skill**, **method**, optional **devices**) and `active_diet_id`. There is **no** D1 `kitchens`/`diets` table and **no** `cooks.active_diet_id`. Diet is not on the Credit DO.
 - Generate calls `getActive()` and reads one row; it never refetches a whole profile list.
 - **v1 supports multiple Diets.** A Diet is **required before the first Generate**: **`/onboarding`** creates Diet #1 (devices owned, staples customise, publish defaults explained). `/pantry` then has a Diet switcher for the active Diet, plus add / rename / edit / delete. Deleting the active Diet falls back to another remaining Diet. The site itself stays public.
 - **Skill** (three levels) and **method / devices** are v1 Diet columns; this-run toggles may override them for one Generate. Skill affects technique, step detail, parallel steps, and time estimates (see [ai.md](./ai.md)).
-- **Allergies always win.** A pantry Chip that conflicts with an allergy is **swapped** and highlighted, never used as-is (recorded in `swaps`; see [ai.md](./ai.md#recipe-json)). This-run toggles may tighten or loosen diet **flags** and change servings, time, kcal, skill, method, and devices for that Generate only; they can **never** remove or ignore an allergy. Flag conflicts that remain after this-run toggles (for example vegan Diet + chicken chip with vegetarian still on) also produce a **Swap**, never a silent ignore.
-- Each Recipe row records which Diet it was cooked for (`diet_id` on the Recipe in `RECIPES_DB`). **`diet_id` is never rendered on public pages** (no Diet name, flags, allergies, or medical diets on `/recipes/[slug]` or Recent cards).
+- **Avoid list wins over pantry chips.** A pantry Chip that matches the Cook’s avoid list (slug/alias, or selectable group chips `dairy` / `wheat` expanded via `parent` — and `dairy` also via `intrinsic.dairy`) is **swapped** and highlighted, never used as-is (recorded in `swaps`; see [ai.md](./ai.md#recipe-json)). Seed items do **not** store curated allergen codes. The UI states that Cooks must check their own labels. This-run toggles may tighten or loosen diet **flags** and change servings, time, kcal, skill, method, and devices for that Generate only; they can **never** remove or ignore an avoid-list entry. Flag conflicts that remain after this-run toggles (for example vegan Diet + chicken chip with vegetarian still on) also produce a **Swap**, never a silent ignore.
+
+- **Staples** are stored on the Diet (user-chosen / customisable — not a fixed app list). They do **not** count toward the ≥3 pantry-chip Generate minimum. Generate / chip canonicalizer **dedupe** pantry chips that resolve to a staple (slug or alias via the NZ pantry seed) so the AI prompt lists each ingredient once; UI behaviour in [product.md](./product.md#staples).
+- Each Recipe row records which Diet it was cooked for (`diet_id` on the Recipe in `RECIPES_DB`). **`diet_id` is never rendered on public pages** (no Diet name, flags, avoid list, or medical diets on `/recipes/[slug]` or Recent cards).
 - The Fallow module is `src/features/diet/`. (Multi-Diet was parked as v2; **superseded 21 Nov 2026** — see [product.md](./product.md#diet); the old park note remains in [v2.md](./v2.md).)
 
 ### Recent (v1) vs Try me vs Popular ingredients (v2)
 - **v1 Recent:** D1 query of **published** recipes ordered by created/published time (newest first). Short Workers Cache; no KV ranking snapshot; no weekly cron. See [product.md](./product.md#recent).
 - **v1 Try me:** curated static starter chip lists on `/` (breakfast / lunch / dinner / dessert × tiers). See [product.md](./product.md#try-me).
 - **v2:** counted **Popular ingredients** — canonical IDs, sorted ID set per Generate, pairs/triples over 7 days, KV `POPULAR`, cron, cache, sitemap. See [v2.md](./v2.md).
+
+### Canonical NZ pantry ingredients (seed)
+- Committed seed: `data/ingredients/nz-pantry.json` (~300–500 everyday NZ items). Sources, licences, NZFCD decision, and regenerate steps: [`data/ingredients/SOURCES.md`](../data/ingredients/SOURCES.md). Manual review queue: [`data/ingredients/MANUAL_REVIEW.md`](../data/ingredients/MANUAL_REVIEW.md).
+- **Shape (planned `RECIPES_DB` ingredients table + chip map):** stable `slug` (UNIQUE, kebab-case); ULID `id` minted on D1 load; `name`; `aliases[]`; `category`; optional `parent` (`dairy` | `wheat` — group expansion; bakery may use `wheat` parent with `intrinsic.dairy`); `intrinsic` `{ meat, fish, dairy, egg, animal_derived }`; derived `diets` `{ vegan, vegetarian }` only. No curated `allergens[]` / `allergen_uncertain` / per-item `gluten_free` | `keto` | `halal` | `paleo`. Avoid-list matching + parent expansion + label disclaimer: [`SOURCES.md`](../data/ingredients/SOURCES.md). Valibot field sketch lives there (to land under `#lib/schemas/*` with app code). Validate: `node scripts/validate-nz-pantry.mjs`. Regenerate: `node scripts/generate-nz-pantry.mjs`.
+
+- **Vectorize:** later embed `name` + `aliases` with metadata `slug` (and ULID after D1 load). Distinct from the `recipes` index.
+- Feeds the in-process chip synonym map ([ai.md](./ai.md#chips)) and Try me label → canonical ID wiring when that lands. Publish gates already require canonical ingredient IDs ([product.md](./product.md#moderation-approach)).
 
 ### Write path (v1)
 - Session → Diet DO `getActive()` → Credit DO **`hold(n, idempotencyKey)`** (coalesced SQL, no `await` between writes, no AI inside the DO) → Workers AI granite → Valibot → moderation / quality gates → D1 `batch()` insert of the Recipe (including `diet_id`, publish/visibility) → **`settle`**. **`release`** if AI or Valibot fails, or on cancel. Then Queue `index_recipe` (bge embed + Vectorize upsert + Analytics Engine) for rows that may appear publicly. Credits are always held first, then settled or released; never a one-shot debit before AI. (Persisting a sorted canonical ingredient ID set for Popular ranking is **v2**.)
@@ -81,3 +90,6 @@
 - Near-duplicate canonical pantry skip window for Recent (see [product.md](./product.md#quality-publish-gates)).
 - Storage (v2 option): nightly near-duplicate merge + 301, and embed only saved recipes.
 - Popular ingredients open detail (canonical IDs, thresholds, guest Generates, …) lives under [v2.md](./v2.md).
+- **Ingredients D1 load:** exact Drizzle column names / migration; when to mint ULIDs; how avoid-list + parent links are stored on the Diet DO.
+- **Manual review** of `data/ingredients/MANUAL_REVIEW.md` (identity / alias rows) before treating the seed as production-canonical.
+- Chip canonicalizer: replace the tiny hard-coded synonym map with the seed’s `slug` + `aliases` (and whether unmatched free text stays “held for review” only).

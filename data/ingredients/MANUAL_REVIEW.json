@@ -1,0 +1,80 @@
+{
+  "count": 15,
+  "items": [
+    {
+      "slug": "cereal",
+      "kind": "identity_ambiguous",
+      "detail": "Ambiguous commercial product; confirm slug/aliases and intrinsic flags if needed"
+    },
+    {
+      "slug": "chocolate",
+      "kind": "identity_ambiguous",
+      "detail": "Ambiguous commercial product; confirm slug/aliases and intrinsic flags if needed"
+    },
+    {
+      "slug": "hummus",
+      "kind": "identity_ambiguous",
+      "detail": "Ambiguous commercial product; confirm slug/aliases and intrinsic flags if needed"
+    },
+    {
+      "slug": "kimchi",
+      "kind": "identity_ambiguous",
+      "detail": "Ambiguous commercial product; confirm slug/aliases and intrinsic flags if needed"
+    },
+    {
+      "slug": "margarine",
+      "kind": "identity_ambiguous",
+      "detail": "Ambiguous commercial product; confirm slug/aliases and intrinsic flags if needed"
+    },
+    {
+      "slug": "noodles",
+      "kind": "identity_ambiguous",
+      "detail": "Ambiguous commercial product; confirm slug/aliases and intrinsic flags if needed"
+    },
+    {
+      "slug": "oats",
+      "kind": "identity_ambiguous",
+      "detail": "Ambiguous commercial product; confirm slug/aliases and intrinsic flags if needed"
+    },
+    {
+      "slug": "pesto",
+      "kind": "identity_ambiguous",
+      "detail": "Ambiguous commercial product; confirm slug/aliases and intrinsic flags if needed"
+    },
+    {
+      "slug": "ramen-noodles",
+      "kind": "identity_ambiguous",
+      "detail": "Ambiguous commercial product; confirm slug/aliases and intrinsic flags if needed"
+    },
+    {
+      "slug": "sausage",
+      "kind": "identity_ambiguous",
+      "detail": "Ambiguous commercial product; confirm slug/aliases and intrinsic flags if needed"
+    },
+    {
+      "slug": "stock",
+      "kind": "identity_ambiguous",
+      "detail": "Ambiguous commercial product; confirm slug/aliases and intrinsic flags if needed"
+    },
+    {
+      "slug": "tamari",
+      "kind": "identity_ambiguous",
+      "detail": "Ambiguous commercial product; confirm slug/aliases and intrinsic flags if needed"
+    },
+    {
+      "slug": "vermicelli",
+      "kind": "identity_ambiguous",
+      "detail": "Ambiguous commercial product; confirm slug/aliases and intrinsic flags if needed"
+    },
+    {
+      "slug": "worcestershire",
+      "kind": "identity_ambiguous",
+      "detail": "Ambiguous commercial product; confirm slug/aliases and intrinsic flags if needed"
+    },
+    {
+      "slug": "wrap",
+      "kind": "identity_ambiguous",
+      "detail": "Ambiguous commercial product; confirm slug/aliases and intrinsic flags if needed"
+    }
+  ]
+}

@@ -18,7 +18,7 @@
 
 - **Publish defaults:** free-tier recipes are eligible for **Recent** by default after moderation / quality gates; paid Cooks may opt out (private). See [product.md](./product.md#publish-and-privacy). Unpublished / private recipes are not on Recent and are not treated as public brochure HTML.
 - **`/recipes/[slug]` is never auth-gated for published rows:** gating would break link previews (Facebook's `facebookexternalhit`, Slack, iMessage fetch anonymously). Private / unpublished behaviour is Open in product.
-- **Public recipe HTML never exposes** profile, Diet, allergies, or medical diets ([product.md](./product.md#publish-and-privacy)).
+- **Public recipe HTML never exposes** profile, Diet, avoid list, or medical diets ([product.md](./product.md#publish-and-privacy)).
 - **`noindex` with a robots meta tag, not a `robots.txt` Disallow**, on recipe pages, so crawlers can fetch the page and see the `noindex`.
 - **No weekly Popular purge / recipe robots flip in v1** — there is no Popular *recipe* ranking list. Account deletion and report-hide still purge cache tags ([caching.md](./caching.md#cache-purge-route)). Counted Popular ingredients are **v2** ([v2.md](./v2.md)).
 - One canonical URL per published recipe: `/recipes/{title}-{8-char suffix}`. A bare suffix or wrong title part gets a SvelteKit `redirect(301)` to the canonical slug; unknown is 404; deleted is 410. None of these are cached (see [data.md](./data.md) and [caching.md](./caching.md#headers-by-route)).
